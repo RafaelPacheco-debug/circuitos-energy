@@ -1,0 +1,125 @@
+<div th:fragment="conteudo" class="container-fluid">
+
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold mb-1" th:text="${tituloDetalhe}">Detalhe</h1>
+      <p class="text-muted mb-0">Consulta completa da submissao realizada pelo utilizador.</p>
+    </div>
+    <a class="btn btn-outline-primary" th:href="@{/admin/ferramentas-utilizador}">
+      Voltar a Ferramentas de Utilizador
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12 col-xl-4">
+      <div class="card shadow-sm border-0 rounded-4 h-100">
+        <div class="card-body">
+          <h2 class="h5 mb-3">Resumo</h2>
+          <dl class="mb-0">
+            <div class="mb-3">
+              <dt class="small text-muted">ID</dt>
+              <dd class="mb-0 fw-semibold" th:text="${registo.id}">1</dd>
+            </div>
+            <div class="mb-3">
+              <dt class="small text-muted">Estado</dt>
+              <dd class="mb-0"><span class="badge bg-primary-subtle text-primary-emphasis border" th:text="${registo.estado}">Novo</span></dd>
+            </div>
+            <div class="mb-3">
+              <dt class="small text-muted">Criado em</dt>
+              <dd class="mb-0 fw-semibold" th:text="${#temporals.format(registo.criadoEm, 'dd/MM/yyyy HH:mm')}">22/04/2026 22:00</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-8">
+      <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+          <div th:switch="${tipoFerramenta}">
+            <div th:case="'calculo-solar'">
+              <h2 class="h5 mb-3">Dados submetidos</h2>
+              <div class="row g-3">
+                <div class="col-md-6"><strong>Nome:</strong> <span th:text="${(registo.firstName != null ? registo.firstName : '') + ' ' + (registo.lastName != null ? registo.lastName : '')}">Nome</span></div>
+                <div class="col-md-6"><strong>Email:</strong> <span th:text="${registo.email}">email</span></div>
+                <div class="col-md-6"><strong>Telefone:</strong> <span th:text="${registo.phone}">telefone</span></div>
+                <div class="col-md-6"><strong>Tipo de instalacao:</strong> <span th:text="${registo.installationType}">tipo</span></div>
+                <div class="col-md-6"><strong>Consumo mensal:</strong> <span th:text="${registo.consumoMensalKwh + ' kWh'}">300</span></div>
+                <div class="col-md-6"><strong>Tarifa:</strong> <span th:text="${registo.tarifaKwh + ' EUR/kWh'}">0.15</span></div>
+                <div class="col-md-6"><strong>Horas de uso:</strong> <span th:text="${registo.horasUsoDiario + ' h/dia'}">8</span></div>
+                <div class="col-md-6"><strong>Investimento:</strong> <span th:text="${registo.investimento + ' EUR'}">5000</span></div>
+                <div class="col-md-6"><strong>Propriedade:</strong> <span th:text="${registo.ownership}">Sim</span></div>
+                <div class="col-md-6"><strong>Em construcao:</strong> <span th:text="${registo.construction}">Nao</span></div>
+                <div class="col-md-6"><strong>Ligacao a rede:</strong> <span th:text="${registo.gridConnection}">Sim</span></div>
+                <div class="col-md-6"><strong>Localizacao:</strong> <span th:text="${(registo.address != null ? registo.address : '') + ' ' + (registo.city != null ? registo.city : '') + ' ' + (registo.postalCode != null ? registo.postalCode : '')}">morada</span></div>
+              </div>
+
+              <hr class="my-4">
+
+              <h3 class="h6 mb-3">Resultado calculado</h3>
+              <div class="row g-3">
+                <div class="col-md-6"><strong>Potencia necessaria:</strong> <span th:text="${registo.potenciaNecessariaKw + ' kW'}">1.0</span></div>
+                <div class="col-md-6"><strong>Consumo anual:</strong> <span th:text="${registo.consumoAnualKwh + ' kWh'}">3600</span></div>
+                <div class="col-md-6"><strong>Custo anual atual:</strong> <span th:text="${registo.custoAnualAtual + ' EUR'}">540</span></div>
+                <div class="col-md-6"><strong>Economia anual:</strong> <span th:text="${registo.economiaAnualEstimada + ' EUR'}">162</span></div>
+                <div class="col-md-6"><strong>Economia percentual:</strong> <span th:text="${registo.economiaPercent + '%'}">30%</span></div>
+                <div class="col-md-6"><strong>Payback:</strong> <span th:text="${registo.paybackAnos + ' anos'}">10</span></div>
+              </div>
+            </div>
+
+            <div th:case="'orcamento-paineis'">
+              <h2 class="h5 mb-3">Dados submetidos</h2>
+              <div class="row g-3">
+                <div class="col-md-6"><strong>Nome completo:</strong> <span th:text="${registo.nomeCompleto}">Nome</span></div>
+                <div class="col-md-6"><strong>Email:</strong> <span th:text="${registo.email}">email</span></div>
+                <div class="col-md-6"><strong>Telefone:</strong> <span th:text="${registo.telefone}">telefone</span></div>
+                <div class="col-md-6"><strong>Area disponivel:</strong> <span th:text="${registo.areaDisponivel}">50</span></div>
+                <div class="col-md-6"><strong>Tipo de painel:</strong> <span th:text="${registo.tipoPainel}">Mono</span></div>
+                <div class="col-md-6"><strong>Tipo de telhado:</strong> <span th:text="${registo.tipoTelhado}">Plano</span></div>
+                <div class="col-md-6"><strong>Consumo mensal:</strong> <span th:text="${registo.consumoMensal != null && !registo.consumoMensal.isBlank() ? registo.consumoMensal + ' kWh' : 'Nao indicado'}">300</span></div>
+                <div class="col-md-6"><strong>Tipo de instalacao:</strong> <span th:text="${registo.installationType}">Residencia</span></div>
+                <div class="col-md-6"><strong>Tipo de imovel:</strong> <span th:text="${registo.propertyType}">Moradia</span></div>
+                <div class="col-md-6"><strong>O imovel e seu:</strong> <span th:text="${registo.ownershipStatus}">Sim</span></div>
+                <div class="col-md-6"><strong>Em construcao:</strong> <span th:text="${registo.constructionStatus}">Nao</span></div>
+                <div class="col-md-6"><strong>Ligacao a rede:</strong> <span th:text="${registo.gridConnection}">Sim</span></div>
+                <div class="col-md-6"><strong>Superficie:</strong> <span th:text="${registo.installationSurface}">Telhado</span></div>
+                <div class="col-md-6"><strong>Area aproximada:</strong> <span th:text="${registo.availableAreaBand}">Media</span></div>
+                <div class="col-md-12"><strong>Localizacao:</strong> <span th:text="${(registo.projectAddress != null ? registo.projectAddress : '') + ' ' + (registo.projectCity != null ? registo.projectCity : '') + ' ' + (registo.projectPostalCode != null ? registo.projectPostalCode : '')}">morada</span></div>
+              </div>
+            </div>
+
+            <div th:case="'orcamento-postos'">
+              <h2 class="h5 mb-3">Dados submetidos</h2>
+              <div class="row g-3">
+                <div class="col-md-6"><strong>Nome completo:</strong> <span th:text="${registo.nomeCompleto}">Nome</span></div>
+                <div class="col-md-6"><strong>Email:</strong> <span th:text="${registo.email}">email</span></div>
+                <div class="col-md-6"><strong>Telefone:</strong> <span th:text="${registo.telefone}">telefone</span></div>
+                <div class="col-md-6"><strong>Tipo de localizacao:</strong> <span th:text="${registo.tipoLocalizacao}">residencia</span></div>
+                <div class="col-md-6"><strong>Tipo de carregador:</strong> <span th:text="${registo.tipoCarregador}">7kW</span></div>
+                <div class="col-md-6"><strong>Quantidade:</strong> <span th:text="${registo.quantidade}">1</span></div>
+                <div class="col-md-6"><strong>Tipo de instalacao:</strong> <span th:text="${registo.tipoInstalacao}">interna</span></div>
+                <div class="col-md-6"><strong>Tipo de projeto:</strong> <span th:text="${registo.wizardInstallationType}">Residencia</span></div>
+                <div class="col-md-6"><strong>Local de instalacao:</strong> <span th:text="${registo.wizardInstallationPlace}">Garagem</span></div>
+                <div class="col-md-6"><strong>Ja tem veiculo eletrico:</strong> <span th:text="${registo.wizardHasEv}">Sim</span></div>
+                <div class="col-md-6"><strong>Tipo de carregamento:</strong> <span th:text="${registo.wizardChargingType}">Normal</span></div>
+                <div class="col-md-6"><strong>Ligacao eletrica:</strong> <span th:text="${registo.wizardGridAvailable}">Sim</span></div>
+                <div class="col-md-12"><strong>Localizacao:</strong> <span th:text="${(registo.wizardAddress != null ? registo.wizardAddress : '') + ' ' + (registo.wizardCity != null ? registo.wizardCity : '') + ' ' + (registo.wizardPostalCode != null ? registo.wizardPostalCode : '')}">morada</span></div>
+              </div>
+
+              <hr class="my-4">
+
+              <h3 class="h6 mb-3">Resultado calculado</h3>
+              <div class="row g-3">
+                <div class="col-md-6"><strong>Custo por unidade:</strong> <span th:text="${registo.custoPorUnidade + ' EUR'}">700</span></div>
+                <div class="col-md-6"><strong>Instalacao:</strong> <span th:text="${registo.instalacao + ' EUR'}">300</span></div>
+                <div class="col-md-6"><strong>Desconto:</strong> <span th:text="${registo.desconto + ' EUR'}">0</span></div>
+                <div class="col-md-6"><strong>Total estimado:</strong> <span th:text="${registo.custoTotalEstimado + ' EUR'}">1000</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

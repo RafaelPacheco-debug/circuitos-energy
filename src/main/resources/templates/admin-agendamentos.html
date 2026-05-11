@@ -1,0 +1,108 @@
+<div th:fragment="conteudo" class="container-fluid">
+
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold mb-1">
+        <i class="fas fa-calendar-check me-2 text-primary"></i>
+        Pedidos e Agendamentos
+      </h1>
+      <p class="text-muted mb-0">Pedidos reais submetidos pelos utilizadores através dos formulários do site.</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+      <span class="badge bg-primary fs-6">
+        <span th:text="${totalAgendamentos}">0</span> pedidos
+      </span>
+      <span class="badge text-bg-light border">
+        <span th:text="${totalReunioes}">0</span> reuniões
+      </span>
+      <span class="badge text-bg-light border">
+        <span th:text="${totalManutencoes}">0</span> manutenções
+      </span>
+      <span class="badge text-bg-light border">
+        <span th:text="${totalInstalacoes}">0</span> instalações
+      </span>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn"
+           th:classappend="${filtroTipo == 'todos'} ? ' btn-primary' : ' btn-outline-primary'"
+           th:href="@{/admin/agendamentos(tipo='todos')}">Todos</a>
+        <a class="btn"
+           th:classappend="${filtroTipo == 'reuniao'} ? ' btn-primary' : ' btn-outline-primary'"
+           th:href="@{/admin/agendamentos(tipo='reuniao')}">Reuniões</a>
+        <a class="btn"
+           th:classappend="${filtroTipo == 'manutencao'} ? ' btn-primary' : ' btn-outline-primary'"
+           th:href="@{/admin/agendamentos(tipo='manutencao')}">Manutenções</a>
+        <a class="btn"
+           th:classappend="${filtroTipo == 'instalacao'} ? ' btn-primary' : ' btn-outline-primary'"
+           th:href="@{/admin/agendamentos(tipo='instalacao')}">Instalações</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <div th:if="${#lists.isEmpty(agendamentos)}" class="text-center py-5">
+        <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+        <h2 class="h5">Sem pedidos para o filtro selecionado</h2>
+        <p class="text-muted mb-0">Assim que houver submissões, elas aparecerão aqui automaticamente.</p>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(agendamentos)}" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Contacto</th>
+              <th>Data</th>
+              <th>Hora / Período</th>
+              <th>Localização</th>
+              <th>Detalhe</th>
+              <th>Observações</th>
+              <th>Criado em</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="pedido : ${agendamentos}">
+              <td><span class="badge text-bg-secondary" th:text="${pedido.id()}">1</span></td>
+              <td>
+                <span class="badge"
+                      th:classappend="${pedido.tipoPedido() == 'Reunião'} ? ' text-bg-info' : (${pedido.tipoPedido() == 'Manutenção'} ? ' text-bg-warning' : ' text-bg-success')"
+                      th:text="${pedido.tipoPedido()}">Tipo</span>
+              </td>
+              <td>
+                <div class="fw-semibold" th:text="${pedido.nome()}">Nome</div>
+                <div class="small text-muted" th:text="${pedido.email()}">email</div>
+                <div class="small text-muted" th:text="${pedido.telefone()}">telefone</div>
+              </td>
+              <td th:text="${pedido.dataEscolhida() != null ? #temporals.format(pedido.dataEscolhida(), 'dd/MM/yyyy') : '—'}">01/01/2026</td>
+              <td th:text="${pedido.horarioOuPeriodo()}">09:00 - 11:00</td>
+              <td>
+                <span class="small" th:text="${pedido.localizacao()}">Localização</span>
+              </td>
+              <td>
+                <span class="small" th:text="${pedido.detalhePedido()}">Detalhe</span>
+              </td>
+              <td style="max-width: 240px;">
+                <span class="small" th:text="${pedido.observacoes() != null && !pedido.observacoes().isBlank() ? pedido.observacoes() : 'Sem observações'}">Obs</span>
+              </td>
+              <td>
+                <span class="small text-muted" th:text="${#temporals.format(pedido.criadoEm(), 'dd/MM/yyyy HH:mm')}">22/04/2026 21:00</span>
+              </td>
+              <td>
+                <span class="badge bg-primary-subtle text-primary-emphasis border" th:text="${pedido.estado()}">Novo</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

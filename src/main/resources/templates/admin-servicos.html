@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Serviços</title>
+</head>
+<body>
+
+<div th:fragment="conteudo">
+
+  <h1>Serviços (Admin)</h1>
+
+  <a href="/admin/servicos/novo">➕ Novo Serviço</a>
+
+  <table border="1">
+    <tr>
+      <th>ID</th>
+      <th>Título</th>
+      <th>Preço</th>
+      <th>Ativo</th>
+      <th>Ações</th>
+    </tr>
+
+    <tr th:each="s : ${servicos}">
+      <td th:text="${s.id}"></td>
+      <td th:text="${s.titulo}"></td>
+      <td th:text="${s.preco} + ' €'"></td>
+      <td th:text="${s.ativo}"></td>
+      <td>
+        <a th:href="@{/admin/servicos/editar/{id}(id=${s.id})}">Editar</a> |
+        <form th:action="@{/admin/servicos/toggle/{id}(id=${s.id})}" method="post" style="display:inline">
+          <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <button type="submit" style="background:none;border:0;padding:0;color:#0d6efd;text-decoration:underline;cursor:pointer;font:inherit">
+            Toggle
+          </button>
+        </form>
+        |
+        <form th:action="@{/admin/servicos/apagar/{id}(id=${s.id})}" method="post" style="display:inline">
+          <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <button type="submit" style="background:none;border:0;padding:0;color:#0d6efd;text-decoration:underline;cursor:pointer;font:inherit">
+            Apagar
+          </button>
+        </form>
+      </td>
+    </tr>
+  </table>
+
+</div>
+
+</body>
+</html>

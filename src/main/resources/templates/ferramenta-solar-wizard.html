@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Formulário de Qualificação - Calculadora Solar</title>
+
+    <style>
+        :root {
+            --bg: #eef6f1;
+            --card: #ffffff;
+            --muted: #6b7280;
+            --green1: #0b7a2b;
+            --green2: #0a6a26;
+            --blue1: #1f4ed8;
+            --blue2: #1b3fb5;
+            --gray-light: #f3f4f6;
+            --text-dark: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+        }
+
+        .wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 28px 18px 40px;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .navbtn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .backbtn {
+            background: #374151;
+            color: white;
+        }
+
+        .homebtn {
+            background: var(--green1);
+            color: white;
+        }
+
+        /* HEADER */
+        h1 {
+            margin: 20px 0 8px;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 0.2px;
+            font-weight: 700;
+        }
+
+        .sub {
+            text-align: center;
+            color: var(--muted);
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        /* PROGRESS BAR */
+        .progress-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-right: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .progress-step:last-child {
+            margin-right: 0;
+        }
+
+        .progress-step.active {
+            background: var(--green1);
+        }
+
+        .progress-step.completed {
+            background: var(--green1);
+        }
+
+        .progress-info {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* CARD */
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            padding: 40px 32px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .card .description {
+            color: var(--muted);
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        /* STEPS - Hidden by default */
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* OPTION BUTTONS */
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .option-btn {
+            padding: 16px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: #f9fafb;
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            border-color: var(--green1);
+            background: #f0fdf4;
+        }
+
+        .option-btn.selected {
+            border-color: var(--green1);
+            background: #dcfce7;
+            color: var(--green1);
+        }
+
+        /* INPUT FIELDS */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .textInput {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            outline: none;
+            font-size: 14px;
+            background: var(--gray-light);
+            transition: border-color 0.2s ease;
+        }
+
+        .textInput:focus {
+            border-color: var(--green1);
+            background: #fff;
+        }
+
+        .textInput::placeholder {
+            color: #9ca3af;
+        }
+
+        /* MAP CONTAINER (optional) */
+        .map-container {
+            margin-bottom: 18px;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 250px;
+            background: #f3f4f6;
+            display: none; /* Hidden for now */
+        }
+
+        .map-container.show {
+            display: block;
+        }
+
+        /* TWO COLUMN GRID */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 28px 20px;
+                min-height: auto;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        /* BUTTONS */
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back {
+            background: #e5e7eb;
+            color: var(--text-dark);
+        }
+
+        .btn-back:hover {
+            background: #d1d5db;
+        }
+
+        .btn-next {
+            background: var(--green1);
+            color: white;
+            flex: 2;
+        }
+
+        .btn-next:hover {
+            background: var(--green2);
+        }
+
+        .btn-next:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        /* SUCCESS STEP */
+        .success-icon {
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .success-text {
+            text-align: center;
+            color: var(--muted);
+            margin-bottom: 30px;
+        }
+
+        .btn-finish {
+            background: var(--green1);
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-finish:hover {
+            background: var(--green2);
+        }
+    </style>
+</head>
+
+<body>
+<div class="wrap">
+    <div class="topbar">
+        <button class="navbtn backbtn" onclick="history.back()">
+            ← Voltar
+        </button>
+        <a href="/" class="navbtn homebtn">
+            🏠 Página Inicial
+        </a>
+    </div>
+
+    <h1>Calculadora de Potência Solar</h1>
+    <div class="sub">Responda a algumas perguntas simples para calcular o seu potencial solar</div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-step active" id="progress-1"></div>
+            <div class="progress-step" id="progress-2"></div>
+            <div class="progress-step" id="progress-3"></div>
+            <div class="progress-step" id="progress-4"></div>
+            <div class="progress-step" id="progress-5"></div>
+            <div class="progress-step" id="progress-6"></div>
+        </div>
+        <div class="progress-info">
+            <span id="stepCounter">Passo 1</span> de 6
+        </div>
+    </div>
+
+    <!-- CARD WITH STEPS -->
+    <div class="card">
+
+        <!-- STEP 1: Tipo de Instalação -->
+        <div class="step active" id="step-1">
+            <h2>Tipo de Instalação</h2>
+            <p class="description">Onde pretende realizar a instalação?</p>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption(1, 'Habitação', this)">
+                    🏠 Habitação
+                </button>
+                <button class="option-btn" onclick="selectOption(1, 'Empresa', this)">
+                    🏢 Empresa
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 2: Proprietário -->
+        <div class="step" id="step-2">
+            <h2>É o proprietário?</h2>
+            <p class="description">Confirme a sua relação com o imóvel</p>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption(2, 'Sim', this)">
+                    ✓ Sim, sou proprietário
+                </button>
+                <button class="option-btn" onclick="selectOption(2, 'Não', this)">
+                    ✗ Não, sou arrendatário
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Construção -->
+        <div class="step" id="step-3">
+            <h2>O imóvel está em construção?</h2>
+            <p class="description">Selecione a situação do imóvel</p>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption(3, 'Sim', this)">
+                    🏗️ Sim, ainda está em construção
+                </button>
+                <button class="option-btn" onclick="selectOption(3, 'Não', this)">
+                    ✓ Não, já está construído
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Conexão Elétrica -->
+        <div class="step" id="step-4">
+            <h2>Ligação à rede elétrica</h2>
+            <p class="description">Confirme a sua situação de ligação</p>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption(4, 'Conectado', this)">
+                    🔌 Sim, está conectado
+                </button>
+                <button class="option-btn" onclick="selectOption(4, 'Sem conexão', this)">
+                    ⚠️ Não, sem conexão
+                </button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Localização -->
+        <div class="step" id="step-5">
+            <h2>Localização</h2>
+            <p class="description">Indique a morada do imóvel</p>
+            <div class="form-group">
+                <label for="rua">Rua *</label>
+                <input class="textInput" id="rua" type="text" placeholder="Ex: Rua da Paz, 123"
+                       onchange="saveData('rua', this.value)">
+            </div>
+            <div class="form-group">
+                <label for="numero">Nº, Andar, etc *</label>
+                <input class="textInput" id="numero" type="text" placeholder="Ex: 45, Apto. 3º Esq"
+                       onchange="saveData('numero', this.value)">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="codigoPostal">Código Postal *</label>
+                    <input class="textInput" id="codigoPostal" type="text" placeholder="Ex: 1000-001"
+                           onchange="saveData('codigoPostal', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="cidade">Cidade *</label>
+                    <input class="textInput" id="cidade" type="text" placeholder="Ex: Lisboa"
+                           onchange="saveData('cidade', this.value)">
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 6: Dados de Contacto -->
+        <div class="step" id="step-6">
+            <h2>Dados de Contacto</h2>
+            <p class="description">Indique os seus dados para a proposta</p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nome">Nome *</label>
+                    <input class="textInput" id="nome" type="text" placeholder="Ex: João"
+                           onchange="saveData('nome', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="apelido">Apelido *</label>
+                    <input class="textInput" id="apelido" type="text" placeholder="Ex: Silva"
+                           onchange="saveData('apelido', this.value)">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="telefone">Telefone *</label>
+                    <input class="textInput" id="telefone" type="tel" placeholder="Ex: 919123456"
+                           onchange="saveData('telefone', this.value)">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input class="textInput" id="email" type="email" placeholder="Ex: joao@email.com"
+                           onchange="saveData('email', this.value)">
+                </div>
+            </div>
+        </div>
+
+        <!-- BUTTON GROUP -->
+        <div class="button-group">
+            <button class="btn btn-back" id="btnBack" onclick="previousStep()" style="display:none;">
+                ← Voltar
+            </button>
+            <button class="btn btn-next" id="btnNext" onclick="nextStep()">
+                Seguinte →
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 6;
+    const formData = {};
+
+    // Load saved data
+    function loadData() {
+        const saved = localStorage.getItem('wizardData');
+        if (saved) {
+            Object.assign(formData, JSON.parse(saved));
+            restoreUI();
+        }
+    }
+
+    // Save data to localStorage
+    function saveData(key, value) {
+        formData[key] = value;
+        localStorage.setItem('wizardData', JSON.stringify(formData));
+    }
+
+    // Restore UI from saved data
+    function restoreUI() {
+        // Restore option selections
+        ['step1', 'step2', 'step3', 'step4'].forEach((key, idx) => {
+            if (formData[key]) {
+                const buttons = document.querySelectorAll(`#step-${idx + 1} .option-btn`);
+                buttons.forEach(btn => {
+                    if (btn.textContent.includes(formData[key])) {
+                        btn.classList.add('selected');
+                    }
+                });
+            }
+        });
+
+        // Restore text inputs
+        ['rua', 'numero', 'codigoPostal', 'cidade', 'nome', 'apelido', 'telefone', 'email'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && formData[id]) {
+                el.value = formData[id];
+            }
+        });
+    }
+
+    function selectOption(stepNum, value, element) {
+        const key = `step${stepNum}`;
+        formData[key] = value;
+        localStorage.setItem('wizardData', JSON.stringify(formData));
+
+        // Visual feedback
+        const buttons = element.parentElement.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.classList.remove('selected'));
+        element.classList.add('selected');
+    }
+
+    function nextStep() {
+        // Validate current step
+        if (!isStepValid(currentStep)) {
+            alert('Por favor, complete todos os campos obrigatórios');
+            return;
+        }
+
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateUI();
+        } else {
+            // All steps completed - redirect to calculation page
+            finishWizard();
+        }
+    }
+
+    function previousStep() {
+        if (currentStep > 1) {
+            currentStep--;
+            updateUI();
+        }
+    }
+
+    function isStepValid(step) {
+        switch (step) {
+            case 1:
+                return formData.step1 !== undefined;
+            case 2:
+                return formData.step2 !== undefined;
+            case 3:
+                return formData.step3 !== undefined;
+            case 4:
+                return formData.step4 !== undefined;
+            case 5:
+                return formData.rua && formData.numero && formData.codigoPostal && formData.cidade;
+            case 6:
+                return formData.nome && formData.apelido && formData.telefone && formData.email;
+            default:
+                return true;
+        }
+    }
+
+    function updateUI() {
+        // Hide all steps
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+
+        // Show current step
+        document.getElementById(`step-${currentStep}`).classList.add('active');
+
+        // Update progress bar
+        for (let i = 1; i <= totalSteps; i++) {
+            const prog = document.getElementById(`progress-${i}`);
+            if (i < currentStep) {
+                prog.classList.add('completed');
+            } else if (i === currentStep) {
+                prog.classList.add('active');
+                prog.classList.remove('completed');
+            } else {
+                prog.classList.remove('active', 'completed');
+            }
+        }
+
+        // Update step counter
+        document.getElementById('stepCounter').textContent = `Passo ${currentStep}`;
+
+        // Show/hide back button
+        document.getElementById('btnBack').style.display = currentStep > 1 ? 'block' : 'none';
+
+        // Update next button text
+        const btnNext = document.getElementById('btnNext');
+        if (currentStep === totalSteps) {
+            btnNext.textContent = 'Começar Cálculo ✓';
+        } else {
+            btnNext.textContent = 'Seguinte →';
+        }
+
+        // Scroll to top
+        window.scrollTo(0, 0);
+    }
+
+    function finishWizard() {
+        // Clear old data and redirect to main calculator
+        localStorage.removeItem('wizardData');
+        window.location.href = '/ferramentas/calcular-solar';
+    }
+
+    // Initialize on page load
+    loadData();
+    updateUI();
+</script>
+
+</body>
+</html>

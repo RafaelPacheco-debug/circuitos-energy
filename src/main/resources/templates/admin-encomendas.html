@@ -1,0 +1,97 @@
+<div th:fragment="conteudo" class="container-fluid">
+
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+    <div>
+      <h1 class="h3 fw-bold mb-1">Encomendas</h1>
+      <p class="text-muted mb-0">Compras reais concluídas através do checkout do site.</p>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+      <span class="badge bg-primary fs-6">
+        <span th:text="${totalEncomendas}">0</span> encomendas
+      </span>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-4 mb-4">
+    <div class="card-body">
+      <div class="d-flex flex-wrap gap-2">
+        <a class="btn"
+           th:classappend="${filtroEstado == 'todas'} ? ' btn-primary' : ' btn-outline-primary'"
+           th:href="@{/admin/encomendas(estado='todas')}">Todas</a>
+        <a class="btn"
+           th:classappend="${filtroEstado == 'Nova'} ? ' btn-primary' : ' btn-outline-primary'"
+           th:href="@{/admin/encomendas(estado='Nova')}">Novas</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body">
+      <div th:if="${#lists.isEmpty(encomendas)}" class="text-center py-5">
+        <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+        <h2 class="h5">Sem encomendas registadas</h2>
+        <p class="text-muted mb-0">Assim que existir uma compra no checkout, ela aparecerá aqui.</p>
+      </div>
+
+      <div th:if="${!#lists.isEmpty(encomendas)}" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Produtos</th>
+              <th>Morada</th>
+              <th>Pagamento</th>
+              <th>Total</th>
+              <th>Data</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="encomenda : ${encomendas}">
+              <td><span class="badge text-bg-secondary" th:text="${encomenda.id}">1</span></td>
+              <td>
+                <div class="fw-semibold" th:text="${encomenda.nomeCompleto}">Nome</div>
+                <div class="small text-muted" th:text="${encomenda.email}">email</div>
+                <div class="small text-muted" th:text="${encomenda.telefone}">telefone</div>
+              </td>
+              <td style="min-width: 260px;">
+                <div th:each="item : ${encomenda.items}" class="mb-2">
+                  <div class="small fw-semibold" th:text="${item.tituloServico}">Produto</div>
+                  <div class="small text-muted">
+                    <span th:text="${item.quantidade}">1</span> x
+                    <span th:text="${item.precoUnitario} + ' €'">0 €</span>
+                    •
+                    <span th:text="${item.subtotal} + ' €'">0 €</span>
+                  </div>
+                </div>
+              </td>
+              <td style="min-width: 240px;">
+                <div class="small" th:text="${encomenda.moradaEnvio}">Morada</div>
+                <div class="small text-muted">
+                  <span th:text="${encomenda.cidade}">Cidade</span>,
+                  <span th:text="${encomenda.codigoPostal}">1000-001</span>
+                </div>
+                <div class="small text-muted" th:text="${encomenda.pais}">Portugal</div>
+              </td>
+              <td>
+                <span class="small" th:text="${encomenda.metodoPagamento}">Cartao</span>
+              </td>
+              <td>
+                <span class="fw-semibold" th:text="${encomenda.total} + ' €'">0 €</span>
+              </td>
+              <td>
+                <span class="small text-muted" th:text="${#temporals.format(encomenda.criadoEm, 'dd/MM/yyyy HH:mm')}">22/04/2026 23:00</span>
+              </td>
+              <td>
+                <span class="badge bg-primary-subtle text-primary-emphasis border" th:text="${encomenda.estado}">Nova</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

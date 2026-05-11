@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orçamento de Postos de Carregamento</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/theme.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: var(--color-background);
+      --card: var(--color-surface);
+      --muted: var(--color-text-secondary);
+      --blue: var(--color-primary);
+      --blue-dark: var(--color-primary-hover);
+      --border: var(--color-border);
+      --shadow: 0 12px 30px rgba(15,118,110,.10);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: #0f1724;
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 36px 18px 60px;
+    }
+
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom: 22px;
+    }
+
+    .navbtn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .backbtn { background: rgba(15,23,42,.12); color: #0f1724; }
+    .homebtn { background: var(--blue); color: #fff; }
+
+    h1 {
+      font-size: clamp(30px, 2.8vw, 42px);
+      margin: 0 0 6px;
+      letter-spacing: .2px;
+      text-align: center;
+    }
+
+    .sub {
+      text-align:center;
+      color: var(--muted);
+      margin-bottom: 26px;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 22px;
+      align-items:start;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h3 {
+      margin-top:0;
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .hint {
+      margin-top: 2px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .form-group { margin-top: 16px; }
+
+    label {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      font-size: 14px;
+      background: #f8fafc;
+      outline: none;
+    }
+
+    .form-error {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #d63384;
+    }
+
+    .btn-submit {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .print-budget-btn {
+      display: block;
+      margin-top: 16px;
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--blue);
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .panel {
+      border-radius: 16px;
+      padding: 24px;
+      color: #fff;
+      box-shadow: var(--shadow);
+      background: linear-gradient(180deg, var(--blue), var(--blue-dark));
+    }
+
+    .panel h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 15px;
+      letter-spacing: .2px;
+    }
+
+    .panel .note {
+      font-size: 13px;
+      opacity: .9;
+      margin-bottom: 16px;
+    }
+
+    .result {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .result .item {
+      display:flex;
+      justify-content:space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.18);
+      font-size: 14px;
+    }
+
+    .result .item:last-child { border-bottom: none; }
+    .result .label { color: rgba(255,255,255,.9); }
+    .result .value { font-weight: 700; }
+
+    .wizard-card{
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 18px 40px rgba(15,23,42,.08);
+      margin-bottom: 24px;
+    }
+
+    .wizard-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap:wrap;
+    }
+
+    .wizard-title{
+      font-size: 26px;
+      margin: 0;
+    }
+
+    .wizard-subtitle{
+      margin: 8px 0 0;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .wizard-progress{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+
+    .wizard-step{
+      font-size: 13px;
+      font-weight: 700;
+      color:#0f172a;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .wizard-track{
+      flex:1;
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      min-width: 160px;
+      align-items:center;
+    }
+
+    .wizard-segment{
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7eb;
+    }
+
+    .wizard-segment.active,
+    .wizard-segment.completed{
+      background: #111827;
+    }
+
+    .step-pane{
+      display:none;
+      gap: 18px;
+    }
+
+    .step-pane.active{
+      display:grid;
+    }
+
+    .option-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .option-card{
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 20px;
+      text-align:left;
+      cursor:pointer;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      min-height: 118px;
+    }
+
+    .option-card:hover{
+      transform: translateY(-2px);
+      border-color: #cbd5e1;
+    }
+
+    .option-card.is-selected{
+      background: #111827;
+      color:#fff;
+      border-color: #111827;
+    }
+
+    .option-title{
+      display:block;
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .option-desc{
+      font-size: 13px;
+      color: inherit;
+      opacity: .82;
+      line-height: 1.5;
+    }
+
+    .wizard-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 14px;
+      margin-top: 24px;
+      flex-wrap:wrap;
+    }
+
+    .wizard-button{
+      padding: 12px 18px;
+      border-radius: 999px;
+      border:none;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .wizard-button.primary{
+      background:#111827;
+      color:#fff;
+    }
+
+    .wizard-button.secondary{
+      background:#f8fafc;
+      color:#0f172a;
+      border:1px solid #d1d5db;
+    }
+
+    .wizard-note{
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .field-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field-group{
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+
+    .field-label{
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .field-input{
+      width:100%;
+      min-height: 46px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 14px;
+      background:#f8fafc;
+      outline:none;
+      font-size: 14px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .wizard-track { grid-template-columns: repeat(4, 1fr); }
+      .field-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <button class="navbtn backbtn" onclick="history.back()">← Voltar</button>
+      <a th:href="@{/}" class="navbtn homebtn">🏠 Página Inicial</a>
+    </div>
+
+    <h1>Orçamento de Postos de Carregamento</h1>
+    <div class="sub">Obtenha um orçamento instantâneo para postos de carregamento elétrico.</div>
+
+    <section class="wizard-card" id="chargingWizard" th:classappend="${resultadoPostos != null} ? ' hidden' : ''">
+      <div class="wizard-header">
+        <div>
+          <p class="wizard-step">Pré-qualificação</p>
+          <h2 class="wizard-title">Algumas perguntas rápidas antes do orçamento</h2>
+          <p class="wizard-subtitle">Este fluxo ajuda a recolher o contexto do projeto antes de mostrar o orçamento de carregadores.</p>
+        </div>
+        <div class="wizard-progress">
+          <span id="wizardCounter" class="wizard-step">Passo 1 de 7</span>
+          <div class="wizard-track" id="wizardTrack">
+            <span class="wizard-segment active"></span>
+            <span class="wizard-segment"></span>
+            <span class="wizard-segment"></span>
+            <span class="wizard-segment"></span>
+            <span class="wizard-segment"></span>
+            <span class="wizard-segment"></span>
+            <span class="wizard-segment"></span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="step-pane active" data-step="1">
+        <h3>Tipo de instalação</h3>
+        <p class="wizard-note">Selecione o tipo de local onde pretende instalar o posto.</p>
+        <div class="option-grid">
+          <button type="button" class="option-card" data-field="installationType" data-value="Residência pessoal">
+            <p class="option-title">Residência pessoal</p>
+            <p class="option-desc">Instalação em casa, garagem privada ou residência.</p>
+          </button>
+          <button type="button" class="option-card" data-field="installationType" data-value="Empresa / Negócio">
+            <p class="option-title">Empresa / Negócio</p>
+            <p class="option-desc">Instalação em loja, escritório ou estabelecimento comercial.</p>
+          </button>
+          <button type="button" class="option-card" data-field="installationType" data-value="Condomínio">
+            <p class="option-title">Condomínio</p>
+            <p class="option-desc">Solução partilhada para áreas comuns e garagens coletivas.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-pane" data-step="2">
+        <h3>Local de instalação</h3>
+        <p class="wizard-note">Escolha o espaço onde o posto será instalado.</p>
+        <div class="option-grid">
+          <button type="button" class="option-card" data-field="installationPlace" data-value="Garagem privada">
+            <p class="option-title">Garagem privada</p>
+            <p class="option-desc">Espaço reservado em casa ou prédio.</p>
+          </button>
+          <button type="button" class="option-card" data-field="installationPlace" data-value="Garagem coletiva">
+            <p class="option-title">Garagem coletiva</p>
+            <p class="option-desc">Box ou parque fechado partilhado por vários utilizadores.</p>
+          </button>
+          <button type="button" class="option-card" data-field="installationPlace" data-value="Exterior">
+            <p class="option-title">Exterior</p>
+            <p class="option-desc">Instalação em espaço exterior ou jardim.</p>
+          </button>
+          <button type="button" class="option-card" data-field="installationPlace" data-value="Parque de estacionamento">
+            <p class="option-title">Parque de estacionamento</p>
+            <p class="option-desc">Área de estacionamento público ou privado.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-pane" data-step="3">
+        <h3>Já possui veículo elétrico?</h3>
+        <p class="wizard-note">Esta informação ajuda a indicar o tipo de carregamento mais adequado.</p>
+        <div class="option-grid">
+          <button type="button" class="option-card" data-field="hasEv" data-value="Sim">
+            <p class="option-title">Sim</p>
+            <p class="option-desc">Já tenho um veículo elétrico em uso.</p>
+          </button>
+          <button type="button" class="option-card" data-field="hasEv" data-value="Não (mas pretende adquirir)">
+            <p class="option-title">Não</p>
+            <p class="option-desc">Ainda não tenho, mas planeio comprar.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-pane" data-step="4">
+        <h3>Tipo de carregamento pretendido</h3>
+        <p class="wizard-note">Escolha a velocidade de carregamento que procura.</p>
+        <div class="option-grid">
+          <button type="button" class="option-card" data-field="chargingType" data-value="Normal (lento)">
+            <p class="option-title">Normal (lento)</p>
+            <p class="option-desc">Carregamento diário mais suave e econômico.</p>
+          </button>
+          <button type="button" class="option-card" data-field="chargingType" data-value="Semi-rápido">
+            <p class="option-title">Semi-rápido</p>
+            <p class="option-desc">Boa opção para uso frequente com tempo médio.</p>
+          </button>
+          <button type="button" class="option-card" data-field="chargingType" data-value="Rápido">
+            <p class="option-title">Rápido</p>
+            <p class="option-desc">Carregamento mais rápido para uso intensivo.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-pane" data-step="5">
+        <h3>O local tem ligação elétrica disponível?</h3>
+        <p class="wizard-note">Informe se já existe fornecimento elétrico no local.</p>
+        <div class="option-grid">
+          <button type="button" class="option-card" data-field="gridAvailable" data-value="Sim">
+            <p class="option-title">Sim</p>
+            <p class="option-desc">A ligação elétrica já está disponível.</p>
+          </button>
+          <button type="button" class="option-card" data-field="gridAvailable" data-value="Não">
+            <p class="option-title">Não</p>
+            <p class="option-desc">Ainda não há ligação elétrica instalada.</p>
+          </button>
+          <button type="button" class="option-card" data-field="gridAvailable" data-value="Não sei">
+            <p class="option-title">Não sei</p>
+            <p class="option-desc">Preciso de confirmar este detalhe posteriormente.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="step-pane" data-step="6">
+        <h3>Localização</h3>
+        <p class="wizard-note">Opcionalmente, esta etapa pode ser integrada com mapa mais tarde.</p>
+        <div class="field-grid">
+          <div class="field-group">
+            <label class="field-label" for="wizardAddress">Morada</label>
+            <input id="wizardAddress" class="field-input" type="text" placeholder="Rua, número" data-field="address">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="wizardCity">Cidade</label>
+            <input id="wizardCity" class="field-input" type="text" placeholder="Cidade" data-field="city">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="wizardPostal">Código Postal</label>
+            <input id="wizardPostal" class="field-input" type="text" placeholder="1000-001" data-field="postalCode">
+          </div>
+        </div>
+      </div>
+
+      <div class="step-pane" data-step="7">
+        <h3>Dados de contacto</h3>
+        <p class="wizard-note">Preencha o essencial para avançar ao orçamento.</p>
+        <div class="field-grid">
+          <div class="field-group">
+            <label class="field-label" for="wizardName">Nome</label>
+            <input id="wizardName" class="field-input" type="text" placeholder="Nome" data-field="name">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="wizardSurname">Apelido</label>
+            <input id="wizardSurname" class="field-input" type="text" placeholder="Apelido" data-field="surname">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="wizardPhone">Telefone</label>
+            <input id="wizardPhone" class="field-input" type="tel" placeholder="Telemóvel" data-field="phone">
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="wizardEmail">Email</label>
+            <input id="wizardEmail" class="field-input" type="email" placeholder="Email" data-field="email">
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-actions">
+        <button type="button" class="wizard-button secondary" id="wizardPrev" disabled>Voltar</button>
+        <div>
+          <p id="wizardNoteText" class="wizard-note">Selecione uma opção para continuar.</p>
+          <button type="button" class="wizard-button primary" id="wizardNext">Seguinte</button>
+        </div>
+      </div>
+    </section>
+
+    <div th:class="${resultadoPostos != null} ? 'grid' : 'grid hidden'"
+         id="budgetGrid"
+         th:attr="data-has-result=${resultadoPostos != null}">
+
+      <div class="card">
+        <h3>Dados do Projeto</h3>
+        <div class="hint">Preencha as informações abaixo para calcular o orçamento.</div>
+
+        <form th:action="@{/ferramentas/calcular-postos}" method="post" th:object="${postosRequest}">
+          <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+          <input type="hidden" th:field="*{wizardInstallationType}" id="hiddenWizardInstallationType">
+          <input type="hidden" th:field="*{wizardInstallationPlace}" id="hiddenWizardInstallationPlace">
+          <input type="hidden" th:field="*{wizardHasEv}" id="hiddenWizardHasEv">
+          <input type="hidden" th:field="*{wizardChargingType}" id="hiddenWizardChargingType">
+          <input type="hidden" th:field="*{wizardGridAvailable}" id="hiddenWizardGridAvailable">
+          <input type="hidden" th:field="*{wizardAddress}" id="hiddenWizardAddress">
+          <input type="hidden" th:field="*{wizardCity}" id="hiddenWizardCity">
+          <input type="hidden" th:field="*{wizardPostalCode}" id="hiddenWizardPostalCode">
+          <input type="hidden" th:field="*{wizardName}" id="hiddenWizardName">
+          <input type="hidden" th:field="*{wizardSurname}" id="hiddenWizardSurname">
+          <input type="hidden" th:field="*{wizardPhone}" id="hiddenWizardPhone">
+          <input type="hidden" th:field="*{wizardEmail}" id="hiddenWizardEmail">
+
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" th:field="*{nomeCompleto}" placeholder="Seu nome" required>
+            <div th:if="${#fields.hasErrors('nomeCompleto')}" class="form-error" th:errors="*{nomeCompleto}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" th:field="*{email}" placeholder="email@exemplo.com" required>
+            <div th:if="${#fields.hasErrors('email')}" class="form-error" th:errors="*{email}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Telefone</label>
+            <input type="text" th:field="*{telefone}" placeholder="9xx xxx xxx">
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de Localização *</label>
+            <select th:field="*{tipoLocalizacao}" required>
+              <option value="">Selecione</option>
+              <option value="residencia">Residência</option>
+              <option value="empresa">Empresa</option>
+              <option value="condominio">Condomínio</option>
+            </select>
+            <div th:if="${#fields.hasErrors('tipoLocalizacao')}" class="form-error" th:errors="*{tipoLocalizacao}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de Carregador *</label>
+            <select th:field="*{tipoCarregador}" required>
+              <option value="">Selecione a potência</option>
+              <option value="7kW">7 kW (doméstico)</option>
+              <option value="11kW">11 kW (semi-rápido)</option>
+              <option value="22kW">22 kW (rápido)</option>
+            </select>
+            <div th:if="${#fields.hasErrors('tipoCarregador')}" class="form-error" th:errors="*{tipoCarregador}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Quantidade de Carregadores *</label>
+            <input type="number" min="1" th:field="*{quantidade}" placeholder="1" required>
+            <div th:if="${#fields.hasErrors('quantidade')}" class="form-error" th:errors="*{quantidade}"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Tipo de Instalação *</label>
+            <select th:field="*{tipoInstalacao}" required>
+              <option value="">Selecione</option>
+              <option value="interna">Instalação Interna</option>
+              <option value="externa">Instalação Externa</option>
+              <option value="padrao">Padrão</option>
+            </select>
+            <div th:if="${#fields.hasErrors('tipoInstalacao')}" class="form-error" th:errors="*{tipoInstalacao}"></div>
+          </div>
+
+          <button class="btn-submit" type="submit">Calcular Orçamento</button>
+        </form>
+      </div>
+
+      <div class="panel" id="resultado-postos">
+        <h3>Orçamento Estimado</h3>
+        <div class="note">Preencha o formulário e clique em "Calcular Orçamento" para ver o valor estimado.</div>
+
+        <div th:if="${resultadoPostos != null}" class="result">
+          <div class="item">
+            <div class="label">Custo por unidade</div>
+            <div class="value">€<span th:text="${resultadoPostos.custoPorUnidade}">0</span></div>
+          </div>
+          <div class="item">
+            <div class="label">Instalação aproximada</div>
+            <div class="value">€<span th:text="${resultadoPostos.instalacao}">0</span></div>
+          </div>
+          <div class="item">
+            <div class="label">Desconto aplicado</div>
+            <div class="value">€<span th:text="${resultadoPostos.desconto}">0</span></div>
+          </div>
+          <div class="item">
+            <div class="label">Total estimado</div>
+            <div class="value">€<span th:text="${resultadoPostos.custoTotalEstimado}">0</span></div>
+          </div>
+          <a th:href="@{/ferramentas/postos/orcamento}"
+             target="_blank"
+             rel="noopener"
+             class="print-budget-btn">Transferir/Imprimir or&ccedil;amento</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script>
+    (function() {
+      const steps = Array.from(document.querySelectorAll('.step-pane'));
+      const segments = Array.from(document.querySelectorAll('.wizard-segment'));
+      const wizardCounter = document.getElementById('wizardCounter');
+      const wizardPrev = document.getElementById('wizardPrev');
+      const wizardNext = document.getElementById('wizardNext');
+      const wizardNoteText = document.getElementById('wizardNoteText');
+      const budgetGrid = document.getElementById('budgetGrid');
+      const wizard = document.getElementById('chargingWizard');
+      const optionButtons = Array.from(document.querySelectorAll('.option-card'));
+      const inputFields = Array.from(document.querySelectorAll('[data-field]'));
+      const hasServerResult = budgetGrid && budgetGrid.dataset.hasResult === 'true';
+      const state = {
+        step: 1,
+        values: {}
+      };
+
+      function showStep(step) {
+        steps.forEach(pane => {
+          pane.classList.toggle('active', Number(pane.dataset.step) === step);
+        });
+        segments.forEach((segment, index) => {
+          const position = index + 1;
+          segment.classList.toggle('completed', position < step);
+          segment.classList.toggle('active', position === step);
+        });
+        wizardCounter.textContent = `Passo ${step} de ${steps.length}`;
+        wizardPrev.disabled = step === 1;
+        wizardNext.textContent = step === steps.length ? 'Avançar para Orçamento' : 'Seguinte';
+        updateNote();
+        refreshSelections();
+      }
+
+      function updateNote() {
+        if (state.step <= steps.length) {
+          const stepPane = steps.find(p => Number(p.dataset.step) === state.step);
+          const selectedField = stepPane.querySelector('.option-card.is-selected');
+          wizardNoteText.textContent = selectedField ? 'Pronto para avançar.' : 'Selecione uma opção para continuar.';
+        }
+      }
+
+      function refreshSelections() {
+        const activePane = steps.find(p => Number(p.dataset.step) === state.step);
+        if (!activePane) return;
+        const field = activePane.querySelector('[data-field]')?.getAttribute('data-field');
+        if (!field) return;
+        activePane.querySelectorAll('.option-card').forEach(card => {
+          const isActive = state.values[field] === card.dataset.value;
+          card.classList.toggle('is-selected', isActive);
+        });
+      }
+
+      function saveField(field, value) {
+        state.values[field] = value;
+      }
+
+      optionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const field = this.dataset.field;
+          const value = this.dataset.value;
+          if (!field) return;
+          saveField(field, value);
+          refreshSelections();
+          updateNote();
+        });
+      });
+
+      wizardNext.addEventListener('click', function() {
+        const currentPane = steps.find(p => Number(p.dataset.step) === state.step);
+        const selectedField = currentPane.querySelector('.option-card.is-selected');
+        const isInputStep = currentPane.querySelector('input[data-field]');
+
+        if (selectedField || isInputStep) {
+          if (isInputStep) {
+            const fields = Array.from(currentPane.querySelectorAll('input[data-field]'));
+            fields.forEach(input => {
+              if (input.value.trim()) {
+                saveField(input.dataset.field, input.value.trim());
+              }
+            });
+          }
+
+          if (state.step < steps.length) {
+            state.step += 1;
+            showStep(state.step);
+          } else {
+            wizard.classList.add('hidden');
+            budgetGrid.classList.remove('hidden');
+            prefillBudgetForm();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        } else {
+          wizardNoteText.textContent = 'Por favor, selecione uma opção ou preencha o campo antes de avançar.';
+        }
+      });
+
+      wizardPrev.addEventListener('click', function() {
+        if (state.step > 1) {
+          state.step -= 1;
+          showStep(state.step);
+        }
+      });
+
+      function prefillBudgetForm() {
+        const form = document.querySelector('form[action]') || document.querySelector('form');
+        if (!form) return;
+        const nameField = form.querySelector('[name="nomeCompleto"]');
+        const emailField = form.querySelector('[name="email"]');
+        const phoneField = form.querySelector('[name="telefone"]');
+        const locationField = form.querySelector('[name="tipoLocalizacao"]');
+        const chargerField = form.querySelector('[name="tipoCarregador"]');
+        const installationField = form.querySelector('[name="tipoInstalacao"]');
+        const hiddenWizardFields = {
+          hiddenWizardInstallationType: state.values.installationType,
+          hiddenWizardInstallationPlace: state.values.installationPlace,
+          hiddenWizardHasEv: state.values.hasEv,
+          hiddenWizardChargingType: state.values.chargingType,
+          hiddenWizardGridAvailable: state.values.gridAvailable,
+          hiddenWizardAddress: state.values.address,
+          hiddenWizardCity: state.values.city,
+          hiddenWizardPostalCode: state.values.postalCode,
+          hiddenWizardName: state.values.name,
+          hiddenWizardSurname: state.values.surname,
+          hiddenWizardPhone: state.values.phone,
+          hiddenWizardEmail: state.values.email
+        };
+
+        Object.entries(hiddenWizardFields).forEach(([fieldId, value]) => {
+          const hiddenField = document.getElementById(fieldId);
+          if (hiddenField) {
+            hiddenField.value = value || '';
+          }
+        });
+
+        if (nameField && state.values.name && state.values.surname) {
+          nameField.value = `${state.values.name} ${state.values.surname}`.trim();
+        }
+        if (emailField && state.values.email) {
+          emailField.value = state.values.email;
+        }
+        if (phoneField && state.values.phone) {
+          phoneField.value = state.values.phone;
+        }
+        if (locationField && state.values.installationType) {
+          const map = {
+            'Residência pessoal': 'residencia',
+            'Empresa / Negócio': 'empresa',
+            'Condomínio': 'condominio'
+          };
+          locationField.value = map[state.values.installationType] || '';
+        }
+        if (chargerField && state.values.chargingType) {
+          const map = {
+            'Normal (lento)': '7kW',
+            'Semi-rápido': '11kW',
+            'Rápido': '22kW'
+          };
+          chargerField.value = map[state.values.chargingType] || '';
+        }
+        if (installationField && state.values.installationPlace) {
+          const map = {
+            'Garagem privada': 'interna',
+            'Garagem coletiva': 'padrao',
+            'Exterior': 'externa',
+            'Parque de estacionamento': 'padrao'
+          };
+          installationField.value = map[state.values.installationPlace] || '';
+        }
+      }
+
+      const budgetForm = document.querySelector('form[action]');
+      if (budgetForm) {
+        budgetForm.addEventListener('submit', prefillBudgetForm);
+      }
+
+      if (hasServerResult) {
+        wizard.classList.add('hidden');
+        budgetGrid.classList.remove('hidden');
+        document.getElementById('resultado-postos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        showStep(state.step);
+      }
+    })();
+  </script>
+</body>
+</html>

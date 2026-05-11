@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title th:text="${servico.titulo} + ' | Circuitos Energy'">Produto | Circuitos Energy</title>
+
+  <link href="/css/theme.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: var(--color-surface);
+      --card: var(--color-surface);
+      --surface: #f5fbfa;
+      --surface-2: #ecfdf5;
+      --text: var(--color-text-primary);
+      --muted: var(--color-text-secondary);
+      --border: var(--color-border);
+      --accent: var(--color-primary);
+      --accent-dark: var(--color-primary-hover);
+      --success: var(--color-success);
+      --shadow: 0 18px 45px rgba(15, 118, 110, 0.10);
+      --radius: 20px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 22%),
+        linear-gradient(180deg, #fbfefd 0%, #f5fbfa 20%, #ffffff 100%);
+    }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 18px 72px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .navbtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(20, 32, 51, 0.04);
+    }
+
+    .breadcrumb {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+      gap: 30px;
+      align-items: start;
+    }
+
+    .media-panel,
+    .info-panel,
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .media-panel {
+      padding: 22px;
+    }
+
+    .main-image {
+      position: relative;
+      min-height: 480px;
+      border-radius: 18px;
+      overflow: hidden;
+      background:
+        linear-gradient(140deg, rgba(13, 110, 253, 0.16), rgba(13, 110, 253, 0.03)),
+        #f3f7ff;
+      border: 1px solid rgba(13, 110, 253, 0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+    }
+
+    .main-image img {
+      width: 100%;
+      height: 100%;
+      max-height: 440px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .image-placeholder {
+      text-align: center;
+      max-width: 420px;
+    }
+
+    .image-placeholder strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .image-placeholder p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .thumbnail-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .thumb {
+      border-radius: 16px;
+      border: 1px solid rgba(13, 110, 253, 0.10);
+      background: var(--surface);
+      padding: 14px;
+      min-height: 96px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .thumb strong {
+      font-size: 14px;
+    }
+
+    .thumb span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .info-panel {
+      padding: 26px;
+      position: sticky;
+      top: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .title {
+      margin: 16px 0 10px;
+      font-size: clamp(30px, 3vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .short-desc {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .price-row {
+      display: grid;
+      grid-template-columns: 1.1fr auto;
+      gap: 16px;
+      margin-top: 22px;
+      padding: 22px;
+      border-radius: 22px;
+      background: var(--surface);
+    }
+
+    .price-box small,
+    .stock-box small {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .price {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .price-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 280px;
+    }
+
+    .stock-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: right;
+    }
+
+    .stock {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--success);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .stock::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: currentColor;
+      box-shadow: 0 0 0 6px rgba(15, 157, 88, 0.12);
+    }
+
+    .options {
+      margin-top: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .option-group h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .option-values {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .option-pill {
+      padding: 11px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(13, 110, 253, 0.14);
+      background: #f8fbff;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      transition: background .2s ease, border-color .2s ease;
+    }
+
+    .option-pill:hover {
+      background: #eef4ff;
+      border-color: rgba(13, 110, 253, 0.24);
+    }
+
+    .buy-box {
+      margin-top: 24px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .quantity-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 20px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--surface);
+    }
+
+    .quantity-wrap strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .quantity-wrap span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .quantity-control {
+      display: inline-flex;
+      align-items: center;
+      background: white;
+      border: 1px solid rgba(13, 110, 253, 0.12);
+      border-radius: 999px;
+      padding: 4px;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: none;
+      background: var(--surface-2);
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .qty-value {
+      min-width: 34px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .cta {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+      color: white;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 20px 45px rgba(13, 110, 253, 0.22);
+      transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    .secondary-actions {
+      display: grid;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .secondary-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      flex: 1 1 180px;
+    }
+
+    .trust-box {
+      margin-top: 24px;
+      padding: 22px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, #f9fbff, #eef4ff);
+      border: 1px solid rgba(13, 110, 253, 0.14);
+    }
+
+    .trust-box h3 {
+      margin: 0 0 14px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .trust-list {
+      display: grid;
+      gap: 10px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .trust-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .trust-list li::before {
+      content: "✓";
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 157, 88, 0.12);
+      color: var(--success);
+      font-weight: 900;
+      flex: 0 0 auto;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 24px;
+      margin-top: 30px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 24px;
+    }
+
+    .section-card {
+      padding: 24px;
+    }
+
+    .section-card h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .spec-list,
+    .bullet-list,
+    .usage-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .spec-item,
+    .bullet-list li,
+    .usage-list li {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      padding: 16px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .spec-item strong {
+      font-size: 14px;
+    }
+
+    .spec-item span,
+    .bullet-list li,
+    .usage-list li {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .usage-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .usage-list li {
+      text-align: center;
+      font-weight: 800;
+      color: var(--text);
+      background: linear-gradient(180deg, #ffffff, #f4f8ff);
+    }
+
+    .related {
+      margin-top: 32px;
+    }
+
+    .related-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .related-header h2 {
+      margin: 0;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+    }
+
+    .related-header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      max-width: 540px;
+    }
+
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .related-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: white;
+      overflow: hidden;
+      box-shadow: 0 14px 36px rgba(20, 32, 51, 0.05);
+    }
+
+    .related-media {
+      aspect-ratio: 16 / 10;
+      background: linear-gradient(140deg, rgba(13, 110, 253, 0.12), rgba(13, 110, 253, 0.03));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .related-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .related-media span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .related-content {
+      padding: 18px;
+    }
+
+    .related-content h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+
+    .related-content p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .related-content a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #102542;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 14px;
+      box-shadow: 0 18px 40px rgba(16, 37, 66, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity .2s ease, transform .2s ease;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .hero,
+      .details-grid,
+      .related-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .info-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .thumbnail-row,
+      .usage-list {
+        grid-template-columns: 1fr;
+      }
+
+      .price-row,
+      .related-header,
+      .quantity-wrap,
+      .topbar {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .secondary-actions {
+        flex-direction: column;
+      }
+
+      .main-image {
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <a class="navbtn" th:href="@{/servicos}">← Voltar aos produtos</a>
+      <a class="navbtn" th:href="@{/carrinho}">Ver carrinho</a>
+    </div>
+
+    <div class="breadcrumb">
+      <a th:href="@{/}">Início</a>
+      <span>•</span>
+      <a th:href="@{/servicos}">Produtos</a>
+      <span>•</span>
+      <span th:text="${servico.titulo}">Produto</span>
+    </div>
+
+    <section class="hero">
+      <div class="media-panel">
+        <div class="main-image">
+          <img th:if="${servico.imagem != null}" th:src="@{'/uploads/' + ${servico.imagem}}" th:alt="${servico.titulo}" />
+
+          <div class="image-placeholder" th:if="${servico.imagem == null}">
+            <strong th:text="${servico.titulo}">Produto</strong>
+            <p>
+              Visual profissional do produto em destaque. Assim que adicionar uma imagem no backoffice, ela aparecerá aqui em grande formato.
+            </p>
+          </div>
+        </div>
+
+        <div class="thumbnail-row">
+          <div class="thumb">
+            <strong>Vista principal</strong>
+            <span>Imagem em grande escala para ajudar na decisão de compra.</span>
+          </div>
+          <div class="thumb">
+            <strong>Entrega rápida</strong>
+            <span th:text="${estadoStock}">Em stock, envio em 24/48h</span>
+          </div>
+          <div class="thumb">
+            <strong>Categoria</strong>
+            <span th:text="${categoriaProduto == 'solar' ? 'Painéis solares' : (categoriaProduto == 'posto' ? 'Postos de carregamento' : (categoriaProduto == 'carregador' ? 'Carregadores elétricos' : 'Soluções energéticas'))}">Categoria</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="info-panel">
+        <span class="eyebrow">Produto em destaque</span>
+        <h1 class="title" th:text="${servico.titulo}">Nome do produto</h1>
+        <p class="short-desc" th:text="${servico.descricao}">Descrição curta do produto.</p>
+
+        <div class="price-row">
+          <div class="price-box">
+            <small>Preço</small>
+            <div class="price" th:text="${precoProduto}">749 €</div>
+            <div class="price-note" th:text="${notaPreco}">Preço de referência para carregador doméstico.</div>
+          </div>
+
+          <div class="stock-box">
+            <small>Disponibilidade</small>
+            <div class="stock" th:text="${estadoStock}">Em stock, envio em 24/48h</div>
+          </div>
+        </div>
+
+        <div class="options">
+          <section class="option-group" th:each="grupo : ${opcoesProduto}">
+            <h3 th:text="${grupo.titulo}">Potência</h3>
+            <div class="option-values">
+              <span class="option-pill" th:each="valor : ${grupo.valores}" th:text="${valor}">11 kW</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="buy-box">
+          <div class="quantity-wrap">
+            <div>
+              <strong>Quantidade</strong>
+              <span>Escolha quantas unidades quer adicionar ao carrinho.</span>
+            </div>
+
+            <div class="quantity-control" aria-label="Seletor de quantidade">
+              <button class="qty-btn" id="decreaseQty" type="button">−</button>
+              <div class="qty-value" id="qtyValue">1</div>
+              <button class="qty-btn" id="increaseQty" type="button">+</button>
+            </div>
+          </div>
+
+          <form id="addToCartForm" action="/carrinho/adicionar" method="post">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" name="servicoId" th:value="${servico.id}">
+            <button class="cta" id="addToCartButton" type="submit">
+              Adicionar ao carrinho
+            </button>
+          </form>
+
+          <div class="secondary-actions">
+            <a class="secondary-link" th:href="@{/contactos}">Falar com um especialista</a>
+            <a class="secondary-link" th:href="@{/servicos}">Continuar a ver produtos</a>
+          </div>
+        </div>
+
+        <div class="trust-box">
+          <h3>Compra com confiança</h3>
+          <ul class="trust-list">
+            <li>Devoluções até 30 dias</li>
+            <li>Envio rápido</li>
+            <li>Pagamentos seguros</li>
+            <li>Garantia</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <section class="details-grid">
+      <div class="stack">
+        <article class="section-card">
+          <h2>Descrição do produto</h2>
+          <p th:text="${servico.descricao}">
+            Descrição completa do produto com contexto de utilização, valor entregue e posicionamento técnico.
+          </p>
+        </article>
+
+        <article class="section-card">
+          <h2>Benefícios</h2>
+          <ul class="bullet-list">
+            <li th:each="beneficio : ${beneficiosProduto}" th:text="${beneficio}">Benefício principal do produto.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="stack">
+        <article class="section-card">
+          <h2>Especificações técnicas</h2>
+          <div class="spec-list">
+            <div class="spec-item" th:each="spec : ${especificacoesProduto}">
+              <strong th:text="${spec.nome}">Potência máxima</strong>
+              <span th:text="${spec.valor}">22 kW</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="section-card">
+          <h2>Possíveis utilizações</h2>
+          <ul class="usage-list">
+            <li th:each="uso : ${utilizacoesProduto}" th:text="${uso}">Casa</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="related" th:if="${produtosRelacionados != null and !#lists.isEmpty(produtosRelacionados)}">
+      <div class="related-header">
+        <div>
+          <h2>Também pode interessar</h2>
+          <p>Outros produtos e serviços do mesmo ecossistema para ajudar a completar a solução.</p>
+        </div>
+      </div>
+
+      <div class="related-grid">
+        <article class="related-card" th:each="item : ${produtosRelacionados}">
+          <div class="related-media">
+            <img th:if="${item.imagem != null}" th:src="@{'/uploads/' + ${item.imagem}}" th:alt="${item.titulo}" />
+            <span th:if="${item.imagem == null}">Sem imagem</span>
+          </div>
+
+          <div class="related-content">
+            <h3 th:text="${item.titulo}">Outro produto</h3>
+            <p th:text="${item.descricao}">Descrição resumida.</p>
+            <a th:href="@{/servicos/{id}(id=${item.id})}">Ver detalhe →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="cartToast">Produto adicionado ao carrinho.</div>
+
+  <script>
+    const qtyValue = document.getElementById("qtyValue");
+    const decreaseQty = document.getElementById("decreaseQty");
+    const increaseQty = document.getElementById("increaseQty");
+    const addToCartForm = document.getElementById("addToCartForm");
+    const addToCartButton = document.getElementById("addToCartButton");
+    const cartToast = document.getElementById("cartToast");
+    let quantity = 1;
+
+    function updateQuantity() {
+      qtyValue.textContent = String(quantity);
+      decreaseQty.disabled = quantity <= 1;
+      decreaseQty.style.opacity = quantity <= 1 ? ".5" : "1";
+      decreaseQty.style.cursor = quantity <= 1 ? "not-allowed" : "pointer";
+    }
+
+    async function addItemsToCart() {
+      const addUrl = addToCartForm.action;
+      const csrfInput = addToCartForm.querySelector('input[type="hidden"][name]');
+      const headers = csrfInput && csrfInput.value ? { "X-CSRF-TOKEN": csrfInput.value } : {};
+      addToCartButton.disabled = true;
+      addToCartButton.textContent = "A adicionar...";
+
+      try {
+        for (let index = 0; index < quantity; index += 1) {
+          await fetch(addUrl, { method: "POST", credentials: "same-origin", headers, body: new FormData(addToCartForm) });
+        }
+
+        cartToast.textContent = quantity > 1
+          ? `${quantity} unidades adicionadas ao carrinho.`
+          : "Produto adicionado ao carrinho.";
+        cartToast.classList.add("is-visible");
+        setTimeout(() => cartToast.classList.remove("is-visible"), 2200);
+        addToCartButton.textContent = "Adicionar ao carrinho";
+      } catch (error) {
+        cartToast.textContent = "Não foi possível adicionar ao carrinho.";
+        cartToast.classList.add("is-visible");
+        setTimeout(() => cartToast.classList.remove("is-visible"), 2200);
+        addToCartButton.textContent = "Tentar novamente";
+      } finally {
+        addToCartButton.disabled = false;
+      }
+    }
+
+    decreaseQty.addEventListener("click", () => {
+      if (quantity > 1) {
+        quantity -= 1;
+        updateQuantity();
+      }
+    });
+
+    increaseQty.addEventListener("click", () => {
+      quantity += 1;
+      updateQuantity();
+    });
+
+    addToCartForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      addItemsToCart();
+    });
+    updateQuantity();
+  </script>
+</body>
+</html>

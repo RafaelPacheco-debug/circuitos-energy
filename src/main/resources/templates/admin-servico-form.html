@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Serviço</title>
+
+  <!-- Bootstrap + FontAwesome (opcional, mas dá logo outro ar) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    .page-title { font-weight: 800; letter-spacing: .2px; }
+    .soft-card {
+      border: 0;
+      border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
+    }
+    .form-label { font-weight: 700; }
+    .muted { color: #6b7280; }
+    .thumb {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, .08);
+    }
+    .req::after { content:" *"; color:#dc2626; font-weight:800; }
+  </style>
+</head>
+
+<body>
+
+<div th:fragment="conteudo" class="container-fluid">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="page-title h3 mb-1"
+          th:text="${servico.id} != null ? 'Editar Serviço' : 'Novo Serviço'">
+        Novo Serviço
+      </h1>
+      <div class="muted">
+        Preenche os dados e guarda. Podes actualizar a imagem quando quiseres.
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-3 mt-sm-0">
+      <a th:href="@{/admin/servicos}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Voltar
+      </a>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card soft-card">
+    <div class="card-body p-4 p-lg-5">
+
+      <form method="post"
+            enctype="multipart/form-data"
+            th:object="${servico}"
+            th:action="${servico.id} != null
+                       ? @{/admin/servicos/editar/{id}(id=${servico.id})}
+                       : @{/admin/servicos/novo}">
+
+        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" th:field="*{id}"/>
+
+        <div class="row g-4">
+
+          <!-- LEFT: Form fields -->
+          <div class="col-lg-7">
+
+            <!-- Título -->
+            <div class="mb-3">
+              <label class="form-label req">Título</label>
+              <input type="text"
+                     class="form-control"
+                     th:field="*{titulo}"
+                     placeholder="Ex: Instalação de Painéis Solares"
+                     required>
+
+              <div class="text-danger mt-1"
+                   th:if="${#fields.hasErrors('titulo')}"
+                   th:errors="*{titulo}"></div>
+            </div>
+
+            <!-- Descrição -->
+            <div class="mb-3">
+              <label class="form-label req">Descrição</label>
+              <textarea class="form-control"
+                        th:field="*{descricao}"
+                        rows="7"
+                        placeholder="Descreva o serviço de forma clara..."
+                        required></textarea>
+
+              <div class="text-danger mt-1"
+                   th:if="${#fields.hasErrors('descricao')}"
+                   th:errors="*{descricao}"></div>
+
+              <div class="form-text muted">
+                Dica: escreve em 3 partes — problema, solução, benefício.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label req">Preço</label>
+              <input type="number"
+                     class="form-control"
+                     th:field="*{preco}"
+                     min="0"
+                     step="0.01"
+                     placeholder="Ex: 149.90"
+                     required>
+
+              <div class="text-danger mt-1"
+                   th:if="${#fields.hasErrors('preco')}"
+                   th:errors="*{preco}"></div>
+            </div>
+
+            <!-- Ativo -->
+            <div class="form-check form-switch mb-2">
+              <input class="form-check-input" type="checkbox" role="switch" th:field="*{ativo}">
+              <label class="form-check-label fw-bold">Ativo</label>
+            </div>
+            <div class="muted mb-3">
+              Se estiver desligado, o serviço fica oculto no site público.
+            </div>
+
+            <!-- Upload -->
+            <div class="mb-1">
+              <label class="form-label">Imagem</label>
+              <input class="form-control" type="file" name="file" accept="image/*">
+              <div class="text-danger mt-1" th:if="${uploadError != null}" th:text="${uploadError}"></div>
+              <div class="form-text muted">
+                Formatos permitidos: JPG, PNG ou WEBP ate 2MB. Ideal: imagem horizontal.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RIGHT: Preview -->
+          <div class="col-lg-5">
+
+            <div class="p-3 p-lg-4 bg-light rounded-4 border">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="fw-bold">
+                  <i class="fas fa-image me-2"></i>Pré-visualização
+                </div>
+                <span class="badge text-bg-secondary" th:if="${servico.imagem == null}">Sem imagem</span>
+                <span class="badge text-bg-success" th:if="${servico.imagem != null}">Imagem actual</span>
+              </div>
+
+              <div th:if="${servico.imagem != null}">
+                <img class="thumb mb-3" th:src="@{'/uploads/' + ${servico.imagem}}" alt="Imagem do serviço">
+                <div class="muted" style="font-size: 13px;">
+                  Se escolheres uma nova imagem, esta será substituída ao guardar.
+                </div>
+              </div>
+
+              <div th:if="${servico.imagem == null}" class="muted">
+                Ainda não existe imagem para este serviço. Podes carregar uma agora.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Actions -->
+        <div class="d-flex flex-wrap gap-2 justify-content-end">
+          <a th:href="@{/admin/servicos}" class="btn btn-outline-secondary">
+            Cancelar
+          </a>
+
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i>Guardar
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

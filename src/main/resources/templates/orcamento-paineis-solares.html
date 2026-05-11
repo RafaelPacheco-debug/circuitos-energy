@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orçamento de Painéis Solares | Circuitos Energy</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/theme.css" rel="stylesheet">
+  <style>
+    :root{
+      --page-bg:var(--color-background);
+      --card-bg:var(--color-surface);
+      --surface:#f6fbfa;
+      --text:var(--color-text-primary);
+      --muted:var(--color-text-secondary);
+      --border:var(--color-border);
+      --field-bg:#f3f4f7;
+      --accent:var(--color-primary);
+      --accent-dark:var(--color-primary-hover);
+      --accent-soft:var(--color-primary-light);
+      --button:var(--color-primary);
+      --success:var(--color-success);
+      --sim-bg:#0f766e;
+      --sim-bg-strong:#115e59;
+      --empty-icon:#99f6e4;
+      --shadow:0 12px 30px rgba(15,118,110,.08);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, rgba(15,118,110,.06), transparent 28%), var(--page-bg);
+      color:var(--text);
+    }
+
+    .page{
+      min-height:100vh;
+      padding:38px 16px 56px;
+    }
+
+    .page-inner{
+      max-width:1080px;
+      margin:0 auto;
+    }
+
+    .hero{
+      text-align:center;
+      margin-bottom:34px;
+    }
+
+    .hero-icon{
+      width:64px;
+      height:64px;
+      margin:0 auto 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--accent);
+      font-size:2.4rem;
+    }
+
+    .hero-title{
+      margin:0;
+      font-size:clamp(30px, 4vw, 42px);
+      line-height:1.08;
+      letter-spacing:-.03em;
+      font-weight:700;
+    }
+
+    .hero-subtitle{
+      margin:12px auto 0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.6;
+      max-width:720px;
+    }
+
+    .section-card,
+    .card{
+      background:var(--card-bg);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .wizard-shell{
+      overflow:hidden;
+      margin-bottom:24px;
+    }
+
+    .wizard-head{
+      padding:24px 24px 18px;
+      border-bottom:1px solid rgba(228,221,210,.9);
+      background:linear-gradient(180deg, rgba(15,118,110,.06), rgba(255,255,255,0));
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+
+    .wizard-head h2{
+      margin:16px 0 8px;
+      font-size:28px;
+      line-height:1.15;
+      letter-spacing:-.03em;
+    }
+
+    .wizard-head p{
+      margin:0;
+      max-width:650px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .progress-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      margin-top:18px;
+      flex-wrap:wrap;
+    }
+
+    .progress-text{
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .progress-track{
+      display:grid;
+      grid-template-columns:repeat(9, 1fr);
+      gap:8px;
+      width:min(100%, 460px);
+    }
+
+    .progress-segment{
+      height:6px;
+      border-radius:999px;
+      background:#eadfd5;
+      transition:background .25s ease, transform .25s ease;
+    }
+
+    .progress-segment.active,
+    .progress-segment.done{
+      background:var(--accent);
+    }
+
+    .wizard-body{
+      padding:24px;
+    }
+
+    .step{
+      display:none;
+    }
+
+    .step.active{
+      display:block;
+      animation:stepFade .24s ease;
+    }
+
+    @keyframes stepFade{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    .step h3{
+      margin:0 0 8px;
+      font-size:24px;
+      line-height:1.2;
+      letter-spacing:-.03em;
+    }
+
+    .step p{
+      margin:0 0 22px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .option-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+
+    .option-card{
+      position:relative;
+      border:1px solid var(--border);
+      background:var(--surface);
+      border-radius:16px;
+      padding:18px;
+      cursor:pointer;
+      transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .option-card:hover{
+      transform:translateY(-1px);
+      border-color:rgba(15,118,110,.35);
+      box-shadow:0 12px 24px rgba(15,118,110,.08);
+    }
+
+    .option-card.is-selected{
+      border-color:var(--accent);
+      background:linear-gradient(180deg, #fff8f4, #ffefe4);
+      box-shadow:0 12px 24px rgba(15,118,110,.10);
+    }
+
+    .option-mark{
+      width:40px;
+      height:40px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:12px;
+      background:#fff;
+      border:1px solid rgba(15,118,110,.12);
+      font-size:18px;
+      margin-bottom:14px;
+      color:var(--accent);
+    }
+
+    .option-title{
+      display:block;
+      font-size:18px;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .option-desc{
+      display:block;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .field-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+
+    .field-grid.single{
+      grid-template-columns:1fr;
+    }
+
+    .form-group{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .form-group label{
+      font-size:13px;
+      font-weight:700;
+      color:var(--text);
+    }
+
+    .text-input{
+      width:100%;
+      padding:13px 14px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      outline:none;
+      font-size:14px;
+      background:var(--surface);
+      transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+
+    .text-input:focus{
+      border-color:rgba(15,118,110,.55);
+      box-shadow:0 0 0 4px rgba(15,118,110,.08);
+      background:#ffffff;
+    }
+
+    .field-note{
+      margin-top:12px;
+      padding:14px 16px;
+      border-radius:14px;
+      background:#fff8f3;
+      border:1px dashed rgba(15,118,110,.18);
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .wizard-actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-top:26px;
+      padding-top:22px;
+      border-top:1px solid rgba(228,221,210,.9);
+    }
+
+    .wizard-actions-left,
+    .wizard-actions-right{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .btn-ghost,
+    .btn-primary,
+    .btn-secondary{
+      border:none;
+      border-radius:12px;
+      padding:13px 18px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .2s ease, opacity .2s ease, background .2s ease;
+    }
+
+    .btn-ghost{
+      background:#efe7df;
+      color:var(--text);
+    }
+
+    .btn-primary{
+      background:linear-gradient(180deg, var(--accent), var(--accent-dark));
+      color:white;
+      min-width:190px;
+    }
+
+    .btn-secondary{
+      background:white;
+      color:var(--accent);
+      border:1px solid rgba(15,118,110,.18);
+    }
+
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-ghost:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn-primary:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .helper-text{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .quote-shell{
+      display:none;
+    }
+
+    .quote-shell.is-visible{
+      display:block;
+    }
+
+    .completion-banner{
+      display:none;
+      margin-bottom:18px;
+      padding:18px 20px;
+      border-radius:16px;
+      border:1px solid rgba(15,118,110,.16);
+      background:linear-gradient(180deg, rgba(15,118,110,.08), rgba(255,255,255,.96));
+      box-shadow:var(--shadow);
+    }
+
+    .completion-banner.is-visible{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .completion-banner strong{
+      display:block;
+      margin-bottom:4px;
+      font-size:16px;
+    }
+
+    .completion-banner span{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) minmax(320px, 410px);
+      gap:22px;
+      align-items:start;
+    }
+
+    .form-card{
+      padding:18px 18px 16px;
+    }
+
+    .card-head{
+      margin-bottom:18px;
+    }
+
+    .card-head h2,
+    .card-head h3{
+      margin:0 0 6px;
+      font-size:23px;
+      line-height:1.2;
+      letter-spacing:-.02em;
+      font-weight:700;
+    }
+
+    .card-head p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .field{
+      margin-bottom:16px;
+    }
+
+    .field-label{
+      display:block;
+      margin-bottom:8px;
+      font-size:14px;
+      font-weight:700;
+      color:#0d1220;
+    }
+
+    .field-input,
+    .field-select{
+      width:100%;
+      min-height:44px;
+      padding:11px 12px;
+      border:none;
+      border-radius:8px;
+      background:var(--field-bg);
+      color:#111827;
+      font-size:14px;
+      outline:none;
+      box-shadow:none;
+      transition:box-shadow .15s ease, background .15s ease;
+    }
+
+    .field-input::placeholder{
+      color:#8a93a5;
+    }
+
+    .field-input:focus,
+    .field-select:focus{
+      background:#eef0f5;
+      box-shadow:0 0 0 2px rgba(15,118,110,.12);
+    }
+
+    .field-help{
+      margin-top:8px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .field-error{
+      margin-top:8px;
+      color:#dc2626;
+      font-size:12px;
+      font-weight:600;
+      line-height:1.45;
+      display:none;
+    }
+
+    .field-error.is-visible{
+      display:block;
+    }
+
+    .submit-feedback{
+      display:none;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .submit-feedback.is-visible{
+      display:block;
+    }
+
+    .submit-feedback.is-success{
+      background:rgba(22,163,74,.10);
+      border:1px solid rgba(22,163,74,.18);
+      color:#166534;
+    }
+
+    .submit-feedback.is-error{
+      background:rgba(220,38,38,.08);
+      border:1px solid rgba(220,38,38,.14);
+      color:#b91c1c;
+    }
+
+    .print-budget-link{
+      display:none;
+      width:100%;
+      min-height:44px;
+      margin-top:12px;
+      align-items:center;
+      justify-content:center;
+      border-radius:8px;
+      background:#ffffff;
+      color:var(--accent);
+      border:1px solid rgba(15,118,110,.22);
+      font-size:14px;
+      font-weight:800;
+      text-decoration:none;
+    }
+
+    .print-budget-link.is-visible{
+      display:flex;
+    }
+
+    .submit-btn{
+      width:100%;
+      min-height:46px;
+      border:none;
+      border-radius:8px;
+      background:var(--button);
+      color:#fff;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .15s ease, opacity .15s ease;
+      margin-top:4px;
+    }
+
+    .submit-btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .submit-btn i{
+      margin-right:8px;
+    }
+
+    .side-stack{
+      display:grid;
+      gap:18px;
+    }
+
+    .simulation-card{
+      padding:18px;
+      background:linear-gradient(180deg, var(--sim-bg), var(--sim-bg-strong));
+      color:#fff;
+      min-height:240px;
+    }
+
+    .simulation-card .card-head p{
+      color:rgba(255,255,255,.82);
+    }
+
+    .simulation-empty{
+      min-height:150px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:14px;
+    }
+
+    .simulation-empty-icon{
+      width:56px;
+      height:56px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2rem;
+      color:var(--empty-icon);
+    }
+
+    .simulation-empty p{
+      margin:0;
+      max-width:280px;
+      color:#fff;
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    .simulation-result{
+      display:none;
+      gap:14px;
+    }
+
+    .simulation-result.is-visible{
+      display:grid;
+    }
+
+    .sim-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+
+    .sim-item{
+      padding:14px;
+      border-radius:12px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .sim-item-label{
+      display:block;
+      font-size:12px;
+      line-height:1.4;
+      color:rgba(255,255,255,.8);
+      margin-bottom:6px;
+    }
+
+    .sim-item-value{
+      display:block;
+      font-size:24px;
+      line-height:1.1;
+      font-weight:800;
+      letter-spacing:-.03em;
+      color:#fff;
+    }
+
+    .sim-note{
+      padding:14px;
+      border-radius:12px;
+      background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.14);
+      font-size:13px;
+      line-height:1.55;
+      color:rgba(255,255,255,.9);
+    }
+
+    .benefits-card{
+      padding:18px;
+    }
+
+    .benefits-list{
+      margin:0;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:12px;
+    }
+
+    .benefits-list li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      font-size:15px;
+      line-height:1.55;
+      color:#162030;
+    }
+
+    .benefits-list i{
+      color:var(--success);
+      font-size:1rem;
+      margin-top:3px;
+      flex:0 0 auto;
+    }
+
+    @media (max-width: 980px){
+      .layout,
+      .option-grid,
+      .field-grid{
+        grid-template-columns:1fr;
+      }
+
+      .wizard-head,
+      .wizard-body{
+        padding:22px 18px;
+      }
+
+      .wizard-actions{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .wizard-actions-left,
+      .wizard-actions-right{
+        width:100%;
+        justify-content:space-between;
+      }
+    }
+
+    @media (max-width: 640px){
+      .page{
+        padding:28px 12px 40px;
+      }
+
+      .form-card,
+      .simulation-card,
+      .benefits-card{
+        padding:16px 14px 14px;
+      }
+
+      .sim-grid{
+        grid-template-columns:1fr;
+      }
+
+      .progress-track{
+        width:100%;
+      }
+
+      .completion-banner.is-visible{
+        align-items:stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="page-inner">
+      <section class="hero">
+        <div class="hero-icon">
+          <i class="bi bi-sun"></i>
+        </div>
+        <h1 class="hero-title">Orçamento de Painéis Solares</h1>
+        <p class="hero-subtitle">Calcule o investimento e economia com energia solar</p>
+      </section>
+
+      <section class="section-card wizard-shell" id="solarPanelsQuestionnaire">
+        <div class="wizard-head">
+          <span class="eyebrow"><i class="bi bi-ui-checks-grid"></i> Pré-qualificação solar</span>
+          <h2>Vamos começar com 9 perguntas simples</h2>
+          <p>Este fluxo inicial ajuda a recolher o contexto do projeto antes de avançar para o orçamento e para a simulação final.</p>
+
+          <div class="progress-meta">
+            <div class="progress-text">
+              <span id="wizardStepLabel">Passo 1</span> de 9
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <span class="progress-segment active" data-progress="1"></span>
+              <span class="progress-segment" data-progress="2"></span>
+              <span class="progress-segment" data-progress="3"></span>
+              <span class="progress-segment" data-progress="4"></span>
+              <span class="progress-segment" data-progress="5"></span>
+              <span class="progress-segment" data-progress="6"></span>
+              <span class="progress-segment" data-progress="7"></span>
+              <span class="progress-segment" data-progress="8"></span>
+              <span class="progress-segment" data-progress="9"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wizard-body">
+          <div class="step active" data-step="1">
+            <h3>Tipo de instalação</h3>
+            <p>Escolha o contexto principal onde pretende avançar com o projeto solar.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="installationType" data-value="Residência pessoal">
+                <span class="option-mark"><i class="bi bi-house"></i></span>
+                <span class="option-title">Residência pessoal</span>
+                <span class="option-desc">Projetos para habitação própria e autoconsumo residencial.</span>
+              </button>
+              <button class="option-card" type="button" data-field="installationType" data-value="Empresa">
+                <span class="option-mark"><i class="bi bi-building"></i></span>
+                <span class="option-title">Empresa</span>
+                <span class="option-desc">Lojas, escritórios, armazéns ou instalações empresariais.</span>
+              </button>
+              <button class="option-card" type="button" data-field="installationType" data-value="Condomínio">
+                <span class="option-mark"><i class="bi bi-buildings"></i></span>
+                <span class="option-title">Condomínio</span>
+                <span class="option-desc">Coberturas comuns e soluções partilhadas entre frações.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="2">
+            <h3>Tipo de imóvel</h3>
+            <p>Ajuda-nos a adequar melhor a solução ao espaço disponível e ao tipo de estrutura.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="propertyType" data-value="Moradia">
+                <span class="option-mark"><i class="bi bi-house-door"></i></span>
+                <span class="option-title">Moradia</span>
+                <span class="option-desc">Instalação em habitação independente.</span>
+              </button>
+              <button class="option-card" type="button" data-field="propertyType" data-value="Apartamento">
+                <span class="option-mark"><i class="bi bi-building"></i></span>
+                <span class="option-title">Apartamento</span>
+                <span class="option-desc">Cobertura ou fração em edifício multifamiliar.</span>
+              </button>
+              <button class="option-card" type="button" data-field="propertyType" data-value="Loja">
+                <span class="option-mark"><i class="bi bi-shop"></i></span>
+                <span class="option-title">Loja</span>
+                <span class="option-desc">Espaço comercial com necessidade de produção própria.</span>
+              </button>
+              <button class="option-card" type="button" data-field="propertyType" data-value="Armazém">
+                <span class="option-mark"><i class="bi bi-box-seam"></i></span>
+                <span class="option-title">Armazém</span>
+                <span class="option-desc">Áreas técnicas ou industriais com superfícies amplas.</span>
+              </button>
+              <button class="option-card" type="button" data-field="propertyType" data-value="Outro">
+                <span class="option-mark"><i class="bi bi-three-dots"></i></span>
+                <span class="option-title">Outro</span>
+                <span class="option-desc">Outro tipo de imóvel ou caso especial.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="3">
+            <h3>O imóvel é seu?</h3>
+            <p>Este ponto ajuda a perceber o enquadramento da decisão e da autorização para instalar.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="ownershipStatus" data-value="Sim">
+                <span class="option-mark"><i class="bi bi-check-circle"></i></span>
+                <span class="option-title">Sim</span>
+                <span class="option-desc">Sou proprietário e posso avançar com a instalação.</span>
+              </button>
+              <button class="option-card" type="button" data-field="ownershipStatus" data-value="Não">
+                <span class="option-mark"><i class="bi bi-x-circle"></i></span>
+                <span class="option-title">Não</span>
+                <span class="option-desc">Preciso de validação do proprietário ou responsável.</span>
+              </button>
+              <button class="option-card" type="button" data-field="ownershipStatus" data-value="Sou arrendatário / administrador">
+                <span class="option-mark"><i class="bi bi-person-badge"></i></span>
+                <span class="option-title">Sou arrendatário / administrador</span>
+                <span class="option-desc">Tenho envolvimento na gestão, mas não sou o titular direto do imóvel.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="4">
+            <h3>O edifício ainda está em construção?</h3>
+            <p>Queremos perceber se o projeto está numa fase nova ou numa instalação sobre um imóvel existente.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="constructionStatus" data-value="Sim">
+                <span class="option-mark"><i class="bi bi-hammer"></i></span>
+                <span class="option-title">Sim</span>
+                <span class="option-desc">A obra ainda está em curso e permite planeamento antecipado.</span>
+              </button>
+              <button class="option-card" type="button" data-field="constructionStatus" data-value="Não">
+                <span class="option-mark"><i class="bi bi-check2-square"></i></span>
+                <span class="option-title">Não</span>
+                <span class="option-desc">O edifício já está concluído e em utilização normal.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="5">
+            <h3>Tem ligação à rede elétrica?</h3>
+            <p>Queremos perceber se o local já está ligado à rede pública e pronto para um sistema de autoconsumo.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="gridConnection" data-value="Sim">
+                <span class="option-mark"><i class="bi bi-plug"></i></span>
+                <span class="option-title">Sim</span>
+                <span class="option-desc">Existe fornecimento elétrico ativo no local.</span>
+              </button>
+              <button class="option-card" type="button" data-field="gridConnection" data-value="Não">
+                <span class="option-mark"><i class="bi bi-lightning-charge"></i></span>
+                <span class="option-title">Não</span>
+                <span class="option-desc">Ainda não existe ligação ativa à rede elétrica.</span>
+              </button>
+              <button class="option-card" type="button" data-field="gridConnection" data-value="Não sei">
+                <span class="option-mark"><i class="bi bi-question-circle"></i></span>
+                <span class="option-title">Não sei</span>
+                <span class="option-desc">Prefiro confirmar este detalhe mais tarde com a equipa técnica.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="6">
+            <h3>Onde pretende instalar os painéis?</h3>
+            <p>Escolha a zona que considera mais provável para a instalação inicial.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="installationSurface" data-value="Telhado">
+                <span class="option-mark"><i class="bi bi-house-up"></i></span>
+                <span class="option-title">Telhado</span>
+                <span class="option-desc">Cobertura principal da habitação ou edifício.</span>
+              </button>
+              <button class="option-card" type="button" data-field="installationSurface" data-value="Terra / terreno">
+                <span class="option-mark"><i class="bi bi-tree"></i></span>
+                <span class="option-title">Terra / terreno</span>
+                <span class="option-desc">Estrutura colocada ao nível do solo.</span>
+              </button>
+              <button class="option-card" type="button" data-field="installationSurface" data-value="Cobertura de estacionamento">
+                <span class="option-mark"><i class="bi bi-car-front"></i></span>
+                <span class="option-title">Cobertura de estacionamento</span>
+                <span class="option-desc">Estruturas solares em zonas de parqueamento.</span>
+              </button>
+              <button class="option-card" type="button" data-field="installationSurface" data-value="Ainda não sei">
+                <span class="option-mark"><i class="bi bi-search"></i></span>
+                <span class="option-title">Ainda não sei</span>
+                <span class="option-desc">Preciso de ajuda para avaliar a melhor solução.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="7">
+            <h3>Qual a área disponível aproximada?</h3>
+            <p>Uma indicação simples já é suficiente para contextualizar o potencial do projeto.</p>
+            <div class="option-grid">
+              <button class="option-card" type="button" data-field="availableAreaBand" data-value="Pequena">
+                <span class="option-mark"><i class="bi bi-grid-1x2"></i></span>
+                <span class="option-title">Pequena</span>
+                <span class="option-desc">Áreas mais reduzidas, ideais para sistemas compactos.</span>
+              </button>
+              <button class="option-card" type="button" data-field="availableAreaBand" data-value="Média">
+                <span class="option-mark"><i class="bi bi-grid-3x2-gap"></i></span>
+                <span class="option-title">Média</span>
+                <span class="option-desc">Superfície equilibrada para um projeto residencial robusto.</span>
+              </button>
+              <button class="option-card" type="button" data-field="availableAreaBand" data-value="Grande">
+                <span class="option-mark"><i class="bi bi-grid-3x3-gap"></i></span>
+                <span class="option-title">Grande</span>
+                <span class="option-desc">Área ampla para sistemas com maior produção.</span>
+              </button>
+              <button class="option-card" type="button" data-field="availableAreaBand" data-value="Não sei">
+                <span class="option-mark"><i class="bi bi-rulers"></i></span>
+                <span class="option-title">Não sei</span>
+                <span class="option-desc">Posso estimar mais tarde com apoio técnico.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="step" data-step="8">
+            <h3>Dados de localização</h3>
+            <p>Preencha a localização do projeto. Mantive este passo simples e pronto para futura integração com mapa.</p>
+            <div class="field-grid">
+              <div class="form-group">
+                <label for="wizardMorada">Morada</label>
+                <input class="text-input" id="wizardMorada" type="text" placeholder="Ex: Rua da Liberdade 120" data-field-input="address">
+              </div>
+              <div class="form-group">
+                <label for="wizardCidade">Cidade</label>
+                <input class="text-input" id="wizardCidade" type="text" placeholder="Ex: Lisboa" data-field-input="city">
+              </div>
+              <div class="form-group">
+                <label for="wizardCodigoPostal">Código postal</label>
+                <input class="text-input" id="wizardCodigoPostal" type="text" placeholder="Ex: 1000-001" data-field-input="postalCode">
+              </div>
+            </div>
+            <div class="field-note">
+              Se no futuro quiser integrar mapa ou pin, este passo já fica preparado sem alterar o fluxo principal do orçamento.
+            </div>
+          </div>
+
+          <div class="step" data-step="9">
+            <h3>Dados de contacto</h3>
+            <p>Último passo antes do orçamento solar. As respostas ficam guardadas localmente para manter continuidade.</p>
+            <div class="field-grid">
+              <div class="form-group">
+                <label for="wizardNome">Nome</label>
+                <input class="text-input" id="wizardNome" type="text" placeholder="Ex: João" data-field-input="firstName">
+              </div>
+              <div class="form-group">
+                <label for="wizardApelido">Apelido</label>
+                <input class="text-input" id="wizardApelido" type="text" placeholder="Ex: Silva" data-field-input="lastName">
+              </div>
+              <div class="form-group">
+                <label for="wizardTelefone">Telefone</label>
+                <input class="text-input" id="wizardTelefone" type="tel" placeholder="Ex: 919123456" data-field-input="phone">
+              </div>
+              <div class="form-group">
+                <label for="wizardEmail">Email</label>
+                <input class="text-input" id="wizardEmail" type="email" placeholder="Ex: joao@email.com" data-field-input="email">
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-actions">
+            <div class="wizard-actions-left">
+              <button class="btn-ghost" type="button" id="prevStepButton" style="display:none;">Voltar</button>
+              <span class="helper-text" id="wizardHelperText">Selecione uma opção para continuar.</span>
+            </div>
+            <div class="wizard-actions-right">
+              <button class="btn-primary" type="button" id="nextStepButton">Seguinte</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="completion-banner" id="completionBanner">
+        <div>
+          <strong>Questionário concluído</strong>
+          <span>Pode agora avançar para o orçamento de painéis solares. Se precisar, ainda pode editar as respostas anteriores.</span>
+        </div>
+        <button class="btn-secondary" type="button" id="editAnswersButton">Editar respostas</button>
+      </div>
+
+      <section class="quote-shell" id="quoteSection">
+        <div class="layout">
+          <article class="card form-card">
+            <div class="card-head">
+              <h2>Dados do Projeto</h2>
+              <p>Informe a área disponível e preferências</p>
+            </div>
+
+            <form id="solarQuoteForm" th:action="@{/orcamento/paineis-solares/submeter}" method="post" novalidate>
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+              <input type="hidden" name="installationType" id="wizardInstallationType">
+              <input type="hidden" name="propertyType" id="wizardPropertyType">
+              <input type="hidden" name="ownershipStatus" id="wizardOwnershipStatus">
+              <input type="hidden" name="constructionStatus" id="wizardConstructionStatus">
+              <input type="hidden" name="gridConnection" id="wizardGridConnection">
+              <input type="hidden" name="installationSurface" id="wizardInstallationSurface">
+              <input type="hidden" name="availableAreaBand" id="wizardAvailableAreaBand">
+              <input type="hidden" name="projectAddress" id="wizardProjectAddress">
+              <input type="hidden" name="projectCity" id="wizardProjectCity">
+              <input type="hidden" name="projectPostalCode" id="wizardProjectPostalCode">
+              <input type="hidden" name="contactFirstName" id="wizardContactFirstName">
+              <input type="hidden" name="contactLastName" id="wizardContactLastName">
+
+              <div class="field">
+                <label class="field-label" for="nomeCompleto">Nome Completo *</label>
+                <input class="field-input" id="nomeCompleto" name="nomeCompleto" type="text">
+                <div class="field-error" data-error-for="nomeCompleto">Preencha o nome completo.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="email">Email *</label>
+                <input class="field-input" id="email" name="email" type="email">
+                <div class="field-error" data-error-for="email">Introduza um email válido.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="telefone">Telefone *</label>
+                <input class="field-input" id="telefone" name="telefone" type="tel">
+                <div class="field-error" data-error-for="telefone">Introduza um telefone válido.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="areaDisponivel">Área Disponível (m²) *</label>
+                <input class="field-input" id="areaDisponivel" name="areaDisponivel" type="number" min="1" step="1" placeholder="Ex: 50">
+                <div class="field-help">Área do telhado ou terreno disponível para instalação</div>
+                <div class="field-error" data-error-for="areaDisponivel">Indique uma área válida.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="tipoPainel">Tipo de Painel *</label>
+                <select class="field-select" id="tipoPainel" name="tipoPainel">
+                  <option value="">Selecione o tipo</option>
+                  <option value="Monocristalino">Monocristalino</option>
+                  <option value="Policristalino">Policristalino</option>
+                  <option value="Alta Eficiência">Alta Eficiência</option>
+                  <option value="Com Bateria">Kit com Bateria</option>
+                </select>
+                <div class="field-error" data-error-for="tipoPainel">Selecione um tipo de painel.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="tipoTelhado">Tipo de Telhado *</label>
+                <select class="field-select" id="tipoTelhado" name="tipoTelhado">
+                  <option value="">Selecione</option>
+                  <option value="Ceramico">Cerâmico</option>
+                  <option value="Metalico">Metálico</option>
+                  <option value="Plano">Plano</option>
+                  <option value="Terreno">Terreno / Solo</option>
+                </select>
+                <div class="field-error" data-error-for="tipoTelhado">Selecione o tipo de telhado.</div>
+              </div>
+
+              <div class="field">
+                <label class="field-label" for="consumoMensal">Consumo Mensal (kWh)</label>
+                <input class="field-input" id="consumoMensal" name="consumoMensal" type="number" min="0" step="1" placeholder="Ex: 300">
+                <div class="field-help">Consulte a sua fatura de eletricidade</div>
+              </div>
+
+              <button type="submit" class="submit-btn" id="solarQuoteSubmit"><i class="bi bi-calculator"></i>Calcular Orçamento</button>
+              <div class="submit-feedback" id="solarQuoteFeedback"></div>
+              <a id="solarQuotePrintLink"
+                 class="print-budget-link"
+                 href="#"
+                 target="_blank"
+                 rel="noopener">Transferir/Imprimir orçamento</a>
+            </form>
+          </article>
+
+          <aside class="side-stack">
+            <section class="card simulation-card">
+              <div class="card-head">
+                <h3>Simulação do Projeto</h3>
+                <p>Estimativa baseada nas suas especificações</p>
+              </div>
+
+              <div class="simulation-empty" id="simulationEmpty">
+                <div class="simulation-empty-icon">
+                  <i class="bi bi-calculator"></i>
+                </div>
+                <p>Preencha o formulário para ver a simulação do seu projeto solar</p>
+              </div>
+
+              <div class="simulation-result" id="simulationResult">
+                <div class="sim-grid">
+                  <div class="sim-item">
+                    <span class="sim-item-label">Potência estimada</span>
+                    <span class="sim-item-value" id="simPotencia">0 kWp</span>
+                  </div>
+                  <div class="sim-item">
+                    <span class="sim-item-label">N.º de painéis</span>
+                    <span class="sim-item-value" id="simPaineis">0</span>
+                  </div>
+                  <div class="sim-item">
+                    <span class="sim-item-label">Investimento</span>
+                    <span class="sim-item-value" id="simInvestimento">€0</span>
+                  </div>
+                  <div class="sim-item">
+                    <span class="sim-item-label">Economia anual</span>
+                    <span class="sim-item-value" id="simEconomia">€0</span>
+                  </div>
+                </div>
+
+                <div class="sim-note" id="simNote">
+                  Estimativa inicial preparada para futura ligação ao backend com cálculo avançado.
+                </div>
+              </div>
+            </section>
+
+            <section class="card benefits-card">
+              <div class="card-head">
+                <h3>Benefícios da Energia Solar</h3>
+              </div>
+
+              <ul class="benefits-list">
+                <li><i class="bi bi-check-lg"></i><span>Redução de até 95% na fatura de eletricidade</span></li>
+                <li><i class="bi bi-check-lg"></i><span>Energia limpa e renovável</span></li>
+                <li><i class="bi bi-check-lg"></i><span>Valorização do imóvel</span></li>
+                <li><i class="bi bi-check-lg"></i><span>Independência energética</span></li>
+                <li><i class="bi bi-check-lg"></i><span>Garantia de 25 anos nos painéis</span></li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "solarPanelsBudgetWizard";
+    const totalSteps = 9;
+
+    const questionnaireSection = document.getElementById("solarPanelsQuestionnaire");
+    const quoteSection = document.getElementById("quoteSection");
+    const completionBanner = document.getElementById("completionBanner");
+    const nextStepButton = document.getElementById("nextStepButton");
+    const prevStepButton = document.getElementById("prevStepButton");
+    const editAnswersButton = document.getElementById("editAnswersButton");
+    const wizardStepLabel = document.getElementById("wizardStepLabel");
+    const wizardHelperText = document.getElementById("wizardHelperText");
+
+    const wizardState = {
+      currentStep: 1,
+      completed: false,
+      answers: {
+        installationType: "",
+        propertyType: "",
+        ownershipStatus: "",
+        constructionStatus: "",
+        gridConnection: "",
+        installationSurface: "",
+        availableAreaBand: "",
+        address: "",
+        city: "",
+        postalCode: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: ""
+      }
+    };
+
+    function loadWizardState() {
+      const savedState = localStorage.getItem(STORAGE_KEY);
+      if (!savedState) {
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(savedState);
+        wizardState.currentStep = parsed.currentStep || 1;
+        wizardState.answers = {
+          ...wizardState.answers,
+          ...(parsed.answers || {})
+        };
+
+        // The questionnaire should always be shown before the quote form on a new visit.
+        wizardState.completed = false;
+      } catch (error) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    function saveWizardState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(wizardState));
+    }
+
+    function bindOptionCards() {
+      document.querySelectorAll(".option-card").forEach((button) => {
+        button.addEventListener("click", () => {
+          const field = button.dataset.field;
+          const value = button.dataset.value;
+          wizardState.answers[field] = value;
+          saveWizardState();
+          syncOptionStates();
+          updateWizardUI();
+        });
+      });
+    }
+
+    function bindInputs() {
+      document.querySelectorAll("[data-field-input]").forEach((input) => {
+        const field = input.dataset.fieldInput;
+        input.addEventListener("input", () => {
+          wizardState.answers[field] = input.value.trim();
+          saveWizardState();
+          updateWizardUI();
+        });
+      });
+    }
+
+    function syncOptionStates() {
+      document.querySelectorAll(".option-card").forEach((button) => {
+        const field = button.dataset.field;
+        const value = button.dataset.value;
+        button.classList.toggle("is-selected", wizardState.answers[field] === value);
+      });
+    }
+
+    function syncInputStates() {
+      document.querySelectorAll("[data-field-input]").forEach((input) => {
+        const field = input.dataset.fieldInput;
+        input.value = wizardState.answers[field] || "";
+      });
+    }
+
+    function getStepValidity(step) {
+      const trimmedPhone = (wizardState.answers.phone || "").trim();
+      const trimmedEmail = (wizardState.answers.email || "").trim();
+
+      switch (step) {
+        case 1:
+          return Boolean(wizardState.answers.installationType);
+        case 2:
+          return Boolean(wizardState.answers.propertyType);
+        case 3:
+          return Boolean(wizardState.answers.ownershipStatus);
+        case 4:
+          return Boolean(wizardState.answers.constructionStatus);
+        case 5:
+          return Boolean(wizardState.answers.gridConnection);
+        case 6:
+          return Boolean(wizardState.answers.installationSurface);
+        case 7:
+          return Boolean(wizardState.answers.availableAreaBand);
+        case 8:
+          return Boolean(
+            wizardState.answers.address &&
+            wizardState.answers.city &&
+            wizardState.answers.postalCode
+          );
+        case 9:
+          return Boolean(
+            wizardState.answers.firstName &&
+            wizardState.answers.lastName &&
+            /^[0-9+\s()\-]{6,20}$/.test(trimmedPhone) &&
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)
+          );
+        default:
+          return false;
+      }
+    }
+
+    function getFirstIncompleteStep() {
+      for (let step = 1; step <= totalSteps; step += 1) {
+        if (!getStepValidity(step)) {
+          return step;
+        }
+      }
+
+      return totalSteps;
+    }
+
+    function getHelperMessage(step) {
+      if (getStepValidity(step)) {
+        return step === totalSteps
+          ? "Tudo pronto. Pode avançar para o orçamento solar."
+          : "Resposta guardada. Pode seguir para a próxima etapa.";
+      }
+
+      if (step <= 7) {
+        return "Selecione uma opção para continuar.";
+      }
+
+      if (step === 8) {
+        return "Preencha os dados de localização para avançar.";
+      }
+
+      return "Preencha nome, apelido, telefone válido e email válido para concluir esta fase.";
+    }
+
+    function updateProgress() {
+      wizardStepLabel.textContent = `Passo ${wizardState.currentStep}`;
+
+      document.querySelectorAll("[data-progress]").forEach((segment) => {
+        const segmentStep = Number(segment.dataset.progress);
+        segment.classList.toggle("done", segmentStep < wizardState.currentStep);
+        segment.classList.toggle("active", segmentStep === wizardState.currentStep);
+      });
+    }
+
+    function updateStepVisibility() {
+      document.querySelectorAll(".step").forEach((stepElement) => {
+        stepElement.classList.toggle(
+          "active",
+          Number(stepElement.dataset.step) === wizardState.currentStep
+        );
+      });
+    }
+
+    function syncQuoteFormFromWizard() {
+      const fullName = `${wizardState.answers.firstName || ""} ${wizardState.answers.lastName || ""}`.trim();
+
+      const fullNameInput = document.getElementById("nomeCompleto");
+      const emailInput = document.getElementById("email");
+      const phoneInput = document.getElementById("telefone");
+      const areaInput = document.getElementById("areaDisponivel");
+      const roofInput = document.getElementById("tipoTelhado");
+      const hiddenFields = {
+        wizardInstallationType: wizardState.answers.installationType,
+        wizardPropertyType: wizardState.answers.propertyType,
+        wizardOwnershipStatus: wizardState.answers.ownershipStatus,
+        wizardConstructionStatus: wizardState.answers.constructionStatus,
+        wizardGridConnection: wizardState.answers.gridConnection,
+        wizardInstallationSurface: wizardState.answers.installationSurface,
+        wizardAvailableAreaBand: wizardState.answers.availableAreaBand,
+        wizardProjectAddress: wizardState.answers.address,
+        wizardProjectCity: wizardState.answers.city,
+        wizardProjectPostalCode: wizardState.answers.postalCode,
+        wizardContactFirstName: wizardState.answers.firstName,
+        wizardContactLastName: wizardState.answers.lastName
+      };
+
+      Object.entries(hiddenFields).forEach(([fieldId, value]) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+          field.value = value || "";
+        }
+      });
+
+      if (fullNameInput && fullName && !fullNameInput.value.trim()) {
+        fullNameInput.value = fullName;
+      }
+
+      if (emailInput && wizardState.answers.email && !emailInput.value.trim()) {
+        emailInput.value = wizardState.answers.email;
+      }
+
+      if (phoneInput && wizardState.answers.phone && !phoneInput.value.trim()) {
+        phoneInput.value = wizardState.answers.phone;
+      }
+
+      if (areaInput && !areaInput.value.trim()) {
+        const areaMap = {
+          "Pequena": "25",
+          "Média": "50",
+          "Grande": "90"
+        };
+
+        if (areaMap[wizardState.answers.availableAreaBand]) {
+          areaInput.value = areaMap[wizardState.answers.availableAreaBand];
+        }
+      }
+
+      if (roofInput && !roofInput.value) {
+        const roofMap = {
+          "Telhado": "Ceramico",
+          "Terra / terreno": "Terreno",
+          "Cobertura de estacionamento": "Plano"
+        };
+
+        if (roofMap[wizardState.answers.installationSurface]) {
+          roofInput.value = roofMap[wizardState.answers.installationSurface];
+        }
+      }
+    }
+
+    function updateQuestionnaireVisibility() {
+      questionnaireSection.style.display = wizardState.completed ? "none" : "block";
+      completionBanner.classList.toggle("is-visible", wizardState.completed);
+      quoteSection.classList.toggle("is-visible", wizardState.completed);
+
+      if (wizardState.completed) {
+        syncQuoteFormFromWizard();
+      }
+    }
+
+    function updateWizardUI() {
+      updateStepVisibility();
+      updateProgress();
+      updateQuestionnaireVisibility();
+
+      prevStepButton.style.display = wizardState.currentStep > 1 ? "inline-flex" : "none";
+      nextStepButton.textContent = wizardState.currentStep === totalSteps ? "Ir para o orçamento solar" : "Seguinte";
+      nextStepButton.disabled = !getStepValidity(wizardState.currentStep);
+      wizardHelperText.textContent = getHelperMessage(wizardState.currentStep);
+    }
+
+    function goToNextStep() {
+      if (!getStepValidity(wizardState.currentStep)) {
+        updateWizardUI();
+        return;
+      }
+
+      if (wizardState.currentStep < totalSteps) {
+        wizardState.currentStep += 1;
+        saveWizardState();
+        updateWizardUI();
+        questionnaireSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
+      wizardState.completed = true;
+      wizardState.currentStep = totalSteps;
+      saveWizardState();
+      updateWizardUI();
+      quoteSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function goToPreviousStep() {
+      if (wizardState.currentStep === 1) {
+        return;
+      }
+
+      wizardState.currentStep -= 1;
+      saveWizardState();
+      updateWizardUI();
+      questionnaireSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function enableEditing() {
+      wizardState.completed = false;
+      wizardState.currentStep = getFirstIncompleteStep();
+      saveWizardState();
+      updateWizardUI();
+      questionnaireSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    nextStepButton.addEventListener("click", goToNextStep);
+    prevStepButton.addEventListener("click", goToPreviousStep);
+    editAnswersButton.addEventListener("click", enableEditing);
+
+    bindOptionCards();
+    bindInputs();
+    loadWizardState();
+    syncOptionStates();
+    syncInputStates();
+
+    wizardState.currentStep = Math.min(Math.max(wizardState.currentStep, 1), totalSteps);
+
+    updateWizardUI();
+
+    const solarQuoteForm = document.getElementById("solarQuoteForm");
+    const solarQuoteSubmit = document.getElementById("solarQuoteSubmit");
+    const solarQuoteFeedback = document.getElementById("solarQuoteFeedback");
+    const solarQuotePrintLink = document.getElementById("solarQuotePrintLink");
+    const simulationEmpty = document.getElementById("simulationEmpty");
+    const simulationResult = document.getElementById("simulationResult");
+
+    const fieldIds = ["nomeCompleto", "email", "telefone", "areaDisponivel", "tipoPainel", "tipoTelhado"];
+
+    const panelFactors = {
+      "Monocristalino": 1.15,
+      "Policristalino": 1.0,
+      "Alta Eficiência": 1.28,
+      "Com Bateria": 1.55
+    };
+
+    const roofFactors = {
+      "Ceramico": 1.0,
+      "Metalico": 0.96,
+      "Plano": 1.08,
+      "Terreno": 1.12
+    };
+
+    function showFieldError(fieldId, isVisible) {
+      const error = document.querySelector(`[data-error-for="${fieldId}"]`);
+      if (error) {
+        error.classList.toggle("is-visible", isVisible);
+      }
+    }
+
+    function showSubmitFeedback(message, type) {
+      solarQuoteFeedback.textContent = message;
+      solarQuoteFeedback.className = `submit-feedback is-visible ${type === "success" ? "is-success" : "is-error"}`;
+    }
+
+    function hidePrintLink() {
+      solarQuotePrintLink.classList.remove("is-visible");
+      solarQuotePrintLink.setAttribute("href", "#");
+    }
+
+    function showPrintLink(printUrl) {
+      if (!printUrl) {
+        hidePrintLink();
+        return;
+      }
+
+      solarQuotePrintLink.setAttribute("href", printUrl);
+      solarQuotePrintLink.classList.add("is-visible");
+    }
+
+    function validateField(fieldId) {
+      const field = document.getElementById(fieldId);
+      const value = field.value.trim();
+
+      let isValid = true;
+
+      if (fieldId === "email") {
+        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+      } else if (fieldId === "telefone") {
+        isValid = /^[0-9+\s()\-]{6,20}$/.test(value);
+      } else if (fieldId === "areaDisponivel") {
+        isValid = Number(value) > 0;
+      } else {
+        isValid = value !== "";
+      }
+
+      showFieldError(fieldId, !isValid);
+      return isValid;
+    }
+
+    function formatEuro(value) {
+      return new Intl.NumberFormat("pt-PT", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0
+      }).format(value);
+    }
+
+    function calculateSimulation() {
+      const area = Number(document.getElementById("areaDisponivel").value || 0);
+      const consumoMensal = Number(document.getElementById("consumoMensal").value || 0);
+      const tipoPainel = document.getElementById("tipoPainel").value;
+      const tipoTelhado = document.getElementById("tipoTelhado").value;
+
+      const panelFactor = panelFactors[tipoPainel] || 1;
+      const roofFactor = roofFactors[tipoTelhado] || 1;
+
+      const potenciaBase = area * 0.2;
+      const potenciaFinal = potenciaBase * panelFactor * roofFactor;
+      const numeroPaineis = Math.max(1, Math.round(area / 2.2));
+      const investimento = numeroPaineis * 420 * panelFactor;
+      const consumoAnual = consumoMensal > 0 ? consumoMensal * 12 : potenciaFinal * 1200;
+      const economiaAnual = consumoAnual * 0.21 * 0.78;
+
+      document.getElementById("simPotencia").textContent = `${potenciaFinal.toFixed(1)} kWp`;
+      document.getElementById("simPaineis").textContent = `${numeroPaineis}`;
+      document.getElementById("simInvestimento").textContent = formatEuro(investimento);
+      document.getElementById("simEconomia").textContent = formatEuro(economiaAnual);
+      document.getElementById("simNote").textContent =
+        `Estimativa para ${tipoPainel.toLowerCase()} em cobertura ${tipoTelhado.toLowerCase()}, com base numa área de ${area} m².`;
+
+      simulationEmpty.style.display = "none";
+      simulationResult.classList.add("is-visible");
+    }
+
+    fieldIds.forEach((fieldId) => {
+      const field = document.getElementById(fieldId);
+      field.addEventListener("input", () => validateField(fieldId));
+      field.addEventListener("change", () => validateField(fieldId));
+    });
+
+    solarQuoteForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const isFormValid = fieldIds.every((fieldId) => validateField(fieldId));
+      if (!isFormValid) {
+        hidePrintLink();
+        showSubmitFeedback("Verifique os campos obrigatórios antes de submeter o pedido.", "error");
+        return;
+      }
+
+      syncQuoteFormFromWizard();
+      calculateSimulation();
+      hidePrintLink();
+
+      solarQuoteSubmit.disabled = true;
+      solarQuoteSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i>A enviar...';
+
+      try {
+        const csrfInput = solarQuoteForm.querySelector('input[type="hidden"][name]');
+        const headers = csrfInput && csrfInput.value ? { "X-CSRF-TOKEN": csrfInput.value } : {};
+        const response = await fetch(solarQuoteForm.getAttribute("action"), {
+          method: "POST",
+          headers,
+          body: new FormData(solarQuoteForm)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+          showSubmitFeedback(data.message || "Nao foi possivel registar o pedido.", "error");
+          return;
+        }
+
+        showSubmitFeedback("Pedido registado com sucesso. A submissao ja esta disponivel na area de administracao.", "success");
+        showPrintLink(data.printUrl);
+      } catch (error) {
+        hidePrintLink();
+        showSubmitFeedback("Ocorreu um erro ao enviar os dados. Tente novamente dentro de instantes.", "error");
+      } finally {
+        solarQuoteSubmit.disabled = false;
+        solarQuoteSubmit.innerHTML = '<i class="bi bi-calculator"></i>Calcular Orçamento';
+      }
+    });
+  </script>
+</body>
+</html>

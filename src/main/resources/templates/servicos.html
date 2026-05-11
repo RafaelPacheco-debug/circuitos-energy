@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}" />
+  <meta th:if="${_csrf != null}" name="_csrf_parameter" th:content="${_csrf.parameterName}" />
+  <title>Serviços | Circuitos Energy</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/theme.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --page-bg: #ffffff;
+      --surface: var(--color-surface);
+      --surface-muted: #fafafa;
+      --surface-soft: #f5f7fb;
+      --text: var(--color-text-primary);
+      --muted: var(--color-text-secondary);
+      --border: rgba(148, 163, 184, 0.24);
+      --border-soft: rgba(148, 163, 184, 0.16);
+      --accent: var(--color-primary);
+      --accent-soft: rgba(15, 118, 110, 0.08);
+      --success: #17a34a;
+      --shadow-soft: 0 10px 26px rgba(15, 23, 42, 0.05);
+      --max-width: 1560px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: var(--page-bg);
+    }
+
+    .page-shell{
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 22px 28px 56px;
+    }
+
+    .catalog-top{
+      display:grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 28px;
+      align-items:start;
+      padding: 2px 0 28px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .catalog-heading h1{
+      margin: 0;
+      font-size: clamp(2rem, 2.2vw, 2.6rem);
+      font-weight: 500;
+      letter-spacing: -.03em;
+    }
+
+    .catalog-heading p{
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 44ch;
+      font-size: .96rem;
+    }
+
+    .category-strip{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+      gap: 0;
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .category-tile{
+      min-height: 118px;
+      padding: 14px 10px 12px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      gap: 10px;
+      border-right: 1px solid var(--border-soft);
+      background: #fbfbfc;
+      text-decoration:none;
+      color: var(--text);
+      transition: background .16s ease;
+    }
+
+    .category-tile:last-child{
+      border-right: none;
+    }
+
+    .category-tile:hover{
+      background: #f2f7f6;
+    }
+
+    .category-tile.featured{
+      background: #1f1f24;
+      color:#fff;
+    }
+
+    .category-icon{
+      width: 54px;
+      height: 54px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 12px;
+      background: rgba(15, 118, 110, 0.08);
+      color: var(--accent);
+      font-size: 1.35rem;
+    }
+
+    .category-tile.featured .category-icon{
+      background: rgba(255,255,255,.10);
+      color:#fff;
+    }
+
+    .category-tile span{
+      font-size: .9rem;
+      line-height: 1.3;
+    }
+
+    .quick-filters{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      padding: 18px 0 0;
+    }
+
+    .quick-chip{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: .88rem;
+      text-decoration:none;
+    }
+
+    .catalog-layout{
+      display:grid;
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 28px;
+      align-items:start;
+      padding-top: 24px;
+    }
+
+    .sidebar{
+      position: sticky;
+      top: 16px;
+      align-self:start;
+      padding-right: 10px;
+    }
+
+    .filter-block{
+      padding: 0 0 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .filter-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .filter-search{
+      width:100%;
+      min-height: 44px;
+      padding: 0 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      font-size: .94rem;
+      outline:none;
+    }
+
+    .range-bar{
+      position:relative;
+      height: 4px;
+      border-radius: 999px;
+      background: #dbe3f1;
+      margin: 16px 0 14px;
+    }
+
+    .range-bar::before{
+      content:"";
+      position:absolute;
+      left: 8px;
+      right: 12px;
+      top:0;
+      bottom:0;
+      border-radius:999px;
+      background: #4974ff;
+    }
+
+    .range-dot{
+      position:absolute;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      border-radius:50%;
+      background: #4974ff;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1px rgba(73, 116, 255, 0.22);
+      transform: translateY(-50%);
+    }
+
+    .range-dot.start{ left: 0; }
+    .range-dot.end{ right: 0; }
+
+    .range-values{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .range-box{
+      min-height: 42px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color: var(--text);
+      font-size: .95rem;
+    }
+
+    .filter-list{
+      display:grid;
+      gap: 10px;
+    }
+
+    .filter-option{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      font-size: .92rem;
+      color: var(--text);
+    }
+
+    .filter-option-left{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    .filter-checkbox{
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1px solid #ccd5e3;
+      background:#fff;
+      flex: 0 0 auto;
+    }
+
+    .filter-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 26px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #eef2f8;
+      color: #6b7280;
+      font-size: .78rem;
+    }
+
+    .filter-more{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      margin-top: 8px;
+      color: #4f6bff;
+      text-decoration:none;
+      font-size: .9rem;
+    }
+
+    .catalog-main{
+      min-width: 0;
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 18px;
+      flex-wrap:wrap;
+      margin-bottom: 26px;
+    }
+
+    .toolbar-left,
+    .toolbar-right{
+      display:flex;
+      align-items:center;
+      gap: 16px;
+      flex-wrap:wrap;
+    }
+
+    .toolbar-inline{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      color: var(--text);
+      font-size: .95rem;
+    }
+
+    .toolbar-select{
+      min-width: 86px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background:#fff;
+      font-size: .92rem;
+    }
+
+    .view-switch{
+      display:flex;
+      align-items:center;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      overflow:hidden;
+      background:#fff;
+    }
+
+    .view-switch button{
+      min-height: 42px;
+      padding: 0 18px;
+      border: none;
+      background:#fff;
+      color: var(--muted);
+      font-size: .93rem;
+      border-right: 1px solid var(--border-soft);
+    }
+
+    .view-switch button:last-child{
+      border-right: none;
+    }
+
+    .view-switch button.active{
+      color: #315cff;
+      box-shadow: inset 0 -2px 0 #4974ff;
+    }
+
+    .catalog-title{
+      margin: 0 0 20px;
+      font-size: clamp(1.7rem, 2vw, 2.2rem);
+      letter-spacing: -.03em;
+      font-weight: 500;
+    }
+
+    .products-grid{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 28px 16px;
+    }
+
+    .service-card{
+      position:relative;
+      min-width:0;
+      background:#fff;
+    }
+
+    .service-media{
+      position:relative;
+      aspect-ratio: 1 / 1;
+      background: #f3f6fb;
+      border: 1px solid var(--border-soft);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      margin-bottom: 12px;
+    }
+
+    .service-media img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .service-placeholder{
+      width: 100%;
+      height: 100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: var(--accent);
+      font-size: 2rem;
+      background:
+        radial-gradient(circle at center, rgba(15, 118, 110, 0.08), transparent 56%),
+        #f3f6fb;
+    }
+
+    .wishlist-dot{
+      position:absolute;
+      top: 12px;
+      right: 12px;
+      width: 38px;
+      height: 38px;
+      border-radius:50%;
+      background: rgba(31, 41, 55, 0.18);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter: blur(6px);
+    }
+
+    .service-price{
+      font-size: 1.9rem;
+      line-height: 1;
+      font-weight: 500;
+      margin-bottom: 8px;
+      letter-spacing: -.04em;
+    }
+
+    .service-ref{
+      color: #7b8799;
+      font-size: .78rem;
+      margin-bottom: 8px;
+    }
+
+    .service-name{
+      margin: 0 0 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.45;
+      min-height: 2.8em;
+    }
+
+    .stock-line{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      color: var(--success);
+      font-size: .92rem;
+      margin-bottom: 10px;
+    }
+
+    .service-points{
+      display:grid;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+
+    .service-points span{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      color: #5f6b7c;
+      font-size: .88rem;
+      line-height: 1.45;
+    }
+
+    .service-points i{
+      color: #6b7280;
+      font-size: .72rem;
+    }
+
+    .cert-line{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      flex-wrap:wrap;
+      color:#1f2937;
+      font-size: .8rem;
+      margin-bottom: 12px;
+    }
+
+    .cert-tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 32px;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 4px;
+      background: #eef2f7;
+      font-weight: 700;
+    }
+
+    .service-footer{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .details-link{
+      color: #4f6bff;
+      text-decoration:none;
+      font-size: .9rem;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+    }
+
+    .cart-btn{
+      min-height: 40px;
+      padding: 0 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      background: var(--accent-soft);
+      color: var(--accent);
+      text-decoration:none;
+      font-size: .88rem;
+      font-weight: 700;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+    }
+
+    .promo-card{
+      aspect-ratio: 0.76 / 1;
+      background:
+        linear-gradient(180deg, rgba(10, 16, 39, 0.15), rgba(11, 21, 56, 0.92)),
+        url('https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+      color:#fff;
+      padding: 22px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      border: 1px solid var(--border-soft);
+      min-height:100%;
+    }
+
+    .promo-badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      font-size: .78rem;
+      margin-bottom: auto;
+      width: fit-content;
+    }
+
+    .promo-card h3{
+      margin: 0 0 10px;
+      font-size: 1.95rem;
+      line-height: 1.06;
+      letter-spacing: -.03em;
+      max-width: 8ch;
+    }
+
+    .promo-card p{
+      margin: 0 0 18px;
+      color: rgba(255,255,255,.82);
+      line-height: 1.6;
+      font-size: .92rem;
+      max-width: 24ch;
+    }
+
+    .promo-card a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 8px;
+      background:#fff;
+      color:#1f2937;
+      text-decoration:none;
+      font-weight: 700;
+      width: fit-content;
+    }
+
+    .agendamento{
+      padding-top: 10px;
+    }
+
+    .agendamento-header{
+      text-align:center;
+      margin-bottom: 28px;
+    }
+
+    .agendamento-icon{
+      width: 70px;
+      height: 70px;
+      margin: 0 auto 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 18px;
+      background: rgba(15,118,110,0.12);
+      color: var(--accent);
+      font-size: 2rem;
+    }
+
+    .agendamento-header h1{
+      margin:0;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      font-weight: 500;
+      letter-spacing: -.04em;
+    }
+
+    .agendamento-header p{
+      margin: 12px auto 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 60ch;
+    }
+
+    .agendamento-card{
+      max-width: 940px;
+      margin: 0 auto;
+      padding: 28px;
+      border: 1px solid var(--border);
+      background:#fff;
+      box-shadow: var(--shadow-soft);
+      border-radius: 16px;
+    }
+
+    .agendamento-card .form-control,
+    .agendamento-card .form-select{
+      min-height: 46px;
+      border-radius: 8px;
+      border-color: var(--border);
+    }
+
+    .agendamento-card textarea.form-control{
+      min-height: 120px;
+    }
+
+    .note-box{
+      border-radius: 10px;
+      border: 1px solid rgba(15,118,110,0.16);
+      background: rgba(15,118,110,0.08);
+      padding: 14px 16px;
+      font-size: .93rem;
+      line-height: 1.6;
+    }
+
+    .empty{
+      margin-top: 24px;
+      padding: 22px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+    }
+
+    .footer-note{
+      margin-top: 28px;
+      text-align:center;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    @media (max-width: 1280px){
+      .products-grid{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 980px){
+      .page-shell{
+        padding: 18px 16px 42px;
+      }
+
+      .catalog-top,
+      .catalog-layout{
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar{
+        position: static;
+        padding-right: 0;
+      }
+
+      .products-grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px){
+      .products-grid{
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar-left,
+      .toolbar-right{
+        width:100%;
+      }
+
+      .toolbar-right{
+        justify-content:space-between;
+      }
+
+      .category-strip{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .agendamento-card{
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-shell">
+
+    <section class="agendamento" th:if="${agendamento != null}">
+      <div class="agendamento-header">
+        <div class="agendamento-icon">
+          <i class="bi" th:classappend="${agendamento == 'manutencao'} ? ' bi-tools' : (${agendamento == 'instalacao'} ? ' bi-geo-alt' : ' bi-people')"></i>
+        </div>
+        <h1 th:text="${agendamento == 'manutencao'} ? 'Agendamento de Manutenção' : (${agendamento == 'instalacao'} ? 'Agendamento de Instalação' : 'Agendamento de Reunião')}">Agendamento</h1>
+        <p th:text="${agendamento == 'manutencao'} ? 'Agende a manutenção dos seus equipamentos de mobilidade elétrica.' : (${agendamento == 'instalacao'} ? 'Agende a instalação de equipamentos de mobilidade elétrica na sua casa ou empresa.' : 'Agende uma reunião informativa com os nossos especialistas.')">Descrição</p>
+      </div>
+
+      <div class="agendamento-card">
+        <div class="mb-4">
+          <h5 class="mb-1">Formulário de Agendamento</h5>
+          <p class="text-muted mb-0" th:text="${agendamento == 'manutencao'} ? 'Preencha os dados abaixo para agendar a manutenção.' : (${agendamento == 'instalacao'} ? 'Preencha os dados para agendar a instalação.' : 'Preencha os dados abaixo para agendar a reunião.')">Formulário</p>
+        </div>
+
+        <div th:switch="${agendamento}">
+          <div th:case="'manutencao'">
+            <form th:action="@{/agendamento/manutencao}" th:object="${agendamentoManutencao}" method="post">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="nomeCompleto">Nome Completo *</label>
+                  <input type="text" class="form-control" th:field="*{nomeCompleto}" id="nomeCompleto" placeholder="Nome completo" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nomeCompleto')}" th:errors="*{nomeCompleto}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="email">Email *</label>
+                  <input type="email" class="form-control" th:field="*{email}" id="email" placeholder="nome@exemplo.com" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="telefone">Telefone *</label>
+                  <input type="tel" class="form-control" th:field="*{telefone}" id="telefone" placeholder="+351 912 345 678" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="tipoEquipamento">Tipo de Equipamento *</label>
+                  <select class="form-select" th:field="*{tipoEquipamento}" id="tipoEquipamento">
+                    <option value="" disabled selected>Selecione o equipamento</option>
+                    <option>Carregador elétrico</option>
+                    <option>Painel solar</option>
+                    <option>Posto de carregamento</option>
+                    <option>Outro</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoEquipamento')}" th:errors="*{tipoEquipamento}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="dataPreferida">Data Preferida *</label>
+                  <input type="date" class="form-control" th:field="*{dataPreferida}" id="dataPreferida" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataPreferida')}" th:errors="*{dataPreferida}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="horarioPreferido">Horário Preferido *</label>
+                  <select class="form-select" th:field="*{horarioPreferido}" id="horarioPreferido">
+                    <option value="" disabled selected>Selecione o horário</option>
+                    <option>08:00 - 10:00</option>
+                    <option>10:00 - 12:00</option>
+                    <option>14:00 - 16:00</option>
+                    <option>16:00 - 18:00</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('horarioPreferido')}" th:errors="*{horarioPreferido}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="tipoServico">Tipo de Serviço *</label>
+                  <select class="form-select" th:field="*{tipoServico}" id="tipoServico">
+                    <option value="" disabled selected>Selecione o tipo de serviço</option>
+                    <option>Manutenção Preventiva</option>
+                    <option>Manutenção Corretiva</option>
+                    <option>Inspeção Técnica</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoServico')}" th:errors="*{tipoServico}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="observacoes">Observações</label>
+                  <textarea class="form-control" th:field="*{observacoes}" id="observacoes" rows="4" placeholder="Descreva o problema ou detalhes adicionais..."></textarea>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('observacoes')}" th:errors="*{observacoes}"></div>
+                </div>
+
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-primary btn-lg">Confirmar Agendamento</button>
+                </div>
+
+                <div class="col-12" th:if="${sucesso}">
+                  <div class="alert alert-success mt-3" role="alert">
+                    Agendamento enviado com sucesso! Entraremos em contacto em breve.
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div th:case="'instalacao'">
+            <form th:action="@{/agendamento/instalacao}" th:object="${agendamentoInstalacao}" method="post">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="nomeCompleto">Nome Completo *</label>
+                  <input type="text" class="form-control" th:field="*{nomeCompleto}" id="nomeCompleto" placeholder="Nome completo" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nomeCompleto')}" th:errors="*{nomeCompleto}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="email">Email *</label>
+                  <input type="email" class="form-control" th:field="*{email}" id="email" placeholder="nome@exemplo.com" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="telefone">Telefone *</label>
+                  <input type="tel" class="form-control" th:field="*{telefone}" id="telefone" placeholder="+351 912 345 678" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="tipoInstalacao">Tipo de Instalação *</label>
+                  <select class="form-select" th:field="*{tipoInstalacao}" id="tipoInstalacao">
+                    <option value="" disabled selected>Selecione o tipo</option>
+                    <option>Carregador elétrico</option>
+                    <option>Painel solar</option>
+                    <option>Posto de carregamento</option>
+                    <option>Outro</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoInstalacao')}" th:errors="*{tipoInstalacao}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="morada">Morada *</label>
+                  <input type="text" class="form-control" th:field="*{morada}" id="morada" placeholder="Rua, número, andar" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('morada')}" th:errors="*{morada}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="cidade">Cidade *</label>
+                  <input type="text" class="form-control" th:field="*{cidade}" id="cidade" placeholder="Cidade" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('cidade')}" th:errors="*{cidade}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="codigoPostal">Código Postal *</label>
+                  <input type="text" class="form-control" th:field="*{codigoPostal}" id="codigoPostal" placeholder="XXXX-XXX" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('codigoPostal')}" th:errors="*{codigoPostal}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="tipoPropriedade">Tipo de Propriedade *</label>
+                  <select class="form-select" th:field="*{tipoPropriedade}" id="tipoPropriedade">
+                    <option value="" disabled selected>Selecione</option>
+                    <option>Residencial</option>
+                    <option>Comercial</option>
+                    <option>Industrial</option>
+                    <option>Outro</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('tipoPropriedade')}" th:errors="*{tipoPropriedade}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="dataPreferida">Data Preferida *</label>
+                  <input type="date" class="form-control" th:field="*{dataPreferida}" id="dataPreferida" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataPreferida')}" th:errors="*{dataPreferida}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="periodoPreferido">Período Preferido *</label>
+                  <select class="form-select" th:field="*{periodoPreferido}" id="periodoPreferido">
+                    <option value="" disabled selected>Selecione o período</option>
+                    <option>Manhã (09:00 - 12:00)</option>
+                    <option>Tarde (13:00 - 17:00)</option>
+                    <option>Noite (18:00 - 20:00)</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('periodoPreferido')}" th:errors="*{periodoPreferido}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="observacoes">Observações Adicionais</label>
+                  <textarea class="form-control" th:field="*{observacoes}" id="observacoes" rows="3" placeholder="Informações relevantes sobre a instalação, acesso ao local, etc."></textarea>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('observacoes')}" th:errors="*{observacoes}"></div>
+                </div>
+
+                <div class="col-12">
+                  <div class="note-box">
+                    <strong>Nota:</strong> Após a submissão, um técnico entrará em contacto consigo para confirmar a disponibilidade e realizar uma avaliação prévia do local de instalação, se necessário.
+                  </div>
+                </div>
+
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-primary btn-lg">Confirmar Agendamento de Instalação</button>
+                </div>
+
+                <div class="col-12" th:if="${sucesso}">
+                  <div class="alert alert-success mt-3" role="alert">
+                    Agendamento enviado com sucesso! Entraremos em contacto em breve.
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div th:case="'reuniao'">
+            <form th:action="@{/agendamento/reuniao}" th:object="${agendamentoReuniao}" method="post">
+              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="nomeCompleto">Nome Completo *</label>
+                  <input type="text" class="form-control" th:field="*{nomeCompleto}" id="nomeCompleto" placeholder="Nome completo" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('nomeCompleto')}" th:errors="*{nomeCompleto}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="email">Email *</label>
+                  <input type="email" class="form-control" th:field="*{email}" id="email" placeholder="nome@exemplo.com" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="telefone">Telefone *</label>
+                  <input type="tel" class="form-control" th:field="*{telefone}" id="telefone" placeholder="+351 912 345 678" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="assunto">Assunto *</label>
+                  <input type="text" class="form-control" th:field="*{assunto}" id="assunto" placeholder="Ex.: Orçamento de instalação" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('assunto')}" th:errors="*{assunto}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="dataPreferida">Data Preferida *</label>
+                  <input type="date" class="form-control" th:field="*{dataPreferida}" id="dataPreferida" />
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dataPreferida')}" th:errors="*{dataPreferida}"></div>
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label" for="horarioPreferido">Horário Preferido *</label>
+                  <select class="form-select" th:field="*{horarioPreferido}" id="horarioPreferido">
+                    <option value="" disabled selected>Selecione o horário</option>
+                    <option>09:00 - 11:00</option>
+                    <option>11:00 - 13:00</option>
+                    <option>14:00 - 16:00</option>
+                    <option>16:00 - 18:00</option>
+                  </select>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('horarioPreferido')}" th:errors="*{horarioPreferido}"></div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label" for="observacoes">Observações</label>
+                  <textarea class="form-control" th:field="*{observacoes}" id="observacoes" rows="4" placeholder="Descreva o objetivo da reunião ou pontos que quer abordar..."></textarea>
+                  <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('observacoes')}" th:errors="*{observacoes}"></div>
+                </div>
+
+                <div class="col-12 text-center">
+                  <button type="submit" class="btn btn-primary btn-lg">Agendar Reunião</button>
+                </div>
+
+                <div class="col-12" th:if="${sucesso}">
+                  <div class="alert alert-success mt-3" role="alert">
+                    Agendamento enviado com sucesso! Entraremos em contacto em breve.
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section th:if="${agendamento == null}">
+      <div class="catalog-top">
+        <div class="catalog-heading">
+          <h1>Serviços Energy</h1>
+          <p>
+            Uma apresentação mais próxima de catálogo, como nas imagens: categorias no topo, filtros laterais e uma grelha mais limpa para explorar os serviços disponíveis.
+          </p>
+        </div>
+
+        <div>
+          <div class="category-strip">
+            <a class="category-tile featured" href="#servicos-lista">
+              <div class="category-icon"><i class="bi bi-stars"></i></div>
+              <span>Novidades</span>
+            </a>
+            <a class="category-tile" href="#servicos-lista" th:each="s, iter : ${servicos}" th:if="${iter.index < 7}">
+              <div class="category-icon">
+                <i class="bi" th:classappend="${iter.index % 4 == 0} ? ' bi-lightning-charge' : (${iter.index % 4 == 1} ? ' bi-sun' : (${iter.index % 4 == 2} ? ' bi-plug' : ' bi-tools'))"></i>
+              </div>
+              <span th:text="${s.titulo}">Serviço</span>
+            </a>
+          </div>
+
+          <div class="quick-filters">
+            <a class="quick-chip" href="#servicos-lista">Instalação <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Manutenção <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Solar <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Mobilidade <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Empresas <i class="bi bi-chevron-right"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty" th:if="${servicos == null or #lists.isEmpty(servicos)}">
+        Ainda não há serviços para apresentar. Volta em breve.
+      </div>
+
+      <div class="catalog-layout" th:if="${servicos != null and !#lists.isEmpty(servicos)}">
+        <aside class="sidebar">
+          <div class="filter-block">
+            <div class="filter-title">Pesquisar nesta categoria</div>
+            <input class="filter-search" type="text" placeholder="Pesquisar nesta categoria">
+          </div>
+
+          <div class="filter-block">
+            <div class="filter-title">
+              <span>Preço de venda</span>
+              <i class="bi bi-chevron-up"></i>
+            </div>
+            <div class="range-bar">
+              <span class="range-dot start"></span>
+              <span class="range-dot end"></span>
+            </div>
+            <div class="range-values">
+              <div class="range-box"><span>0</span><span>€</span></div>
+              <div class="range-box"><span>204</span><span>€</span></div>
+            </div>
+          </div>
+
+          <div class="filter-block">
+            <div class="filter-title">
+              <span>Tipo de serviço</span>
+              <i class="bi bi-chevron-up"></i>
+            </div>
+            <div class="filter-list">
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Instalação</span></div>
+                <span class="filter-badge">18</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Manutenção</span></div>
+                <span class="filter-badge">12</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Painéis solares</span></div>
+                <span class="filter-badge">9</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Carregamento elétrico</span></div>
+                <span class="filter-badge">15</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Consultoria</span></div>
+                <span class="filter-badge">6</span>
+              </div>
+            </div>
+            <a class="filter-more" href="#servicos-lista">Mostrar mais <i class="bi bi-chevron-down"></i></a>
+          </div>
+
+          <div class="filter-block">
+            <div class="filter-title">
+              <span>Aplicação</span>
+              <i class="bi bi-chevron-up"></i>
+            </div>
+            <div class="filter-list">
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Residencial</span></div>
+                <span class="filter-badge">21</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Condomínio</span></div>
+                <span class="filter-badge">11</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Empresa</span></div>
+                <span class="filter-badge">14</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Industrial</span></div>
+                <span class="filter-badge">4</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-block">
+            <div class="filter-title">
+              <span>Disponibilidade</span>
+              <i class="bi bi-chevron-up"></i>
+            </div>
+            <div class="filter-list">
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Com agendamento</span></div>
+                <span class="filter-badge">24</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Pedido de orçamento</span></div>
+                <span class="filter-badge">17</span>
+              </div>
+              <div class="filter-option">
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Suporte técnico</span></div>
+                <span class="filter-badge">8</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section class="catalog-main" id="servicos-lista">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="toolbar-inline">
+                <span>Mostrar</span>
+                <select class="toolbar-select">
+                  <option selected>31</option>
+                  <option>24</option>
+                  <option>12</option>
+                </select>
+              </div>
+
+              <div class="toolbar-inline">
+                <span>de</span>
+                <strong th:text="${#lists.size(servicos)}">0</strong>
+                <span>serviços</span>
+              </div>
+            </div>
+
+            <div class="toolbar-right">
+              <div class="view-switch">
+                <button type="button"><i class="bi bi-view-list me-2"></i>Vista horizontal</button>
+                <button type="button" class="active"><i class="bi bi-grid-3x3-gap me-2"></i>Vista vertical</button>
+              </div>
+
+              <div class="toolbar-inline">
+                <span>Ordenar</span>
+                <select class="toolbar-select" style="min-width: 196px;">
+                  <option selected>Mais vendidos</option>
+                  <option>Mais recentes</option>
+                  <option>Nome A-Z</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="catalog-title">Nossos serviços em destaque</h2>
+
+          <div class="products-grid">
+            <article class="service-card" th:each="s, iter : ${servicos}">
+              <div th:if="${iter.index == 4}" class="promo-card">
+                <span class="promo-badge">Circuitos Energy</span>
+                <h3>Precisa de uma solução à medida?</h3>
+                <p>Fale com a equipa e receba apoio técnico para escolher o serviço mais adequado.</p>
+                <a th:href="@{/contactos}">
+                  Pedir apoio
+                  <i class="bi bi-chevron-right"></i>
+                </a>
+              </div>
+
+              <div th:unless="${iter.index == 4}">
+                <div class="service-media">
+                  <div class="wishlist-dot">
+                    <i class="bi bi-heart"></i>
+                  </div>
+
+                  <img th:if="${s.imagem != null}"
+                       th:src="@{'/uploads/' + ${s.imagem}}"
+                       th:alt="${s.titulo}">
+
+                  <div class="service-placeholder" th:if="${s.imagem == null}">
+                    <i class="bi" th:classappend="${iter.index % 4 == 0} ? ' bi-plug' : (${iter.index % 4 == 1} ? ' bi-sun' : (${iter.index % 4 == 2} ? ' bi-tools' : ' bi-lightning-charge'))"></i>
+                  </div>
+                </div>
+
+                <div class="service-price" th:text="${s.preco} + ' €'">1,01 €</div>
+                <div class="service-ref">Ref <span th:text="${100000 + s.id}">107929</span></div>
+                <h3 class="service-name" th:text="${s.titulo}">Serviço</h3>
+
+                <div class="stock-line">
+                  <i class="bi bi-rocket-takeoff"></i>
+                  <span>Disponível para pedido e acompanhamento rápido</span>
+                </div>
+
+                <div class="service-points">
+                  <span><i class="bi bi-circle-fill"></i><span th:text="${s.descricao}">Descrição</span></span>
+                  <span><i class="bi bi-circle-fill"></i><span>Atendimento técnico e proposta adaptada ao projeto</span></span>
+                  <span><i class="bi bi-circle-fill"></i><span>Planeamento, execução e suporte quando aplicável</span></span>
+                </div>
+
+                <div class="cert-line">
+                  <span class="cert-tag">CE</span>
+                  <span class="cert-tag">ISO</span>
+                  <span class="cert-tag">PRO</span>
+                </div>
+
+                <div class="service-footer">
+                  <a class="details-link" th:href="@{/servicos/{id}(id=${s.id})}">
+                    <i class="bi bi-list-ul"></i>
+                    Ver detalhe
+                  </a>
+                  <form th:attr="action=@{/carrinho/adicionar/{id}(id=${s.id})}" method="post" style="display:inline">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="cart-btn" type="submit">
+                      <i class="bi bi-cart-plus"></i>
+                      Adicionar
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      <span>©</span> <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2026</span>
+      <span> Circuitos Energy • Todos os direitos reservados</span>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.git
+.github
+.mvn/wrapper/maven-wrapper.jar
+target
+data
+uploads
+*.log
+*.err.log
+run-*.ps1
+run-*.log
+run-*.err.log
+.vscode
+.idea

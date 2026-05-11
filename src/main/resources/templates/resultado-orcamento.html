@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resultado do Orçamento Solar</title>
+</head>
+<body>
+
+  <h1>Resultado do Orçamento Solar</h1>
+
+  <!-- Caso exista resultado -->
+  <div th:if="${resultado != null}">
+    <p><strong>Consumo mensal:</strong> <span th:text="${consumoMensalKwh}">0</span> kWh</p>
+    <p><strong>Tarifa kWh:</strong> <span th:text="${#numbers.formatDecimal(tarifaKwh, 1, 3)}">0</span> €</p>
+    <p><strong>Horas de uso diário:</strong> <span th:text="${horasUsoDiario}">0</span> h</p>
+    <p><strong>Investimento:</strong> <span th:text="${#numbers.formatDecimal(investimento, 1, 2)}">0</span> €</p>
+
+    <hr>
+
+    <p><strong>Poupança mensal:</strong> <span th:text="${#numbers.formatDecimal(resultado.poupancaMensal, 1, 2)}">-</span> €</p>
+    <p><strong>Poupança anual:</strong> <span th:text="${#numbers.formatDecimal(resultado.poupancaAnual, 1, 2)}">-</span> €</p>
+    <p><strong>Retorno do investimento:</strong> <span th:text="${#numbers.formatDecimal(resultado.paybackAnos, 1, 2)}">-</span> anos</p>
+
+    <br>
+    <a href="/" style="margin-right:12px;">Voltar ao início</a>
+    <a href="/ferramentas/solar">Novo cálculo</a>
+  </div>
+
+  <!-- Caso não exista resultado -->
+  <div th:if="${resultado == null}">
+    <p>Não foi possível calcular o orçamento. Tenta novamente.</p>
+    <a href="/ferramentas/solar">Voltar</a>
+  </div>
+
+</body>
+</html>
