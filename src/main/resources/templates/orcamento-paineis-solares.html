@@ -47,16 +47,39 @@
     }
 
     .hero{
+      position:relative;
       text-align:center;
       margin-bottom:34px;
       padding:34px 18px;
       border-radius:22px;
       overflow:hidden;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.72)),
-        url("/images/paineis-solares.jpg") center/cover no-repeat,
-        linear-gradient(135deg, #ecfdf5, #ffffff);
+      background:linear-gradient(135deg, #ecfdf5, #ffffff);
       border:1px solid rgba(15,118,110,.12);
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,.78));
+      pointer-events:none;
+    }
+
+    .hero > *{
+      position:relative;
+      z-index:1;
+    }
+
+    .solar-hero-img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      min-height:220px;
+      object-fit:cover;
+      display:block;
+      border:1px solid rgba(0,0,0,.08);
+      z-index:0;
     }
 
     .hero-icon{
@@ -734,6 +757,7 @@
   <main class="page">
     <div class="page-inner">
       <section class="hero">
+        <img th:src="@{/images/paineis-solares.jpg}" src="/images/paineis-solares.jpg" alt="Painéis solares" class="solar-hero-img">
         <div class="hero-icon">
           <i class="bi bi-sun"></i>
         </div>
