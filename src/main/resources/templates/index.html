@@ -39,7 +39,9 @@
       background: radial-gradient(circle at 30% 30%, #99f6e4 0%, #2dd4bf 35%, var(--brand) 100%);
       display:flex;align-items:center;justify-content:center;
       color:#fff;font-weight:800;letter-spacing:.5px;
+      overflow:hidden;
     }
+    .brand-logo img{width:100%;height:100%;object-fit:contain;display:block;padding:4px;}
 
     /* HERO com imagem em fundo e overlay, texto centrado */
     .hero{
@@ -52,7 +54,8 @@
       color:#fff;
       background:
         linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.35)),
-        url("/uploads/hero-placeholder.jpg") center/cover no-repeat;
+        url("/images/home-hero.jpg") center/cover no-repeat,
+        linear-gradient(135deg, #0f766e, #102542);
     }
     .hero h1{
       font-weight:800;
@@ -83,6 +86,11 @@
       height: 260px;
       object-fit: cover;
       display:block;
+    }
+    .image-fallback{
+      background:
+        radial-gradient(circle at 30% 20%, rgba(45,212,191,.24), transparent 36%),
+        linear-gradient(135deg, #edf7f5, #f8fafc);
     }
     .soft-img.sm{
       height: 220px;
@@ -146,7 +154,10 @@
 
       <!-- Brand (mantém link /) -->
       <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-        <div class="brand-logo">CE</div>
+        <div class="brand-logo">
+          <img th:src="@{/images/logo-circuitos-energy.png}" src="/images/logo-circuitos-energy.png" alt="Circuitos Energy" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';">
+          <span style="display:none">CE</span>
+        </div>
         <div class="d-none d-sm-block">
           <div class="fw-semibold" style="line-height:1.1">Circuitos Energy</div>
           <small class="text-muted" style="font-size:.78rem">Energia e mobilidade sustentável</small>
@@ -260,14 +271,14 @@
           </div>
 
           <div class="col-lg-6">
-            <div class="soft-card">
-              <img src="/uploads/about-placeholder.jpg" alt="Sobre nós" class="soft-img">
+            <div class="soft-card image-fallback">
+              <img th:src="@{/images/home-servicos.jpg}" src="/images/home-servicos.jpg" alt="Sobre nós" class="soft-img" onerror="this.style.visibility='hidden';">
             </div>
           </div>
 
           <div class="col-lg-6 order-lg-3">
-            <div class="soft-card">
-              <img src="/uploads/about-placeholder.jpg" alt="Energia solar" class="soft-img">
+            <div class="soft-card image-fallback">
+              <img th:src="@{/images/paineis-solares.jpg}" src="/images/paineis-solares.jpg" alt="Energia solar" class="soft-img" onerror="this.style.visibility='hidden';">
             </div>
           </div>
 

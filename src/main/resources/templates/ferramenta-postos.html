@@ -64,6 +64,19 @@
       margin-bottom: 26px;
     }
 
+    .charging-hero-image {
+      min-height: 220px;
+      margin-bottom: 24px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(15,118,110,.14);
+      background:
+        linear-gradient(90deg, rgba(15,23,42,.62), rgba(15,23,42,.12)),
+        url("/images/postos-carregamento.jpg") center/cover no-repeat,
+        linear-gradient(135deg, #e6fffb, #f8fafc);
+      box-shadow: var(--shadow);
+    }
+
     .grid {
       display:grid;
       grid-template-columns: 1.1fr .9fr;
@@ -380,6 +393,8 @@
 
     <h1>Orçamento de Postos de Carregamento</h1>
     <div class="sub">Obtenha um orçamento instantâneo para postos de carregamento elétrico.</div>
+
+    <div class="charging-hero-image" role="img" aria-label="Postos de carregamento eletrico"></div>
 
     <section class="wizard-card" id="chargingWizard" th:classappend="${resultadoPostos != null} ? ' hidden' : ''">
       <div class="wizard-header">
