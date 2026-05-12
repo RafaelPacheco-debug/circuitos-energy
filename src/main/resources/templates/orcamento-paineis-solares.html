@@ -977,9 +977,6 @@
                 <input class="text-input" id="wizardCodigoPostal" type="text" placeholder="Ex: 1000-001" data-field-input="postalCode">
               </div>
             </div>
-            <div class="field-note">
-              Se no futuro quiser integrar mapa ou pin, este passo já fica preparado sem alterar o fluxo principal do orçamento.
-            </div>
           </div>
 
           <div class="step" data-step="9">
@@ -1109,7 +1106,7 @@
                  class="print-budget-link"
                  href="#"
                  target="_blank"
-                 rel="noopener">Transferir/Imprimir orçamento</a>
+                 rel="noopener">Descarregar orçamento em PDF</a>
             </form>
           </article>
 
@@ -1640,7 +1637,7 @@
           return;
         }
 
-        showSubmitFeedback("Pedido registado com sucesso. A submissao ja esta disponivel na area de administracao.", "success");
+        showSubmitFeedback("Pedido registado com sucesso. Pode abrir o orçamento e escolher Guardar como PDF.", "success");
         showPrintLink(data.printUrl);
       } catch (error) {
         hidePrintLink();

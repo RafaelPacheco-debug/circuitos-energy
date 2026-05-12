@@ -1033,9 +1033,9 @@
     <section th:if="${agendamento == null}">
       <div class="catalog-top">
         <div class="catalog-heading">
-          <h1>Serviços Energy</h1>
+          <h1>Soluções solares</h1>
           <p>
-            Uma apresentação mais próxima de catálogo, como nas imagens: categorias no topo, filtros laterais e uma grelha mais limpa para explorar os serviços disponíveis.
+            Explore as principais soluções de painéis solares para autoconsumo, eficiência e armazenamento de energia.
           </p>
         </div>
 
@@ -1043,22 +1043,31 @@
           <div class="category-strip">
             <a class="category-tile featured" href="#servicos-lista">
               <div class="category-icon"><i class="bi bi-stars"></i></div>
-              <span>Novidades</span>
+              <span>Soluções solares</span>
             </a>
-            <a class="category-tile" href="#servicos-lista" th:each="s, iter : ${servicos}" th:if="${iter.index < 7}">
-              <div class="category-icon">
-                <i class="bi" th:classappend="${iter.index % 4 == 0} ? ' bi-lightning-charge' : (${iter.index % 4 == 1} ? ' bi-sun' : (${iter.index % 4 == 2} ? ' bi-plug' : ' bi-tools'))"></i>
-              </div>
-              <span th:text="${s.titulo}">Serviço</span>
+            <a class="category-tile" href="#servicos-lista">
+              <div class="category-icon"><i class="bi bi-sun"></i></div>
+              <span>Painéis solares monocristalinos</span>
+            </a>
+            <a class="category-tile" href="#servicos-lista">
+              <div class="category-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+              <span>Painéis solares policristalinos</span>
+            </a>
+            <a class="category-tile" href="#servicos-lista">
+              <div class="category-icon"><i class="bi bi-lightning-charge"></i></div>
+              <span>Painéis solares de alta eficiência</span>
+            </a>
+            <a class="category-tile" href="#servicos-lista">
+              <div class="category-icon"><i class="bi bi-battery-charging"></i></div>
+              <span>Kit solar com bateria</span>
             </a>
           </div>
 
           <div class="quick-filters">
-            <a class="quick-chip" href="#servicos-lista">Instalação <i class="bi bi-chevron-right"></i></a>
-            <a class="quick-chip" href="#servicos-lista">Manutenção <i class="bi bi-chevron-right"></i></a>
-            <a class="quick-chip" href="#servicos-lista">Solar <i class="bi bi-chevron-right"></i></a>
-            <a class="quick-chip" href="#servicos-lista">Mobilidade <i class="bi bi-chevron-right"></i></a>
-            <a class="quick-chip" href="#servicos-lista">Empresas <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Monocristalinos <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Policristalinos <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Alta eficiência <i class="bi bi-chevron-right"></i></a>
+            <a class="quick-chip" href="#servicos-lista">Com bateria <i class="bi bi-chevron-right"></i></a>
           </div>
         </div>
       </div>
@@ -1091,29 +1100,29 @@
 
           <div class="filter-block">
             <div class="filter-title">
-              <span>Tipo de serviço</span>
+              <span>Tipo de painel</span>
               <i class="bi bi-chevron-up"></i>
             </div>
             <div class="filter-list">
               <div class="filter-option">
-                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Instalação</span></div>
-                <span class="filter-badge">18</span>
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Monocristalino</span></div>
+                <span class="filter-badge">4</span>
               </div>
               <div class="filter-option">
-                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Manutenção</span></div>
-                <span class="filter-badge">12</span>
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Policristalino</span></div>
+                <span class="filter-badge">3</span>
               </div>
               <div class="filter-option">
-                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Painéis solares</span></div>
-                <span class="filter-badge">9</span>
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Alta eficiência</span></div>
+                <span class="filter-badge">5</span>
               </div>
               <div class="filter-option">
-                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Carregamento elétrico</span></div>
-                <span class="filter-badge">15</span>
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Kit com bateria</span></div>
+                <span class="filter-badge">2</span>
               </div>
               <div class="filter-option">
-                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Consultoria</span></div>
-                <span class="filter-badge">6</span>
+                <div class="filter-option-left"><span class="filter-checkbox"></span><span>Projeto personalizado</span></div>
+                <span class="filter-badge">1</span>
               </div>
             </div>
             <a class="filter-more" href="#servicos-lista">Mostrar mais <i class="bi bi-chevron-down"></i></a>
@@ -1202,7 +1211,7 @@
             </div>
           </div>
 
-          <h2 class="catalog-title">Nossos serviços em destaque</h2>
+          <h2 class="catalog-title">Painéis solares em destaque</h2>
 
           <div class="products-grid">
             <article class="service-card" th:each="s, iter : ${servicos}">

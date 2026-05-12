@@ -35,22 +35,22 @@
     .navbar .dropdown-toggle::after{ margin-left:.4rem; }
 
     .brand-logo{
-      width:54px;height:54px;border-radius:12px;
-      background:#fff;
-      border:1px solid rgba(15,118,110,.16);
-      box-shadow:0 6px 16px rgba(15,118,110,.10);
+      width:58px;height:58px;
+      background:transparent;
+      border:0;
+      box-shadow:none;
       display:flex;align-items:center;justify-content:center;
       color:#fff;font-weight:800;letter-spacing:.5px;
-      overflow:hidden;
+      overflow:visible;
     }
-    .brand-logo img{width:100%;height:100%;object-fit:contain;display:block;padding:2px;}
+    .brand-logo img{width:100%;height:100%;object-fit:contain;display:block;padding:0;}
 
     .navbar-logo-img{
       width:100%;
       height:100%;
       object-fit:contain;
       display:block;
-      padding:1px;
+      padding:0;
     }
 
     /* HERO com imagem real e overlay, texto centrado */
@@ -129,6 +129,10 @@
       border-radius: 18px;
     }
 
+    .mission-img{
+      object-position:center 42%;
+    }
+
     .services .card{
       border: 1px solid rgba(15,23,36,.08);
       border-radius: 18px;
@@ -183,7 +187,7 @@
     @media (max-width: 575px){
       .hero{ min-height: 360px; padding: 54px 0; }
       .hero-img{ min-height:360px; }
-      .brand-logo{ width:42px; height:42px; }
+      .brand-logo{ width:48px; height:48px; }
       .soft-img{ height: 220px; }
       .service-card-img{ height:150px; min-height:150px; }
     }
@@ -223,9 +227,10 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Produtos</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="/servicos">Carregadores Elétricos</a></li>
-              <li><a class="dropdown-item" href="/servicos">Painéis Solares</a></li>
-              <li><a class="dropdown-item" href="/servicos">Postos de Carregamento</a></li>
+              <li><a class="dropdown-item" href="/servicos">Painéis solares monocristalinos</a></li>
+              <li><a class="dropdown-item" href="/servicos">Painéis solares policristalinos</a></li>
+              <li><a class="dropdown-item" href="/servicos">Painéis solares de alta eficiência</a></li>
+              <li><a class="dropdown-item" href="/servicos">Kit solar com bateria</a></li>
             </ul>
           </li>
 
@@ -234,7 +239,7 @@
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" th:href="@{/ferramentas/solar}">Calculadora Solar</a></li>
               <li><a class="dropdown-item" th:href="@{/orcamento/paineis-solares}">Orçamento de Painéis Solares</a></li>
-              <li><a class="dropdown-item" th:href="@{/ferramentas/postos}">Orçamento de Postos</a></li>
+              <li><a class="dropdown-item" th:href="@{/ferramentas/postos}">Orçamento de postos elétricos</a></li>
             </ul>
           </li>
 
@@ -309,8 +314,8 @@
               produtos e serviços de alta qualidade que contribuem para um futuro mais verde e sustentável.
             </p>
             <p class="text-muted mb-0">
-              Especializamo-nos em carregadores elétricos, painéis solares, iluminação eficiente e soluções completas
-              para mobilidade elétrica, oferecendo sempre o melhor suporte técnico e acompanhamento personalizado
+              Especializamo-nos em painéis solares monocristalinos, policristalinos, sistemas de alta eficiência e kits com bateria,
+              oferecendo sempre o melhor suporte técnico e acompanhamento personalizado
               aos nossos clientes.
             </p>
           </div>
@@ -323,7 +328,7 @@
 
           <div class="col-lg-6 order-lg-3">
             <div class="soft-card image-fallback">
-              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Energia solar" class="soft-img" onerror="this.style.visibility='hidden';">
+              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Energia solar" class="soft-img mission-img" onerror="this.style.visibility='hidden';">
             </div>
           </div>
 
@@ -348,12 +353,12 @@
         <div class="row g-4">
           <div class="col-md-4">
             <div class="card p-4 h-100">
-              <img th:src="@{/images/postos-carregamento.jpg(v=3)}" src="/images/postos-carregamento.jpg?v=3" alt="Posto de carregamento elétrico" class="service-card-img mx-n4 mt-n4 mb-4">
+              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Painéis solares monocristalinos" class="service-card-img mx-n4 mt-n4 mb-4">
               <div class="d-flex align-items-start gap-3">
                 <div class="feature-icon"><i class="bi bi-plug-fill"></i></div>
                 <div>
-                  <h5 class="mb-1">Instalação de pontos de carregamento</h5>
-                  <p class="text-muted mb-0 small">Projeto, instalação e manutenção de pontos de carregamento para veículos elétricos.</p>
+                  <h5 class="mb-1">Painéis solares monocristalinos</h5>
+                  <p class="text-muted mb-0 small">Solução eficiente para telhados residenciais com boa exposição solar.</p>
                 </div>
               </div>
             </div>
@@ -365,8 +370,8 @@
               <div class="d-flex align-items-start gap-3">
                 <div class="feature-icon"><i class="bi bi-lightning-charge-fill"></i></div>
                 <div>
-                  <h5 class="mb-1">Gestão energética</h5>
-                  <p class="text-muted mb-0 small">Sistemas de monitorização e otimização do consumo energético para reduzir custos.</p>
+                  <h5 class="mb-1">Painéis solares de alta eficiência</h5>
+                  <p class="text-muted mb-0 small">Produção otimizada para projetos com área limitada e maior exigência energética.</p>
                 </div>
               </div>
             </div>
@@ -378,8 +383,21 @@
               <div class="d-flex align-items-start gap-3">
                 <div class="feature-icon"><i class="bi bi-gear-fill"></i></div>
                 <div>
-                  <h5 class="mb-1">Serviços técnicos</h5>
-                  <p class="text-muted mb-0 small">Manutenção, inspeções e assistência técnica com resposta rápida.</p>
+                  <h5 class="mb-1">Kit solar com bateria</h5>
+                  <p class="text-muted mb-0 small">Sistema solar com armazenamento para aumentar o autoconsumo e a autonomia.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card p-4 h-100">
+              <img th:src="@{/images/projeto-solar.jpg(v=3)}" src="/images/projeto-solar.jpg?v=3" alt="Painéis solares policristalinos" class="service-card-img mx-n4 mt-n4 mb-4">
+              <div class="d-flex align-items-start gap-3">
+                <div class="feature-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+                <div>
+                  <h5 class="mb-1">Painéis solares policristalinos</h5>
+                  <p class="text-muted mb-0 small">Opção equilibrada para projetos solares com boa relação entre custo e desempenho.</p>
                 </div>
               </div>
             </div>
@@ -426,9 +444,10 @@
         <div class="col-lg-3">
           <h6>Produtos</h6>
           <ul class="list-unstyled small mb-0">
-            <li class="mb-2"><a href="/servicos">Carregadores Elétricos</a></li>
-            <li class="mb-2"><a href="/servicos">Painéis Solares</a></li>
-            <li><a href="/servicos">Postos de Carregamento</a></li>
+            <li class="mb-2"><a href="/servicos">Painéis solares monocristalinos</a></li>
+            <li class="mb-2"><a href="/servicos">Painéis solares policristalinos</a></li>
+            <li class="mb-2"><a href="/servicos">Painéis solares de alta eficiência</a></li>
+            <li><a href="/servicos">Kit solar com bateria</a></li>
           </ul>
         </div>
 
@@ -437,7 +456,7 @@
           <ul class="list-unstyled small mb-0">
             <li class="mb-2"><a th:href="@{/ferramentas/solar}">Calculadora Solar</a></li>
             <li class="mb-2"><a href="/servicos">Questionário de Mobilidade</a></li>
-            <li><a href="/servicos">Orçamento de Postos</a></li>
+            <li><a href="/ferramentas/postos">Orçamento de postos elétricos</a></li>
           </ul>
         </div>
 

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultado do Cálculo Solar | Circuitos Energy</title>
+  <link href="/css/theme.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, #f7fbfa 0%, #eef7f5 100%);
+      color: #0f172a;
+    }
+
+    .page {
+      width: min(920px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 54px 0;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .navbtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      background: #fff;
+      color: var(--color-primary);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .hero {
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(32px, 4vw, 46px);
+      letter-spacing: -0.03em;
+      line-height: 1.06;
+    }
+
+    .subtitle {
+      margin: 0;
+      max-width: 680px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    .result-card {
+      background: #fff;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 20px;
+      box-shadow: 0 22px 50px rgba(15, 23, 42, 0.08);
+      padding: 26px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .metric {
+      padding: 20px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .metric > span {
+      display: block;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: clamp(26px, 4vw, 38px);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .metric strong span {
+      display: inline;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <a class="navbtn" th:href="@{/ferramentas/solar}">Voltar ao cálculo</a>
+      <a class="navbtn" th:href="@{/}">Página inicial</a>
+    </div>
+
+    <section class="hero">
+      <h1>Resultado do cálculo solar</h1>
+      <p class="subtitle">Resumo essencial da potência recomendada, quantidade estimada de painéis, poupança e payback.</p>
+    </section>
+
+    <section class="result-card">
+      <div class="grid">
+        <div class="metric">
+          <span>Potência recomendada</span>
+          <strong><span th:text="${#numbers.formatDecimal(resultado.potenciaNecessariaKw, 1, 2)}">0,00</span> kW</strong>
+        </div>
+        <div class="metric">
+          <span>Número estimado de painéis</span>
+          <strong><span th:text="${numeroPaineis}">1</span></strong>
+        </div>
+        <div class="metric">
+          <span>Poupança estimada anual</span>
+          <strong>€<span th:text="${#numbers.formatDecimal(resultado.economiaAnualEstimada, 1, 2)}">0,00</span></strong>
+        </div>
+        <div class="metric">
+          <span>Payback</span>
+          <strong><span th:text="${#numbers.formatDecimal(resultado.paybackAnos, 1, 2)}">0,00</span> anos</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

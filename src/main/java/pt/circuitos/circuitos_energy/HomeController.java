@@ -404,13 +404,23 @@ public class HomeController {
         session.setAttribute(SESSION_SOLAR_ORCAMENTO,
                 new OrcamentoSolarImpressao(request, resultado, LocalDateTime.now(), submissao.getId()));
 
-        model.addAttribute("resultado", resultado);
-        model.addAttribute("consumoMensalKwh", request.getConsumoMensalKwh());
-        model.addAttribute("tarifaKwh", request.getTarifaKwh());
-        model.addAttribute("horasUsoDiario", request.getHorasUsoDiario());
-        model.addAttribute("investimento", request.getInvestimento());
+        return "redirect:/ferramentas/solar/resultado";
+    }
 
-        return "ferramenta-solar";
+    @GetMapping("/ferramentas/solar/resultado")
+    public String resultadoSolar(HttpSession session, Model model) {
+        OrcamentoSolarImpressao orcamento =
+                (OrcamentoSolarImpressao) session.getAttribute(SESSION_SOLAR_ORCAMENTO);
+
+        if (orcamento == null) {
+            return "redirect:/ferramentas/solar";
+        }
+
+        int numeroPaineis = Math.max(1, (int) Math.ceil(orcamento.resultado().getPotenciaNecessariaKw() * 1000 / 450));
+        model.addAttribute("orcamento", orcamento);
+        model.addAttribute("resultado", orcamento.resultado());
+        model.addAttribute("numeroPaineis", numeroPaineis);
+        return "ferramenta-solar-resultado";
     }
 
     @GetMapping("/ferramentas/solar/orcamento")
