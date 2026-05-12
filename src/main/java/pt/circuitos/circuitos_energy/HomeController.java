@@ -105,6 +105,27 @@ public class HomeController {
         return "sobre";
     }
 
+    @GetMapping("/produtos")
+    public String produtos(Model model) {
+        model.addAttribute("produtos", produtosSolares());
+        return "produtos";
+    }
+
+    @GetMapping("/produtos/{slug}")
+    public String detalheProduto(@PathVariable String slug, Model model) {
+        Optional<ProdutoSolar> produto = produtosSolares().stream()
+                .filter(item -> item.slug().equals(slug))
+                .findFirst();
+
+        if (produto.isEmpty()) {
+            return "redirect:/produtos";
+        }
+
+        model.addAttribute("produto", produto.get());
+        model.addAttribute("produtos", produtosSolares());
+        return "produto-detalhe";
+    }
+
     @GetMapping("/servicos")
     public String servicos(
             @RequestParam(value = "agendamento", required = false) String agendamento,
@@ -404,7 +425,13 @@ public class HomeController {
         session.setAttribute(SESSION_SOLAR_ORCAMENTO,
                 new OrcamentoSolarImpressao(request, resultado, LocalDateTime.now(), submissao.getId()));
 
-        return "redirect:/ferramentas/solar/resultado";
+        model.addAttribute("calculoSolarRequest", request);
+        model.addAttribute("consumoMensalKwh", request.getConsumoMensalKwh());
+        model.addAttribute("tarifaKwh", request.getTarifaKwh());
+        model.addAttribute("horasUsoDiario", request.getHorasUsoDiario());
+        model.addAttribute("investimento", request.getInvestimento());
+        model.addAttribute("resultado", resultado);
+        return "ferramenta-solar";
     }
 
     @GetMapping("/ferramentas/solar/resultado")
@@ -1022,5 +1049,51 @@ public class HomeController {
             OrcamentoService.ResultadoPaineisSolares resultado,
             LocalDateTime data,
             Long referenciaSubmissaoId) {
+    }
+
+    private List<ProdutoSolar> produtosSolares() {
+        return List.of(
+                new ProdutoSolar(
+                        "monocristalinos",
+                        "Painéis solares monocristalinos",
+                        "Painéis solares de elevada eficiência fabricados com células monocristalinas, ideais para maximizar produção energética em espaços reduzidos.",
+                        "/images/paineis-solares.jpg",
+                        "Desde 180€ por painel",
+                        List.of("Maior eficiência", "Maior durabilidade", "Melhor desempenho", "Ideal para autoconsumo"),
+                        List.of("Produção elétrica", "Integração com inversores", "Compatibilidade com baterias")),
+                new ProdutoSolar(
+                        "policristalinos",
+                        "Painéis solares policristalinos",
+                        "Solução económica e fiável para produção de energia solar residencial e empresarial.",
+                        "/images/projeto-solar.jpg",
+                        "Desde 140€ por painel",
+                        List.of("Custo mais acessível", "Boa relação qualidade/preço", "Instalação simples"),
+                        List.of("Autoconsumo", "Produção elétrica", "Integração residencial")),
+                new ProdutoSolar(
+                        "alta-eficiencia",
+                        "Painéis solares de alta eficiência",
+                        "Painéis solares premium com rendimento energético superior para projetos mais exigentes.",
+                        "/images/home-hero.jpg",
+                        "Desde 230€ por painel",
+                        List.of("Máximo aproveitamento solar", "Maior produção por m²", "Ideal para instalações premium"),
+                        List.of("Alta performance", "Tecnologia avançada", "Eficiência superior")),
+                new ProdutoSolar(
+                        "kit-bateria",
+                        "Kit solar com bateria",
+                        "Solução completa com painéis solares, inversor e bateria para armazenamento energético.",
+                        "/images/home-servicos.jpg",
+                        "Desde 2500€",
+                        List.of("Autonomia energética", "Armazenamento de energia", "Redução da dependência da rede elétrica"),
+                        List.of("Armazenamento", "Backup energético", "Autoconsumo avançado")));
+    }
+
+    public record ProdutoSolar(
+            String slug,
+            String nome,
+            String descricao,
+            String imagem,
+            String preco,
+            List<String> vantagens,
+            List<String> funcionalidades) {
     }
 }

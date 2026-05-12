@@ -48,6 +48,7 @@ public class SecurityConfig {
                                                 }))
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/", "/sobre", "/servicos", "/servicos/**",
+                                                                "/produtos", "/produtos/**",
                                                                 "/orcamento/paineis-solares/**", "/contactos",
                                                                 "/agendamento/**", "/ferramentas/**", "/login",
                                                                 "/registro", "/css/**", "/js/**", "/images/**",

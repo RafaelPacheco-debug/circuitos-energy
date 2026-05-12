@@ -22,7 +22,9 @@
         body{
             margin:0;
             font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-            background: var(--bg);
+            background:
+                linear-gradient(135deg, rgba(7, 33, 32, .76), rgba(15, 23, 42, .58)),
+                url('/images/home-hero.jpg?v=3') center/cover fixed;
             color:#0f172a;
         }
 
@@ -37,11 +39,13 @@
             text-align:center;
             font-size: 38px;
             letter-spacing: .2px;
+            color:#fff;
+            text-shadow:0 10px 30px rgba(0,0,0,.30);
         }
 
         .sub{
             text-align:center;
-            color: var(--muted);
+            color: rgba(255,255,255,.86);
             margin-bottom: 26px;
         }
 
@@ -50,6 +54,16 @@
             grid-template-columns: 1.1fr .9fr;
             gap: 22px;
             align-items:start;
+        }
+
+        .result-grid{
+            grid-template-columns: .85fr 1.15fr;
+            padding: 18px;
+            border-radius: 24px;
+            background: rgba(255,255,255,.18);
+            border: 1px solid rgba(255,255,255,.30);
+            box-shadow: 0 24px 70px rgba(15,23,42,.28);
+            backdrop-filter: blur(10px);
         }
 
         .card{
@@ -343,6 +357,22 @@
         /* RIGHT */
         .stack{display:flex; flex-direction:column; gap: 18px;}
 
+        .result-heading{
+            margin:0 0 14px;
+            color:#fff;
+        }
+
+        .result-heading h2{
+            margin:0 0 6px;
+            font-size: 24px;
+        }
+
+        .result-heading p{
+            margin:0;
+            color:rgba(255,255,255,.78);
+            line-height:1.5;
+        }
+
         .panel{
             border-radius: 14px;
             padding: 18px;
@@ -355,6 +385,15 @@
         }
         .panel.blue{
             background: linear-gradient(180deg, var(--blue1), var(--blue2));
+        }
+
+        .panel.light{
+            color:#0f172a;
+            background:rgba(255,255,255,.96);
+        }
+
+        .panel.light .panelTitle{
+            color:#0f172a;
         }
 
         .panelTitle{
@@ -438,8 +477,33 @@
             color: #22c55e; /* verde como no print */
         }
 
+        .consumption-list{
+            display:grid;
+            gap:12px;
+        }
+
+        .consumption-item{
+            display:flex;
+            justify-content:space-between;
+            gap:14px;
+            padding:12px;
+            border-radius:12px;
+            background:#f8fafc;
+            border:1px solid rgba(148,163,184,.22);
+        }
+
+        .consumption-item span{
+            color:#64748b;
+            font-size:13px;
+        }
+
+        .consumption-item strong{
+            font-size:16px;
+        }
+
         @media (max-width: 980px){
             .grid{grid-template-columns: 1fr}
+            .result-grid{grid-template-columns:1fr;}
         }
 
         /* BARRA SUPERIOR */
@@ -624,7 +688,7 @@
         </div>
     </section>
 
-    <div th:class="${resultado != null} ? 'grid' : 'grid hidden'"
+    <div th:class="${resultado != null} ? 'grid result-grid' : 'grid hidden'"
          id="solarCalculatorGrid"
          th:attr="data-has-result=${resultado != null}">
 
@@ -694,6 +758,28 @@
 
         <!-- RIGHT: RESULTS -->
         <div class="stack" id="resultado-solar">
+            <div class="result-heading" th:if="${resultado != null}">
+                <h2>Resultado do cálculo solar</h2>
+                <p>Resumo técnico e financeiro com base nos dados de consumo indicados.</p>
+            </div>
+
+            <div class="panel light" th:if="${resultado != null}">
+                <div class="panelTitle">Dados de consumo</div>
+                <div class="consumption-list">
+                    <div class="consumption-item">
+                        <span>Consumo mensal</span>
+                        <strong><span th:text="${#numbers.formatDecimal(consumoMensalKwh, 1, 2)}">300,00</span> kWh</strong>
+                    </div>
+                    <div class="consumption-item">
+                        <span>Tarifa por kWh</span>
+                        <strong>€<span th:text="${#numbers.formatDecimal(tarifaKwh, 1, 2)}">0,15</span></strong>
+                    </div>
+                    <div class="consumption-item">
+                        <span>Investimento</span>
+                        <strong>€<span th:text="${#numbers.formatDecimal(investimento, 1, 2)}">5000,00</span></strong>
+                    </div>
+                </div>
+            </div>
 
             <!-- Potência -->
             <div class="panel green">
@@ -703,14 +789,14 @@
                     <div class="mini">
                         <div class="k">Potência Necessária</div>
                         <div class="big"
-                             th:text="${resultado != null ? resultado.potenciaNecessariaKw : '—'}">1.25</div>
+                             th:text="${resultado != null ? #numbers.formatDecimal(resultado.potenciaNecessariaKw, 1, 2) : '—'}">1.25</div>
                         <div class="k">kW</div>
                     </div>
 
                     <div class="mini">
                         <div class="k">Consumo Anual</div>
                         <div class="big"
-                             th:text="${resultado != null ? resultado.consumoAnualKwh : '—'}">3600</div>
+                             th:text="${resultado != null ? #numbers.formatDecimal(resultado.consumoAnualKwh, 1, 2) : '—'}">3600</div>
                         <div class="k">kWh</div>
                     </div>
                 </div>
@@ -722,29 +808,29 @@
 
                 <div class="finLine">
                     <div>Custo Anual Atual:</div>
-                    <div class="right">€<span th:text="${resultado != null ? resultado.custoAnualAtual : '—'}">540.00</span></div>
+                    <div class="right">€<span th:text="${resultado != null ? #numbers.formatDecimal(resultado.custoAnualAtual, 1, 2) : '—'}">540.00</span></div>
                 </div>
 
                 <div class="finLine">
                     <div>Economia Anual Estimada:</div>
-                    <div class="right" style="color:#22c55e;">€<span th:text="${resultado != null ? resultado.economiaAnualEstimada : '—'}">162.00</span></div>
+                    <div class="right" style="color:#22c55e;">€<span th:text="${resultado != null ? #numbers.formatDecimal(resultado.economiaAnualEstimada, 1, 2) : '—'}">162.00</span></div>
                 </div>
 
                 <div class="finLine">
                     <div>Economia (%):</div>
                     <div class="right" style="color:#22c55e;">
-                        <span th:text="${resultado != null ? resultado.economiaPercent : '—'}">30</span>%
+                        <span th:text="${resultado != null ? #numbers.formatDecimal(resultado.economiaPercent, 1, 2) : '—'}">30</span>%
                     </div>
                 </div>
 
                 <div class="paybox">
                     <div class="small">Período de Payback</div>
-                    <div class="pay"><span th:text="${resultado != null ? resultado.paybackAnos : '—'}">30.9</span> anos</div>
+                    <div class="pay"><span th:text="${resultado != null ? #numbers.formatDecimal(resultado.paybackAnos, 1, 2) : '—'}">30.9</span> anos</div>
                 </div>
 
                 <div class="tenbox">
                     <div class="small">Economia Total em 10 anos</div>
-                    <div class="ten">€<span th:text="${resultado != null ? resultado.economiaTotal10Anos : '—'}">1620</span></div>
+                    <div class="ten">€<span th:text="${resultado != null ? #numbers.formatDecimal(resultado.economiaTotal10Anos, 1, 2) : '—'}">1620</span></div>
                 </div>
             </div>
 
@@ -752,7 +838,7 @@
                th:href="@{/ferramentas/solar/orcamento}"
                target="_blank"
                rel="noopener"
-               class="printBudgetBtn">Transferir/Imprimir or&ccedil;amento</a>
+               class="printBudgetBtn">Imprimir cálculo</a>
 
         </div>
     </div>

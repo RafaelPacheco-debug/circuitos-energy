@@ -153,13 +153,13 @@
     <section>
       <h2>Resultados calculados</h2>
       <div class="grid">
-        <div class="row"><span class="label">Potencia necessaria</span><span class="value" th:text="${orcamento.resultado.potenciaNecessariaKw + ' kW'}">1.25 kW</span></div>
-        <div class="row"><span class="label">Consumo anual</span><span class="value" th:text="${orcamento.resultado.consumoAnualKwh + ' kWh'}">3600 kWh</span></div>
-        <div class="row"><span class="label">Custo anual atual</span><span class="value" th:text="${orcamento.resultado.custoAnualAtual + ' EUR'}">540 EUR</span></div>
-        <div class="row"><span class="label">Economia anual estimada</span><span class="value" th:text="${orcamento.resultado.economiaAnualEstimada + ' EUR'}">351 EUR</span></div>
-        <div class="row"><span class="label">Economia</span><span class="value" th:text="${orcamento.resultado.economiaPercent + '%'}">65%</span></div>
-        <div class="row"><span class="label">Payback</span><span class="value" th:text="${orcamento.resultado.paybackAnos + ' anos'}">14.2 anos</span></div>
-        <div class="row"><span class="label">Economia em 10 anos</span><span class="value" th:text="${orcamento.resultado.economiaTotal10Anos + ' EUR'}">3510 EUR</span></div>
+        <div class="row"><span class="label">Potencia necessaria</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.potenciaNecessariaKw, 1, 2)}">1.25</span> kW</span></div>
+        <div class="row"><span class="label">Consumo anual</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.consumoAnualKwh, 1, 2)}">3600.00</span> kWh</span></div>
+        <div class="row"><span class="label">Custo anual atual</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.custoAnualAtual, 1, 2)}">540.00</span> EUR</span></div>
+        <div class="row"><span class="label">Economia anual estimada</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.economiaAnualEstimada, 1, 2)}">351.00</span> EUR</span></div>
+        <div class="row"><span class="label">Economia</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.economiaPercent, 1, 2)}">65.00</span>%</span></div>
+        <div class="row"><span class="label">Payback</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.paybackAnos, 1, 2)}">14.20</span> anos</span></div>
+        <div class="row"><span class="label">Economia em 10 anos</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.economiaTotal10Anos, 1, 2)}">3510.00</span> EUR</span></div>
       </div>
     </section>
 
@@ -169,7 +169,7 @@
     </div>
 
     <div class="actions">
-      <button type="button" onclick="window.print()">Imprimir / guardar como PDF</button>
+      <button type="button" onclick="window.print()">Imprimir cálculo / guardar como PDF</button>
       <a th:href="@{/ferramentas/solar}">Voltar</a>
     </div>
   </main>
