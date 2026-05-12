@@ -1034,7 +1034,7 @@
               <p>Informe a área disponível e preferências</p>
             </div>
 
-            <form id="solarQuoteForm" th:action="@{/orcamento/paineis-solares/submeter}" method="post" novalidate>
+            <form id="solarQuoteForm" action="/orcamento/paineis-solares/submeter" th:action="@{/orcamento/paineis-solares/submeter}" method="post" novalidate>
               <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
               <input type="hidden" name="installationType" id="wizardInstallationType">
               <input type="hidden" name="propertyType" id="wizardPropertyType">
@@ -1612,6 +1612,8 @@
     solarQuoteForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
+      syncQuoteFormFromWizard();
+
       const isFormValid = fieldIds.every((fieldId) => validateField(fieldId));
       if (!isFormValid) {
         hidePrintLink();
@@ -1619,7 +1621,6 @@
         return;
       }
 
-      syncQuoteFormFromWizard();
       calculateSimulation();
       hidePrintLink();
 
@@ -1627,15 +1628,23 @@
       solarQuoteSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i>A enviar...';
 
       try {
-        const csrfInput = solarQuoteForm.querySelector('input[type="hidden"][name]');
-        const headers = csrfInput && csrfInput.value ? { "X-CSRF-TOKEN": csrfInput.value } : {};
-        const response = await fetch(solarQuoteForm.getAttribute("action"), {
+        const csrfInput = solarQuoteForm.querySelector('input[name="_csrf"]');
+        const headers = { "Accept": "application/json" };
+        if (csrfInput && csrfInput.value) {
+          headers["X-CSRF-TOKEN"] = csrfInput.value;
+        }
+
+        const response = await fetch(solarQuoteForm.action, {
           method: "POST",
           headers,
+          credentials: "same-origin",
           body: new FormData(solarQuoteForm)
         });
 
-        const data = await response.json();
+        const contentType = response.headers.get("content-type") || "";
+        const data = contentType.includes("application/json")
+          ? await response.json()
+          : { success: false, message: response.status === 403 ? "A sessÃ£o expirou. Atualize a pÃ¡gina e tente novamente." : "Nao foi possivel registar o pedido." };
 
         if (!response.ok || !data.success) {
           showSubmitFeedback(data.message || "Nao foi possivel registar o pedido.", "error");
