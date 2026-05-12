@@ -32,7 +32,9 @@
     body{
       margin:0;
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, rgba(15,118,110,.06), transparent 28%), var(--page-bg);
+      background:
+        linear-gradient(135deg, rgba(7,33,32,.78), rgba(15,23,42,.58)),
+        url('/images/paineis-solares.jpg?v=4') center/cover fixed;
       color:var(--text);
     }
 
@@ -545,17 +547,19 @@
     .print-budget-link{
       display:none;
       width:100%;
-      min-height:44px;
-      margin-top:12px;
+      min-height:54px;
+      margin-top:16px;
       align-items:center;
       justify-content:center;
-      border-radius:8px;
-      background:#ffffff;
-      color:var(--accent);
-      border:1px solid rgba(15,118,110,.22);
-      font-size:14px;
+      gap:10px;
+      border-radius:14px;
+      background:linear-gradient(135deg, #0f766e, #115e59);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.22);
+      font-size:15px;
       font-weight:800;
       text-decoration:none;
+      box-shadow:0 16px 34px rgba(15,118,110,.22);
     }
 
     .print-budget-link.is-visible{
@@ -1541,6 +1545,7 @@
 
       solarQuotePrintLink.setAttribute("href", printUrl);
       solarQuotePrintLink.classList.add("is-visible");
+      solarQuotePrintLink.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
     function validateField(fieldId) {

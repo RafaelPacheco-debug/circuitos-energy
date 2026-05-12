@@ -54,7 +54,7 @@ public class SecurityConfig {
                                                                 "/registro", "/css/**", "/js/**", "/images/**",
                                                                 "/webjars/**", "/favicon.ico")
                                                 .permitAll()
-                                                .requestMatchers("/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())
                                 .userDetailsService(userDetailsService)
                                 .formLogin(form -> form

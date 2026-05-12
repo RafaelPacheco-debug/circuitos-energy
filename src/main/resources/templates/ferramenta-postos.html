@@ -21,7 +21,9 @@
     body {
       margin:0;
       font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      background: var(--bg);
+      background:
+        linear-gradient(135deg, rgba(7,33,32,.78), rgba(15,23,42,.58)),
+        url('/images/postos-carregamento.jpg?v=4') center/cover fixed;
       color: #0f1724;
     }
 
@@ -56,11 +58,13 @@
       margin: 0 0 6px;
       letter-spacing: .2px;
       text-align: center;
+      color:#fff;
+      text-shadow:0 10px 30px rgba(0,0,0,.35);
     }
 
     .sub {
       text-align:center;
-      color: var(--muted);
+      color: rgba(255,255,255,.84);
       margin-bottom: 26px;
     }
 
@@ -90,10 +94,11 @@
     }
 
     .card {
-      background: var(--card);
+      background: rgba(255,255,255,.94);
       border-radius: 14px;
       box-shadow: var(--shadow);
       padding: 22px;
+      backdrop-filter: blur(10px);
     }
 
     .card h3 {

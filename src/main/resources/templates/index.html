@@ -156,6 +156,40 @@
       flex: 0 0 auto;
     }
 
+    .impact-grid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:16px;
+    }
+    .impact-card,
+    .premium-card,
+    .tool-card,
+    .faq-card,
+    .review-card{
+      border:1px solid rgba(15,23,36,.08);
+      border-radius:18px;
+      background:#fff;
+      box-shadow:0 16px 40px rgba(16,24,40,.07);
+    }
+    .impact-card{ padding:22px; text-align:center; }
+    .impact-card strong{ display:block; font-size:2rem; color:var(--brand); }
+    .premium-card{ overflow:hidden; height:100%; transition:transform .2s ease, box-shadow .2s ease; }
+    .premium-card:hover{ transform:translateY(-6px); box-shadow:0 24px 60px rgba(16,24,40,.12); }
+    .premium-card img{ width:100%; height:210px; object-fit:cover; display:block; }
+    .premium-card .content{ padding:22px; }
+    .benefit-band{ background:#f8fafc; border-top:1px solid rgba(15,23,36,.08); border-bottom:1px solid rgba(15,23,36,.08); }
+    .tool-card{ padding:24px; height:100%; }
+    .tool-card i{ font-size:2rem; color:var(--brand); }
+    .review-card{ padding:24px; height:100%; }
+    .faq-card{ padding:22px; height:100%; }
+    .final-cta{
+      background:
+        linear-gradient(135deg, rgba(15,23,36,.92), rgba(15,118,110,.82)),
+        url('/images/paineis-solares.jpg?v=4') center 42%/cover;
+      color:#fff;
+      padding:70px 0;
+    }
+
     /* “Explore…” como separador simples */
     .explore{
       background:#f8fafc;
@@ -190,6 +224,11 @@
       .brand-logo{ width:48px; height:48px; }
       .soft-img{ height: 220px; }
       .service-card-img{ height:150px; min-height:150px; }
+      .impact-grid{ grid-template-columns:1fr 1fr; }
+    }
+
+    @media (max-width: 420px){
+      .impact-grid{ grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -244,12 +283,8 @@
           <li class="nav-item"><a class="nav-link" href="/contactos">Contactos</a></li>
         </ul>
 
-        <!-- Ícones à direita: carrinho + login/estado de sessão -->
+        <!-- Login/estado de sessão -->
         <div class="d-flex align-items-center gap-2">
-          <a class="btn btn-link text-dark d-none d-lg-inline-flex" th:href="@{/carrinho}" title="Carrinho" style="text-decoration:none">
-            <i class="bi bi-cart3 fs-5"></i>
-          </a>
-
           <div th:if="${loggedInUser != null}" class="d-flex align-items-center gap-2">
             <span class="text-muted d-none d-lg-inline">Olá, <strong th:text="${loggedInUser}">Usuário</strong></span>
             <a class="btn btn-outline-secondary btn-sm" th:href="@{/perfil}">Perfil</a>
@@ -289,135 +324,178 @@
   </header>
 
   <main>
-
-    <!-- SOBRE NÓS (estilo das imagens) -->
     <section class="py-5">
       <div class="container">
-        <h2 class="text-center section-title mb-5">Sobre Nós</h2>
+        <div class="impact-grid">
+          <div class="impact-card"><strong>4</strong><span>linhas solares principais</span></div>
+          <div class="impact-card"><strong>10+</strong><span>anos de poupança estimada</span></div>
+          <div class="impact-card"><strong>24/48h</strong><span>resposta a pedidos</span></div>
+          <div class="impact-card"><strong>100%</strong><span>foco em energia limpa</span></div>
+        </div>
+      </div>
+    </section>
 
-        <div class="row g-4 align-items-start">
+    <section class="py-5">
+      <div class="container">
+        <div class="row g-5 align-items-center">
           <div class="col-lg-6">
-            <h4 class="fw-bold mb-3">Quem Somos</h4>
+            <span class="text-uppercase small fw-bold text-success">Sobre nós</span>
+            <h2 class="section-title mt-2 mb-3">Energia sustentável com acompanhamento técnico.</h2>
             <p class="text-muted">
-              A Circuitos Energy Solutions é uma empresa líder no fornecimento de soluções energéticas sustentáveis
-              e tecnologias de mobilidade elétrica. Com anos de experiência no mercado, dedicamo-nos a fornecer
-              produtos e serviços de alta qualidade que contribuem para um futuro mais verde e sustentável.
+              A Circuitos Energy Solutions é uma empresa dedicada ao fornecimento de soluções energéticas sustentáveis
+              e tecnologias de mobilidade elétrica. Trabalhamos para tornar a transição energética mais simples,
+              clara e acessível.
             </p>
             <p class="text-muted mb-0">
               Especializamo-nos em painéis solares monocristalinos, policristalinos, sistemas de alta eficiência e kits com bateria,
-              oferecendo sempre o melhor suporte técnico e acompanhamento personalizado
-              aos nossos clientes.
+              oferecendo suporte técnico e acompanhamento personalizado.
             </p>
           </div>
-
           <div class="col-lg-6">
             <div class="soft-card image-fallback">
-              <img th:src="@{/images/home-servicos.jpg(v=3)}" src="/images/home-servicos.jpg?v=3" alt="Sobre nós" class="soft-img" onerror="this.style.visibility='hidden';">
+              <img th:src="@{/images/home-servicos.jpg(v=3)}" src="/images/home-servicos.jpg?v=3" alt="Equipa e serviços Circuitos Energy" class="soft-img" onerror="this.style.visibility='hidden';">
             </div>
-          </div>
-
-          <div class="col-lg-6 order-lg-3">
-            <div class="soft-card image-fallback">
-              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Energia solar" class="soft-img mission-img" onerror="this.style.visibility='hidden';">
-            </div>
-          </div>
-
-          <div class="col-lg-6 order-lg-4">
-            <h4 class="fw-bold mb-3">Nossa Missão</h4>
-            <p class="text-muted">
-              Promover a transição energética através de soluções inovadoras e sustentáveis, contribuindo para a
-              redução da pegada de carbono e para a construção de um futuro energético mais limpo e eficiente.
-            </p>
-            <p class="text-muted mb-0">
-              Oferecemos consultoria especializada, instalação profissional e manutenção de todos os nossos produtos,
-              garantindo sempre a máxima eficiência e satisfação dos nossos clientes.
-            </p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SERVIÇOS (mantidos, só com look mais “clean”) -->
-    <section class="services pb-5">
+    <section class="benefit-band py-5">
       <div class="container">
+        <div class="text-center mb-5">
+          <span class="text-uppercase small fw-bold text-success">Benefícios</span>
+          <h2 class="section-title mt-2">Soluções preparadas para poupar e simplificar.</h2>
+        </div>
         <div class="row g-4">
           <div class="col-md-4">
-            <div class="card p-4 h-100">
-              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Painéis solares monocristalinos" class="service-card-img mx-n4 mt-n4 mb-4">
-              <div class="d-flex align-items-start gap-3">
-                <div class="feature-icon"><i class="bi bi-plug-fill"></i></div>
-                <div>
-                  <h5 class="mb-1">Painéis solares monocristalinos</h5>
-                  <p class="text-muted mb-0 small">Solução eficiente para telhados residenciais com boa exposição solar.</p>
-                </div>
-              </div>
+            <div class="tool-card">
+              <i class="bi bi-sun"></i>
+              <h3 class="h5 mt-3">Autoconsumo solar</h3>
+              <p class="text-muted mb-0">Produza energia limpa e reduza a dependência da rede elétrica.</p>
             </div>
           </div>
-
           <div class="col-md-4">
-            <div class="card p-4 h-100">
-              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Painéis solares" class="service-card-img mx-n4 mt-n4 mb-4">
-              <div class="d-flex align-items-start gap-3">
-                <div class="feature-icon"><i class="bi bi-lightning-charge-fill"></i></div>
-                <div>
-                  <h5 class="mb-1">Painéis solares de alta eficiência</h5>
-                  <p class="text-muted mb-0 small">Produção otimizada para projetos com área limitada e maior exigência energética.</p>
-                </div>
-              </div>
+            <div class="tool-card">
+              <i class="bi bi-graph-up-arrow"></i>
+              <h3 class="h5 mt-3">Eficiência energética</h3>
+              <p class="text-muted mb-0">Escolha soluções adaptadas ao consumo e ao espaço disponível.</p>
             </div>
           </div>
-
           <div class="col-md-4">
-            <div class="card p-4 h-100">
-              <img th:src="@{/images/home-servicos.jpg(v=3)}" src="/images/home-servicos.jpg?v=3" alt="Instalações elétricas modernas" class="service-card-img mx-n4 mt-n4 mb-4">
-              <div class="d-flex align-items-start gap-3">
-                <div class="feature-icon"><i class="bi bi-gear-fill"></i></div>
-                <div>
-                  <h5 class="mb-1">Kit solar com bateria</h5>
-                  <p class="text-muted mb-0 small">Sistema solar com armazenamento para aumentar o autoconsumo e a autonomia.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <div class="card p-4 h-100">
-              <img th:src="@{/images/projeto-solar.jpg(v=3)}" src="/images/projeto-solar.jpg?v=3" alt="Painéis solares policristalinos" class="service-card-img mx-n4 mt-n4 mb-4">
-              <div class="d-flex align-items-start gap-3">
-                <div class="feature-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
-                <div>
-                  <h5 class="mb-1">Painéis solares policristalinos</h5>
-                  <p class="text-muted mb-0 small">Opção equilibrada para projetos solares com boa relação entre custo e desempenho.</p>
-                </div>
-              </div>
+            <div class="tool-card">
+              <i class="bi bi-battery-charging"></i>
+              <h3 class="h5 mt-3">Mais autonomia</h3>
+              <p class="text-muted mb-0">Integre baterias para armazenar energia e aproveitar melhor a produção.</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- “Explore…” como no ecrã final -->
-    <section class="explore">
-      <div class="container">
-        <h3 class="section-title mb-2">Explore Nossos Produtos e Serviços</h3>
-        <p class="text-muted mb-0">
-          Use os menus acima para navegar entre produtos, ferramentas e agendamento de serviços.<br>
-          Estamos aqui para ajudá-lo na transição para energia sustentável.
-        </p>
-      </div>
-    </section>
-
-    <!-- CTA (mantida) -->
     <section class="py-5">
       <div class="container">
-        <div class="p-4 p-md-5 rounded-4 text-center" style="background:#f8fafc;border:1px solid rgba(15,23,36,.08)">
-          <h4 class="mb-2 fw-bold">Pronto para começar?</h4>
-          <p class="text-muted mb-3">Contacte-nos para uma proposta sem compromisso.</p>
-          <a href="/contactos" class="btn btn-primary btn-lg">Contactar equipa</a>
+        <div class="d-flex justify-content-between align-items-end gap-3 flex-wrap mb-4">
+          <div>
+            <span class="text-uppercase small fw-bold text-success">Produtos solares</span>
+            <h2 class="section-title mt-2 mb-0">Escolha a solução certa para o seu projeto.</h2>
+          </div>
+          <a href="/produtos" class="btn btn-outline-primary">Ver todos</a>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <a class="premium-card d-block text-decoration-none text-dark" href="/produtos/monocristalinos">
+              <img th:src="@{/images/paineis-solares.jpg(v=3)}" src="/images/paineis-solares.jpg?v=3" alt="Painéis monocristalinos">
+              <div class="content"><h3 class="h5">Monocristalinos</h3><p class="text-muted mb-0">Alta eficiência em espaços reduzidos.</p></div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <a class="premium-card d-block text-decoration-none text-dark" href="/produtos/policristalinos">
+              <img th:src="@{/images/projeto-solar.jpg(v=3)}" src="/images/projeto-solar.jpg?v=3" alt="Painéis policristalinos">
+              <div class="content"><h3 class="h5">Policristalinos</h3><p class="text-muted mb-0">Boa relação qualidade/preço.</p></div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <a class="premium-card d-block text-decoration-none text-dark" href="/produtos/alta-eficiencia">
+              <img th:src="@{/images/home-hero.jpg(v=3)}" src="/images/home-hero.jpg?v=3" alt="Painéis de alta eficiência">
+              <div class="content"><h3 class="h5">Alta eficiência</h3><p class="text-muted mb-0">Rendimento superior por metro quadrado.</p></div>
+            </a>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <a class="premium-card d-block text-decoration-none text-dark" href="/produtos/kit-bateria">
+              <img th:src="@{/images/home-servicos.jpg(v=3)}" src="/images/home-servicos.jpg?v=3" alt="Kit solar com bateria">
+              <div class="content"><h3 class="h5">Kit com bateria</h3><p class="text-muted mb-0">Produção, armazenamento e autonomia.</p></div>
+            </a>
+          </div>
         </div>
       </div>
     </section>
 
+    <section class="benefit-band py-5">
+      <div class="container">
+        <div class="row g-4 align-items-stretch">
+          <div class="col-lg-4">
+            <div class="tool-card">
+              <i class="bi bi-calculator"></i>
+              <h3 class="h5 mt-3">Calculadora solar</h3>
+              <p class="text-muted">Estime potência, poupança e payback.</p>
+              <a href="/ferramentas/solar" class="btn btn-primary">Calcular</a>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="tool-card">
+              <i class="bi bi-file-earmark-text"></i>
+              <h3 class="h5 mt-3">Orçamento de painéis</h3>
+              <p class="text-muted">Peça uma estimativa para o seu projeto.</p>
+              <a href="/orcamento/paineis-solares" class="btn btn-primary">Pedir orçamento</a>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="tool-card">
+              <i class="bi bi-calendar-check"></i>
+              <h3 class="h5 mt-3">Agendamentos</h3>
+              <p class="text-muted">Marque instalação, reunião ou manutenção.</p>
+              <a href="/agendamento/instalacao" class="btn btn-primary">Agendar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-5">
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-4"><div class="review-card"><strong>“Processo claro e simples.”</strong><p class="text-muted mb-0 mt-2">Apoio desde a escolha da solução até ao pedido de orçamento.</p></div></div>
+          <div class="col-lg-4"><div class="review-card"><strong>“Boa orientação técnica.”</strong><p class="text-muted mb-0 mt-2">Ferramentas úteis para perceber consumo, potência e retorno.</p></div></div>
+          <div class="col-lg-4"><div class="review-card"><strong>“Soluções bem organizadas.”</strong><p class="text-muted mb-0 mt-2">Produtos solares apresentados de forma simples e comparável.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="benefit-band py-5">
+      <div class="container">
+        <div class="text-center mb-4"><h2 class="section-title">Perguntas frequentes</h2></div>
+        <div class="row g-4">
+          <div class="col-md-6"><div class="faq-card"><h3 class="h6">Vale a pena instalar painéis solares?</h3><p class="text-muted mb-0">Em projetos com boa exposição e consumo regular, o autoconsumo pode reduzir custos e melhorar autonomia.</p></div></div>
+          <div class="col-md-6"><div class="faq-card"><h3 class="h6">Posso pedir orçamento online?</h3><p class="text-muted mb-0">Sim. A página de orçamento de painéis solares permite registar dados e imprimir o resultado.</p></div></div>
+          <div class="col-md-6"><div class="faq-card"><h3 class="h6">A solução pode ter bateria?</h3><p class="text-muted mb-0">Sim. O kit solar com bateria foi pensado para armazenamento e maior independência energética.</p></div></div>
+          <div class="col-md-6"><div class="faq-card"><h3 class="h6">Como posso falar com a equipa?</h3><p class="text-muted mb-0">Pode usar a página de contactos ou agendar uma reunião/instalação.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta">
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-8">
+            <h2 class="display-6 fw-bold mb-2">Pronto para começar?</h2>
+            <p class="mb-0 opacity-75">Contacte-nos para uma proposta sem compromisso e avance para uma solução solar adequada ao seu projeto.</p>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <a href="/contactos" class="btn btn-light btn-lg">Contactar equipa</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- FOOTER (colunas tipo imagem) -->
