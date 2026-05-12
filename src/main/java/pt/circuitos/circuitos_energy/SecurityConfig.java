@@ -50,7 +50,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/", "/sobre", "/servicos", "/servicos/**",
                                                                 "/orcamento/paineis-solares/**", "/contactos",
                                                                 "/agendamento/**", "/ferramentas/**", "/login",
-                                                                "/registro", "/css/**")
+                                                                "/registro", "/css/**", "/js/**", "/images/**",
+                                                                "/webjars/**", "/favicon.ico")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
                                                 .anyRequest().authenticated())
