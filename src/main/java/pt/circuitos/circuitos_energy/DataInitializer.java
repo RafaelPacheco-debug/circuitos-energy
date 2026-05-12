@@ -17,14 +17,29 @@ public class DataInitializer implements CommandLineRunner {
     private final ServicoRepository servicoRepo;
     private final AppUserService userService;
     private final boolean seedDefaultUsers;
+    private final boolean bootstrapAdmin;
+    private final String adminUsername;
+    private final String adminPassword;
+    private final String adminFullName;
+    private final String adminEmail;
 
     public DataInitializer(
             ServicoRepository servicoRepo,
             AppUserService userService,
-            @Value("${app.seed-default-users:false}") boolean seedDefaultUsers) {
+            @Value("${app.seed-default-users:false}") boolean seedDefaultUsers,
+            @Value("${app.admin.bootstrap.enabled:false}") boolean bootstrapAdmin,
+            @Value("${app.admin.username:Rafael}") String adminUsername,
+            @Value("${app.admin.password:}") String adminPassword,
+            @Value("${app.admin.full-name:Administrador}") String adminFullName,
+            @Value("${app.admin.email:admin@circuitos.pt}") String adminEmail) {
         this.servicoRepo = servicoRepo;
         this.userService = userService;
         this.seedDefaultUsers = seedDefaultUsers;
+        this.bootstrapAdmin = bootstrapAdmin;
+        this.adminUsername = adminUsername;
+        this.adminPassword = adminPassword;
+        this.adminFullName = adminFullName;
+        this.adminEmail = adminEmail;
     }
 
     @Override
@@ -46,6 +61,10 @@ public class DataInitializer implements CommandLineRunner {
 
         if (seedDefaultUsers) {
             createDefaultUsers();
+        }
+
+        if (bootstrapAdmin) {
+            bootstrapAdminUser();
         }
     }
 
@@ -72,5 +91,34 @@ public class DataInitializer implements CommandLineRunner {
                 () -> userService.register("Rafael", "1234", "Administrador", "admin@circuitos.pt", "ADMIN"));
         userService.findByUsername("cliente")
                 .orElseGet(() -> userService.register("cliente", "1234", "Cliente", "cliente@circuitos.pt", "USER"));
+    }
+
+    private void bootstrapAdminUser() {
+        if (adminPassword == null || adminPassword.isBlank()) {
+            return;
+        }
+
+        userService.findByUsername(adminUsername)
+                .map(user -> {
+                    user.setPassword(userService.encodePassword(adminPassword));
+                    user.setFullName(adminFullName);
+                    user.setEmail(adminEmail);
+                    user.setRoles(ensureAdminRole(user.getRoles()));
+                    user.setEnabled(true);
+                    return userService.save(user);
+                })
+                .orElseGet(() -> userService.register(adminUsername, adminPassword, adminFullName, adminEmail, "ADMIN"));
+    }
+
+    private String ensureAdminRole(String roles) {
+        if (roles == null || roles.isBlank()) {
+            return "ADMIN";
+        }
+        for (String role : roles.split(",")) {
+            if ("ADMIN".equals(role.trim())) {
+                return roles;
+            }
+        }
+        return roles + ",ADMIN";
     }
 }

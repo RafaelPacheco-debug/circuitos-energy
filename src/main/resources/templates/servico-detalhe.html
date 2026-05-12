@@ -117,13 +117,12 @@
       width: 100%;
       height: 100%;
       max-height: 440px;
-      object-fit: contain;
+      object-fit: cover;
       display: block;
+      border-radius: 14px;
     }
 
     .fallback-product-image{
-      position:absolute;
-      inset:0;
       width:100%;
       height:100%;
       max-height:none;
@@ -133,8 +132,7 @@
     }
 
     .image-placeholder {
-      position:relative;
-      z-index:1;
+      display:none;
       text-align: center;
       max-width: 420px;
       padding:22px;
@@ -583,6 +581,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display:block;
     }
 
     .related-media span {
@@ -695,9 +694,9 @@
     <section class="hero">
       <div class="media-panel">
         <div class="main-image">
-          <img th:if="${servico.imagem != null}" th:src="@{'/uploads/' + ${servico.imagem}}" th:alt="${servico.titulo}" />
+          <img th:if="${servico.imagem != null}" th:src="@{'/uploads/' + ${servico.imagem}}" th:alt="${servico.titulo}" onerror="this.onerror=null;this.src='/images/servicos-default.jpg?v=3';" />
 
-          <img th:if="${servico.imagem == null}" th:src="@{/images/servicos-default.jpg}" src="/images/servicos-default.jpg" alt="Serviço Circuitos Energy" class="fallback-product-image">
+          <img th:if="${servico.imagem == null}" th:src="@{/images/servicos-default.jpg(v=3)}" src="/images/servicos-default.jpg?v=3" alt="Serviço Circuitos Energy" class="fallback-product-image">
 
           <div class="image-placeholder" th:if="${servico.imagem == null}">
             <strong th:text="${servico.titulo}">Produto</strong>
@@ -838,7 +837,7 @@
       <div class="related-grid">
         <article class="related-card" th:each="item : ${produtosRelacionados}">
           <div class="related-media">
-            <img th:if="${item.imagem != null}" th:src="@{'/uploads/' + ${item.imagem}}" th:alt="${item.titulo}" />
+            <img th:if="${item.imagem != null}" th:src="@{'/uploads/' + ${item.imagem}}" th:alt="${item.titulo}" onerror="this.onerror=null;this.src='/images/servicos-default.jpg?v=3';" />
             <span th:if="${item.imagem == null}">Sem imagem</span>
           </div>
 

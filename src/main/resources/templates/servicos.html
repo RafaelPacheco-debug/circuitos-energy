@@ -404,17 +404,12 @@
     .service-placeholder{
       width: 100%;
       height: 100%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color: var(--accent);
-      font-size: 2rem;
+      display:block;
       background:#f3f6fb;
+      position:relative;
     }
 
     .service-placeholder-img{
-      position:absolute;
-      inset:0;
       width:100%;
       height:100%;
       object-fit:cover;
@@ -423,16 +418,7 @@
     }
 
     .service-placeholder i{
-      position:relative;
-      z-index:1;
-      width:56px;
-      height:56px;
-      border-radius:16px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:rgba(255,255,255,.84);
-      box-shadow:0 10px 24px rgba(15,23,42,.12);
+      display:none;
     }
 
     .wishlist-dot{
@@ -442,12 +428,12 @@
       width: 38px;
       height: 38px;
       border-radius:50%;
-      background: rgba(31, 41, 55, 0.18);
+      background: rgba(31, 41, 55, 0.14);
       color:#fff;
       display:flex;
       align-items:center;
       justify-content:center;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(3px);
     }
 
     .service-price{
@@ -573,7 +559,7 @@
       content:"";
       position:absolute;
       inset:0;
-      background:linear-gradient(180deg, rgba(10,16,39,.08), rgba(11,21,56,.74));
+      background:linear-gradient(180deg, rgba(10,16,39,.03), rgba(11,21,56,.48));
       pointer-events:none;
     }
 
@@ -1221,7 +1207,7 @@
           <div class="products-grid">
             <article class="service-card" th:each="s, iter : ${servicos}">
               <div th:if="${iter.index == 4}" class="promo-card">
-                <img th:src="@{/images/servicos-promo.jpg}" src="/images/servicos-promo.jpg" alt="Serviços energéticos à medida" class="promo-card-img">
+                <img th:src="@{/images/servicos-promo.jpg(v=3)}" src="/images/servicos-promo.jpg?v=3" alt="Serviços energéticos à medida" class="promo-card-img">
                 <span class="promo-badge">Circuitos Energy</span>
                 <h3>Precisa de uma solução à medida?</h3>
                 <p>Fale com a equipa e receba apoio técnico para escolher o serviço mais adequado.</p>
@@ -1239,11 +1225,11 @@
 
                   <img th:if="${s.imagem != null}"
                        th:src="@{'/uploads/' + ${s.imagem}}"
-                       th:alt="${s.titulo}">
+                       th:alt="${s.titulo}"
+                       onerror="this.onerror=null;this.src='/images/servicos-default.jpg?v=3';">
 
                   <div class="service-placeholder" th:if="${s.imagem == null}">
-                    <img th:src="@{/images/servicos-default.jpg}" src="/images/servicos-default.jpg" alt="Serviço Circuitos Energy" class="service-placeholder-img">
-                    <i class="bi" th:classappend="${iter.index % 4 == 0} ? ' bi-plug' : (${iter.index % 4 == 1} ? ' bi-sun' : (${iter.index % 4 == 2} ? ' bi-tools' : ' bi-lightning-charge'))"></i>
+                    <img th:src="@{/images/servicos-default.jpg(v=3)}" src="/images/servicos-default.jpg?v=3" alt="Serviço Circuitos Energy" class="service-placeholder-img">
                   </div>
                 </div>
 
