@@ -1,68 +1,192 @@
 <!DOCTYPE html>
-<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-PT" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Registar - Circuitos Energy</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="/css/theme.css" rel="stylesheet">
+  <style>
+    body{
+      min-height:100vh;
+      background:
+        linear-gradient(135deg, rgba(7, 33, 32, .78), rgba(15, 23, 42, .58)),
+        url('/images/home-servicos.jpg?v=3') center/cover fixed;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .register-shell{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      padding:48px 0;
+    }
+
+    .register-card{
+      border:1px solid rgba(255,255,255,.34);
+      border-radius:18px;
+      background:rgba(255,255,255,.94);
+      box-shadow:0 24px 70px rgba(15,23,42,.28);
+      overflow:hidden;
+      backdrop-filter:blur(10px);
+    }
+
+    .register-aside{
+      height:100%;
+      min-height:100%;
+      padding:36px;
+      color:#fff;
+      background:
+        linear-gradient(180deg, rgba(15,118,110,.92), rgba(16,37,66,.92)),
+        url('/images/paineis-solares.jpg?v=3') center 42%/cover;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:28px;
+    }
+
+    .brand-mark{
+      width:58px;
+      height:58px;
+      object-fit:contain;
+      display:block;
+      filter:drop-shadow(0 10px 18px rgba(0,0,0,.16));
+    }
+
+    .support-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      width:fit-content;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      font-size:.88rem;
+    }
+
+    .form-panel{
+      padding:36px;
+    }
+
+    .field-icon{
+      width:38px;
+      height:38px;
+      border-radius:10px;
+      background:rgba(15,118,110,.10);
+      color:var(--color-primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 auto;
+    }
+
+    .form-control{
+      min-height:46px;
+      border-radius:10px;
+      border-color:rgba(148,163,184,.34);
+    }
+
+    .form-control:focus{
+      border-color:var(--color-primary);
+      box-shadow:0 0 0 .2rem rgba(15,118,110,.12);
+    }
+
+    .btn-primary{
+      min-height:46px;
+      border-radius:10px;
+      font-weight:700;
+    }
+
+    @media (max-width: 767px){
+      .register-shell{ padding:22px 0; }
+      .register-aside{ min-height:260px; padding:28px; }
+      .form-panel{ padding:28px 22px; }
+    }
+  </style>
 </head>
-<body style="background:var(--color-background);">
-  <div class="container py-5">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h3 class="card-title mb-3">Criar conta</h3>
-            <p class="text-muted mb-4">Crie uma conta para aceder ao seu perfil e aos serviços.</p>
+<body>
+  <main class="register-shell">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-10">
+          <div class="register-card">
+            <div class="row g-0">
+              <div class="col-lg-5">
+                <aside class="register-aside">
+                  <div>
+                    <img th:src="@{/images/logo-circuitos-energy.png(v=3)}" src="/images/logo-circuitos-energy.png?v=3" alt="Circuitos Energy" class="brand-mark mb-4">
+                    <span class="support-pill"><i class="bi bi-sun"></i> Energia solar à medida</span>
+                  </div>
+                  <div>
+                    <h1 class="h2 fw-bold mb-3">Crie a sua conta</h1>
+                    <p class="mb-0 opacity-75">Aceda ao seu perfil, acompanhe pedidos e prepare soluções solares com apoio da Circuitos Energy.</p>
+                  </div>
+                </aside>
+              </div>
 
-            <div th:if="${success}" class="alert alert-success">
-              Conta criada com sucesso! Agora pode fazer login.
+              <div class="col-lg-7">
+                <section class="form-panel">
+                  <div class="d-flex align-items-start gap-3 mb-4">
+                    <div class="field-icon"><i class="bi bi-person-plus"></i></div>
+                    <div>
+                      <h2 class="h3 mb-1">Criar conta</h2>
+                      <p class="text-muted mb-0">Preencha os dados essenciais para começar.</p>
+                    </div>
+                  </div>
+
+                  <div th:if="${success}" class="alert alert-success">
+                    Conta criada com sucesso! Agora pode fazer login.
+                  </div>
+
+                  <form th:action="@{/registro}" th:object="${registrationForm}" method="post">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Nome de utilizador</label>
+                        <input type="text" th:field="*{username}" class="form-control" placeholder="Ex.: rafaelenergy" required>
+                        <div th:if="${#fields.hasErrors('username')}" class="text-danger small" th:errors="*{username}"></div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Último nome</label>
+                        <input type="text" th:field="*{fullName}" class="form-control" placeholder="Ex.: Pacheco" required>
+                        <div th:if="${#fields.hasErrors('fullName')}" class="text-danger small" th:errors="*{fullName}"></div>
+                      </div>
+                    </div>
+
+                    <div class="mb-3 mt-3">
+                      <label class="form-label">Email</label>
+                      <input type="email" th:field="*{email}" class="form-control" placeholder="email@exemplo.com" required>
+                      <div th:if="${#fields.hasErrors('email')}" class="text-danger small" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">Senha</label>
+                        <input type="password" th:field="*{password}" class="form-control" placeholder="Mínimo 6 caracteres" required>
+                        <div th:if="${#fields.hasErrors('password')}" class="text-danger small" th:errors="*{password}"></div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Confirmar senha</label>
+                        <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Repita a senha" required>
+                        <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger small" th:errors="*{confirmPassword}"></div>
+                      </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mt-4">
+                      <a href="/login" class="btn btn-link px-0">Já tem conta? Entrar</a>
+                      <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check2-circle me-2"></i>Criar conta
+                      </button>
+                    </div>
+                  </form>
+                </section>
+              </div>
             </div>
-
-            <form th:action="@{/registro}" th:object="${registrationForm}" method="post">
-              <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label">Nome de utilizador</label>
-                  <input type="text" th:field="*{username}" class="form-control" placeholder="Digite um nome de utilizador" required>
-                  <div th:if="${#fields.hasErrors('username')}" class="text-danger small" th:errors="*{username}"></div>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Nome completo</label>
-                  <input type="text" th:field="*{fullName}" class="form-control" placeholder="Seu nome completo" required>
-                  <div th:if="${#fields.hasErrors('fullName')}" class="text-danger small" th:errors="*{fullName}"></div>
-                </div>
-              </div>
-
-              <div class="mb-3 mt-3">
-                <label class="form-label">Email</label>
-                <input type="email" th:field="*{email}" class="form-control" placeholder="email@exemplo.com" required>
-                <div th:if="${#fields.hasErrors('email')}" class="text-danger small" th:errors="*{email}"></div>
-              </div>
-
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <label class="form-label">Senha</label>
-                  <input type="password" th:field="*{password}" class="form-control" placeholder="Mínimo 6 caracteres" required>
-                  <div th:if="${#fields.hasErrors('password')}" class="text-danger small" th:errors="*{password}"></div>
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Confirmar senha</label>
-                  <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Repita a senha" required>
-                  <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger small" th:errors="*{confirmPassword}"></div>
-                </div>
-              </div>
-
-              <div class="d-flex justify-content-between align-items-center mt-4">
-                <a href="/login" class="btn btn-link">Já tem conta? Entrar</a>
-                <button type="submit" class="btn btn-primary">Criar conta</button>
-              </div>
-            </form>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>
