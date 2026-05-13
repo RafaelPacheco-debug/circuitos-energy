@@ -100,14 +100,27 @@ public class DataInitializer implements CommandLineRunner {
 
         userService.findByUsername(adminUsername)
                 .map(user -> {
-                    user.setPassword(userService.encodePassword(adminPassword));
-                    user.setFullName(adminFullName);
-                    user.setEmail(adminEmail);
-                    user.setRoles(ensureAdminRole(user.getRoles()));
-                    user.setEnabled(true);
-                    return userService.save(user);
+                    boolean needsUpdate = !user.isEnabled() || !hasAdminRole(user.getRoles());
+                    if (needsUpdate) {
+                        user.setRoles(ensureAdminRole(user.getRoles()));
+                        user.setEnabled(true);
+                        return userService.save(user);
+                    }
+                    return user;
                 })
                 .orElseGet(() -> userService.register(adminUsername, adminPassword, adminFullName, adminEmail, "ADMIN"));
+    }
+
+    private boolean hasAdminRole(String roles) {
+        if (roles == null || roles.isBlank()) {
+            return false;
+        }
+        for (String role : roles.split(",")) {
+            if ("ADMIN".equals(role.trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String ensureAdminRole(String roles) {
