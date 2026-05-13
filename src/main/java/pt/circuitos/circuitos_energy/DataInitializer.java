@@ -2,17 +2,23 @@ package pt.circuitos.circuitos_energy;
 
 import java.math.BigDecimal;
 import java.text.Normalizer;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import pt.circuitos.circuitos_energy.model.AppUser;
 import pt.circuitos.circuitos_energy.model.Servico;
 import pt.circuitos.circuitos_energy.repository.ServicoRepository;
 import pt.circuitos.circuitos_energy.service.AppUserService;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
     private final ServicoRepository servicoRepo;
     private final AppUserService userService;
@@ -28,7 +34,7 @@ public class DataInitializer implements CommandLineRunner {
             AppUserService userService,
             @Value("${app.seed-default-users:false}") boolean seedDefaultUsers,
             @Value("${app.admin.bootstrap.enabled:false}") boolean bootstrapAdmin,
-            @Value("${app.admin.username:Rafael}") String adminUsername,
+            @Value("${app.admin.username:admin}") String adminUsername,
             @Value("${app.admin.password:}") String adminPassword,
             @Value("${app.admin.full-name:Administrador}") String adminFullName,
             @Value("${app.admin.email:admin@circuitos.pt}") String adminEmail) {
@@ -87,51 +93,80 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void createDefaultUsers() {
-        userService.findByUsername("Rafael").orElseGet(
-                () -> userService.register("Rafael", "1234", "Administrador", "admin@circuitos.pt", "ADMIN"));
-        userService.findByUsername("cliente")
+        userService.findByUsernameIgnoreCase("Rafael")
+                .or(() -> userService.findByEmailIgnoreCase("admin@circuitos.pt"))
+                .orElseGet(() -> userService.register("Rafael", "1234", "Administrador",
+                        "admin@circuitos.pt", "ADMIN"));
+        userService.findByUsernameIgnoreCase("cliente")
+                .or(() -> userService.findByEmailIgnoreCase("cliente@circuitos.pt"))
                 .orElseGet(() -> userService.register("cliente", "1234", "Cliente", "cliente@circuitos.pt", "USER"));
     }
 
     private void bootstrapAdminUser() {
+        log.info("Admin bootstrap iniciado");
+
         if (adminPassword == null || adminPassword.isBlank()) {
+            log.warn("Admin bootstrap ignorado: password vazia para username={} email={}", adminUsername, adminEmail);
             return;
         }
 
-        userService.findByUsername(adminUsername)
-                .map(user -> {
-                    boolean needsUpdate = !user.isEnabled() || !hasAdminRole(user.getRoles());
-                    if (needsUpdate) {
-                        user.setRoles(ensureAdminRole(user.getRoles()));
-                        user.setEnabled(true);
-                        return userService.save(user);
-                    }
-                    return user;
-                })
-                .orElseGet(() -> userService.register(adminUsername, adminPassword, adminFullName, adminEmail, "ADMIN"));
+        Optional<AppUser> userWithAdminEmail = userService.findByEmailIgnoreCase(adminEmail);
+        Optional<AppUser> userWithAdminUsername = userService.findByUsernameIgnoreCase(adminUsername);
+
+        userWithAdminEmail.ifPresent(user -> log.info("Admin encontrado por email/username: criterio=email, {}",
+                adminSummary(user)));
+        userWithAdminUsername.ifPresent(user -> log.info("Admin encontrado por email/username: criterio=username, {}",
+                adminSummary(user)));
+
+        if (userWithAdminEmail.isPresent()) {
+            AppUser adminUser = userWithAdminEmail.get();
+            userWithAdminUsername
+                    .filter(user -> !sameUser(adminUser, user))
+                    .ifPresent(this::releaseReservedAdminUsername);
+
+            AppUser updatedAdmin = updateAdminUser(adminUser);
+            log.info("Admin criado/atualizado: acao=atualizado, {}", adminSummary(updatedAdmin));
+            return;
+        }
+
+        if (userWithAdminUsername.isPresent()) {
+            AppUser updatedAdmin = updateAdminUser(userWithAdminUsername.get());
+            log.info("Admin criado/atualizado: acao=atualizado, {}", adminSummary(updatedAdmin));
+            return;
+        }
+
+        AppUser createdAdmin = userService.register(adminUsername, adminPassword, adminFullName, adminEmail, "ADMIN");
+        log.info("Admin criado/atualizado: acao=criado, {}", adminSummary(createdAdmin));
     }
 
-    private boolean hasAdminRole(String roles) {
-        if (roles == null || roles.isBlank()) {
-            return false;
-        }
-        for (String role : roles.split(",")) {
-            if ("ADMIN".equals(role.trim())) {
-                return true;
-            }
-        }
-        return false;
+    private AppUser updateAdminUser(AppUser user) {
+        user.setUsername(adminUsername);
+        user.setEmail(adminEmail);
+        user.setFullName(adminFullName);
+        user.setPassword(userService.encodePassword(adminPassword));
+        user.setRoles("ADMIN");
+        user.setEnabled(true);
+        return userService.save(user);
     }
 
-    private String ensureAdminRole(String roles) {
-        if (roles == null || roles.isBlank()) {
-            return "ADMIN";
-        }
-        for (String role : roles.split(",")) {
-            if ("ADMIN".equals(role.trim())) {
-                return roles;
-            }
-        }
-        return roles + ",ADMIN";
+    private void releaseReservedAdminUsername(AppUser user) {
+        String oldUsername = user.getUsername();
+        user.setUsername(oldUsername + "-legacy-" + user.getId());
+        AppUser updatedUser = userService.save(user);
+        log.warn("Username admin libertado de utilizador antigo: id={}, username_anterior={}, username_atual={}, email={}, role={}, enabled={}",
+                updatedUser.getId(), oldUsername, updatedUser.getUsername(), updatedUser.getEmail(),
+                updatedUser.getRoles(), updatedUser.isEnabled());
+    }
+
+    private boolean sameUser(AppUser first, AppUser second) {
+        return first.getId() != null && first.getId().equals(second.getId());
+    }
+
+    private String adminSummary(AppUser user) {
+        return "id=" + user.getId()
+                + ", username=" + user.getUsername()
+                + ", email=" + user.getEmail()
+                + ", role=" + user.getRoles()
+                + ", enabled=" + user.isEnabled();
     }
 }
