@@ -21,13 +21,21 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser user = appUserService.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+        AppUser user = appUserService.findByUsernameIgnoreCase(username)
+                .or(() -> appUserService.findByEmailIgnoreCase(username))
+                .orElseThrow(() -> new UsernameNotFoundException("Utilizador nao encontrado: " + username));
 
-        String[] roles = user.getRoles() != null ? user.getRoles().split(",") : new String[0];
+        String[] authorities = user.getRoles() == null ? new String[0]
+                : Arrays.stream(user.getRoles().split(","))
+                        .map(String::trim)
+                        .filter(role -> !role.isBlank())
+                        .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                        .distinct()
+                        .toArray(String[]::new);
+
         return User.withUsername(user.getUsername())
                 .password(user.getPassword())
-                .roles(roles)
+                .authorities(authorities)
                 .disabled(!user.isEnabled())
                 .build();
     }

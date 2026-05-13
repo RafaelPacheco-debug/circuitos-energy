@@ -23,6 +23,14 @@ public class AppUserService {
         return userRepository.findByUsername(username);
     }
 
+    public Optional<AppUser> findByUsernameIgnoreCase(String username) {
+        return userRepository.findByUsernameIgnoreCase(username);
+    }
+
+    public Optional<AppUser> findByEmailIgnoreCase(String email) {
+        return userRepository.findByEmailIgnoreCase(email);
+    }
+
     public boolean usernameExists(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
