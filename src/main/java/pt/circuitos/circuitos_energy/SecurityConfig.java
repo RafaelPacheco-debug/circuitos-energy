@@ -49,17 +49,29 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/", "/sobre", "/servicos", "/servicos/**",
                                                                 "/produtos", "/produtos/**",
-                                                                "/orcamento/paineis-solares/**", "/contactos",
-                                                                "/agendamento/**", "/ferramentas/**", "/login",
+                                                                "/orcamento/paineis-solares", "/contactos",
+                                                                "/agendamento/**", "/ferramentas/solar",
+                                                                "/ferramentas/postos", "/login", "/recuperar-password",
                                                                 "/registro", "/css/**", "/js/**", "/images/**",
                                                                 "/webjars/**", "/favicon.ico")
                                                 .permitAll()
                                                 .requestMatchers("/admin", "/admin/**").hasRole("ADMIN")
+                                                .requestMatchers("/ferramentas/solar/simulador",
+                                                                "/ferramentas/solar/resultado",
+                                                                "/ferramentas/solar/orcamento",
+                                                                "/ferramentas/calcular-solar",
+                                                                "/ferramentas/postos/simulador",
+                                                                "/ferramentas/postos/orcamento",
+                                                                "/ferramentas/calcular-postos",
+                                                                "/orcamento/paineis-solares/simulador",
+                                                                "/orcamento/paineis-solares/submeter",
+                                                                "/orcamento/paineis-solares/orcamento")
+                                                .authenticated()
                                                 .anyRequest().authenticated())
                                 .userDetailsService(userDetailsService)
                                 .formLogin(form -> form
                                                 .loginPage("/login")
-                                                .defaultSuccessUrl("/", true)
+                                                .defaultSuccessUrl("/", false)
                                                 .permitAll())
                                 .logout(logout -> logout
                                                 .logoutSuccessUrl("/")

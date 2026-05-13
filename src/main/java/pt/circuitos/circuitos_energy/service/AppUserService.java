@@ -40,6 +40,10 @@ public class AppUserService {
                 .anyMatch(u -> u.getEmail() != null && u.getEmail().equalsIgnoreCase(email));
     }
 
+    public long countUsers() {
+        return userRepository.count();
+    }
+
     public AppUser save(AppUser user) {
         return userRepository.save(user);
     }

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculo Solar - Circuitos Energy</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/theme.css" rel="stylesheet">
+  <style>
+    body{min-height:100vh;margin:0;background:linear-gradient(135deg,rgba(7,33,32,.78),rgba(15,23,42,.62)),url('/images/home-hero.jpg?v=5') center/cover fixed;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#0f172a}
+    .page{min-height:100vh;display:flex;align-items:center;padding:42px 16px}
+    .intro{max-width:1080px;margin:0 auto;background:rgba(255,255,255,.95);border-radius:22px;overflow:hidden;box-shadow:0 24px 70px rgba(15,23,42,.28)}
+    .media{min-height:100%;background:linear-gradient(180deg,rgba(15,118,110,.18),rgba(255,255,255,.1)),url('/images/projeto-solar.jpg?v=5') center/cover}
+    .content{padding:42px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:#ecfdf5;color:#0f766e;font-weight:700;font-size:.9rem}
+    .info-card{border:1px solid #e2e8f0;border-radius:14px;padding:16px;height:100%;background:#fff}
+    .info-card i{color:var(--color-primary)}
+    @media(max-width:991px){.media{min-height:260px}.content{padding:28px}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="intro">
+      <div class="row g-0">
+        <div class="col-lg-5"><div class="media"></div></div>
+        <div class="col-lg-7">
+          <div class="content">
+            <span class="pill mb-3"><i class="bi bi-sun"></i> Ferramenta para utilizadores registados</span>
+            <h1 class="display-6 fw-bold mb-3">Calculo solar</h1>
+            <p class="lead text-muted">Estime a potencia recomendada, consumo anual, poupanca aproximada e payback do seu investimento solar.</p>
+            <div class="row g-3 my-4">
+              <div class="col-md-6"><div class="info-card"><i class="bi bi-graph-up-arrow me-2"></i><strong>Resultados claros</strong><p class="mb-0 small text-muted mt-2">Potencia, economia anual e retorno estimado.</p></div></div>
+              <div class="col-md-6"><div class="info-card"><i class="bi bi-list-check me-2"></i><strong>Dados necessarios</strong><p class="mb-0 small text-muted mt-2">Consumo mensal, tarifa, horas de uso e investimento.</p></div></div>
+              <div class="col-md-6"><div class="info-card"><i class="bi bi-lightning-charge me-2"></i><strong>Decisao mais rapida</strong><p class="mb-0 small text-muted mt-2">Uma primeira leitura antes de falar com a equipa.</p></div></div>
+              <div class="col-md-6"><div class="info-card"><i class="bi bi-shield-check me-2"></i><strong>Conta necessaria</strong><p class="mb-0 small text-muted mt-2">Guarde pedidos e resultados associados ao seu acesso.</p></div></div>
+            </div>
+            <a th:href="@{/ferramentas/solar/simulador}" class="btn btn-primary btn-lg">Iniciar simulacao</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Entrar - Circuitos Energy</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link href="/css/theme.css" rel="stylesheet">
   <style>
     body {
@@ -12,70 +13,100 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f8fafc;
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background:
+        linear-gradient(135deg, rgba(7, 33, 32, .78), rgba(15, 23, 42, .58)),
+        url('/images/home-hero.jpg?v=4') center/cover fixed;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      padding: 24px;
     }
-    .card {
-      max-width: 420px;
+
+    .login-card {
+      max-width: 440px;
       width: 100%;
-      border-radius: 18px;
-      box-shadow: 0 18px 40px rgba(15,23,36,0.08);
+      border: 1px solid rgba(255,255,255,.38);
+      border-radius: 20px;
+      box-shadow: 0 24px 70px rgba(15,23,42,.28);
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(10px);
     }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
+
+    .brand-logo {
+      max-height: 64px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    .form-control {
+      min-height: 46px;
+      border-radius: 10px;
+    }
+
+    .btn-primary {
+      min-height: 46px;
+      border-radius: 10px;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      color: var(--color-primary);
     }
-    .brand span {
-      width: 36px;
-      height: 36px;
+
+    .support-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .support-item {
       border-radius: 12px;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #99f6e4 0%, var(--color-primary) 100%);
-      color: #fff;
-      font-weight: 800;
+      background: #f1f5f9;
+      padding: 10px;
+      color: #475569;
+      font-size: .9rem;
+    }
+
+    .support-item i {
+      color: var(--color-primary);
     }
   </style>
 </head>
 <body>
-  <div class="card p-4">
+  <main class="login-card p-4 p-sm-5">
     <div class="mb-4 text-center">
-      <div class="brand mb-2">
-        <span>CE</span>
-        <span>Circuitos Energy</span>
-      </div>
-      <p class="text-muted mb-0">Faça login para aceder às funcionalidades.</p>
+      <img th:src="@{/images/logo-circuitos-energy.png(v=4)}" src="/images/logo-circuitos-energy.png?v=4" alt="Circuitos Energy" class="brand-logo mx-auto mb-3">
+      <h1 class="h3 fw-bold mb-2">Entrar na sua conta</h1>
+      <p class="text-muted mb-0">Aceda ao perfil, ferramentas solares e area administrativa.</p>
+    </div>
+
+    <div class="support-row mb-4">
+      <div class="support-item"><i class="bi bi-shield-lock me-1"></i> Acesso seguro</div>
+      <div class="support-item"><i class="bi bi-sun me-1"></i> Simuladores</div>
     </div>
 
     <div th:if="${param.error}" class="alert alert-danger" role="alert">
-      Usuário ou senha inválidos. Tente novamente.
+      Utilizador ou palavra-passe invalidos. Tente novamente.
     </div>
     <div th:if="${param.logout}" class="alert alert-success" role="alert">
-      Sessão terminada com sucesso.
+      Sessao terminada com sucesso.
     </div>
 
     <form th:action="@{/login}" method="post">
       <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
       <div class="mb-3">
-        <label for="username" class="form-label">Usuário</label>
-        <input type="text" class="form-control" id="username" name="username" required autofocus>
+        <label for="username" class="form-label">Username ou email</label>
+        <input type="text" class="form-control" id="username" name="username" autocomplete="username" required autofocus>
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Senha</label>
-        <input type="password" class="form-control" id="password" name="password" required>
+      <div class="mb-2">
+        <label for="password" class="form-label">Palavra-passe</label>
+        <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
+      </div>
+      <div class="text-end mb-4">
+        <a th:href="@{/recuperar-password}" class="small text-muted">Esqueceu-se da palavra-passe?</a>
       </div>
       <button type="submit" class="btn btn-primary w-100">Entrar</button>
     </form>
 
-    <div class="d-flex justify-content-between align-items-center mt-3">
-      <a href="/" class="text-muted">Voltar ao início</a>
+    <div class="d-flex justify-content-between align-items-center mt-4">
+      <a href="/" class="text-muted">Voltar ao inicio</a>
       <a href="/registro" class="text-muted">Criar conta</a>
     </div>
-  </div>
+  </main>
 </body>
 </html>

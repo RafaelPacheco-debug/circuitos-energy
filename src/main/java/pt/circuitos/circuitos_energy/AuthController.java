@@ -10,4 +10,9 @@ public class AuthController {
     public String login() {
         return "login";
     }
+
+    @GetMapping("/recuperar-password")
+    public String recuperarPassword() {
+        return "recuperar-password";
+    }
 }

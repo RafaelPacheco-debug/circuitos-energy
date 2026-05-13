@@ -45,6 +45,7 @@ import pt.circuitos.circuitos_energy.repository.ServicoRepository;
 import pt.circuitos.circuitos_energy.service.AgendamentoInstalacaoService;
 import pt.circuitos.circuitos_energy.service.AgendamentoManutencaoService;
 import pt.circuitos.circuitos_energy.service.AgendamentoReuniaoService;
+import pt.circuitos.circuitos_energy.service.AppUserService;
 import pt.circuitos.circuitos_energy.service.EncomendaService;
 import pt.circuitos.circuitos_energy.service.FerramentaUtilizadorService;
 import pt.circuitos.circuitos_energy.service.OrcamentoImpressaoService;
@@ -62,6 +63,7 @@ public class HomeController {
     private final FerramentaUtilizadorService ferramentaUtilizadorService;
     private final EncomendaService encomendaService;
     private final OrcamentoImpressaoService orcamentoImpressaoService;
+    private final AppUserService appUserService;
 
     private static final String UPLOAD_DIR = "uploads/";
     private static final Set<String> ALLOWED_IMAGE_EXTENSIONS = Set.of("jpg", "jpeg", "png", "webp");
@@ -81,7 +83,8 @@ public class HomeController {
             AgendamentoReuniaoService reuniaoService,
             FerramentaUtilizadorService ferramentaUtilizadorService,
             EncomendaService encomendaService,
-            OrcamentoImpressaoService orcamentoImpressaoService) {
+            OrcamentoImpressaoService orcamentoImpressaoService,
+            AppUserService appUserService) {
         this.contactRepo = contactRepo;
         this.servicoRepo = servicoRepo;
         this.orcamentoService = orcamentoService;
@@ -91,6 +94,7 @@ public class HomeController {
         this.ferramentaUtilizadorService = ferramentaUtilizadorService;
         this.encomendaService = encomendaService;
         this.orcamentoImpressaoService = orcamentoImpressaoService;
+        this.appUserService = appUserService;
     }
 
     // -------- PÚBLICO --------
@@ -328,6 +332,11 @@ public class HomeController {
     }
 
     @GetMapping("/orcamento/paineis-solares")
+    public String introOrcamentoPaineisSolares() {
+        return "intro-orcamento-paineis-solares";
+    }
+
+    @GetMapping("/orcamento/paineis-solares/simulador")
     public String orcamentoPaineisSolares(Model model, HttpSession session) {
         session.getId();
         model.addAttribute("orcamentoPaineisRequest", new OrcamentoPaineisSolaresRequest());
@@ -371,7 +380,7 @@ public class HomeController {
                 (OrcamentoPaineisImpressao) session.getAttribute(SESSION_PAINEIS_ORCAMENTO);
 
         if (orcamento == null) {
-            return "redirect:/orcamento/paineis-solares";
+            return "redirect:/orcamento/paineis-solares/simulador";
         }
 
         registarImpressaoPaineis(session, orcamento);
@@ -382,6 +391,11 @@ public class HomeController {
     // -------- FERRAMENTAS / SOLAR --------
 
     @GetMapping("/ferramentas/solar")
+    public String introSolar() {
+        return "intro-ferramenta-solar";
+    }
+
+    @GetMapping("/ferramentas/solar/simulador")
     public String paginaSolar(Model model, HttpSession session) {
         session.getId();
         CalculoSolarRequest request = new CalculoSolarRequest();
@@ -440,7 +454,7 @@ public class HomeController {
                 (OrcamentoSolarImpressao) session.getAttribute(SESSION_SOLAR_ORCAMENTO);
 
         if (orcamento == null) {
-            return "redirect:/ferramentas/solar";
+            return "redirect:/ferramentas/solar/simulador";
         }
 
         int numeroPaineis = Math.max(1, (int) Math.ceil(orcamento.resultado().getPotenciaNecessariaKw() * 1000 / 450));
@@ -456,7 +470,7 @@ public class HomeController {
                 (OrcamentoSolarImpressao) session.getAttribute(SESSION_SOLAR_ORCAMENTO);
 
         if (orcamento == null) {
-            return "redirect:/ferramentas/solar";
+            return "redirect:/ferramentas/solar/simulador";
         }
 
         registarImpressaoSolar(session, orcamento);
@@ -467,6 +481,11 @@ public class HomeController {
     // -------- FERRAMENTAS / POSTOS DE CARREGAMENTO --------
 
     @GetMapping("/ferramentas/postos")
+    public String introPostos() {
+        return "intro-ferramenta-postos";
+    }
+
+    @GetMapping("/ferramentas/postos/simulador")
     public String paginaPostos(Model model, HttpSession session) {
         session.getId();
         model.addAttribute("postosRequest", new PostosCarregamentoRequest());
@@ -499,7 +518,7 @@ public class HomeController {
                 (OrcamentoPostosImpressao) session.getAttribute(SESSION_POSTOS_ORCAMENTO);
 
         if (orcamento == null) {
-            return "redirect:/ferramentas/postos";
+            return "redirect:/ferramentas/postos/simulador";
         }
 
         registarImpressaoPostos(session, orcamento);
@@ -518,6 +537,12 @@ public class HomeController {
         model.addAttribute("totalAgendamentosManutencao", manutencaoService.listarRecentes().size());
         model.addAttribute("totalAgendamentosReuniao", reuniaoService.listarRecentes().size());
         model.addAttribute("totalEncomendas", encomendaService.listarRecentes().size());
+        model.addAttribute("totalUtilizadores", appUserService.countUsers());
+        model.addAttribute("totalFerramentas",
+                ferramentaUtilizadorService.listarCalculosSolares().size()
+                        + ferramentaUtilizadorService.listarOrcamentosPaineis().size()
+                        + ferramentaUtilizadorService.listarOrcamentosPostos().size());
+        model.addAttribute("totalOrcamentosImpressos", orcamentoImpressaoService.listarRecentes().size());
         model.addAttribute("activeSection", "dashboard");
         model.addAttribute("conteudo", "admin-dashboard :: conteudo");
         return "admin-layout";

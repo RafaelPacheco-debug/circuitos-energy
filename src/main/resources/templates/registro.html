@@ -81,6 +81,25 @@
       flex:0 0 auto;
     }
 
+    .form-logo{
+      height:54px;
+      width:auto;
+      object-fit:contain;
+      display:block;
+    }
+
+    .mini-feature{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      color:#475569;
+      font-size:.92rem;
+    }
+
+    .mini-feature i{
+      color:var(--color-primary);
+    }
+
     .form-control{
       min-height:46px;
       border-radius:10px;
@@ -127,6 +146,14 @@
 
               <div class="col-lg-7">
                 <section class="form-panel">
+                  <div class="text-center mb-4">
+                    <img th:src="@{/images/logo-circuitos-energy.png(v=3)}" src="/images/logo-circuitos-energy.png?v=3" alt="Circuitos Energy" class="form-logo mx-auto mb-3">
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                      <span class="mini-feature"><i class="bi bi-shield-check"></i> Conta segura</span>
+                      <span class="mini-feature"><i class="bi bi-lightning-charge"></i> Ferramentas exclusivas</span>
+                    </div>
+                  </div>
+
                   <div class="d-flex align-items-start gap-3 mb-4">
                     <div class="field-icon"><i class="bi bi-person-plus"></i></div>
                     <div>
