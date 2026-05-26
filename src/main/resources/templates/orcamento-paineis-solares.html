@@ -1111,6 +1111,9 @@
                  href="#"
                  target="_blank"
                  rel="noopener"><i class="bi bi-printer"></i>Transferir PDF / Imprimir orçamento</a>
+              <a class="btn-secondary mt-3 d-flex justify-content-center text-decoration-none" th:href="@{/}">
+                Voltar à página inicial
+              </a>
             </form>
           </article>
 
@@ -1644,10 +1647,10 @@
         const contentType = response.headers.get("content-type") || "";
         const data = contentType.includes("application/json")
           ? await response.json()
-          : { success: false, message: response.status === 403 ? "A sessÃ£o expirou. Atualize a pÃ¡gina e tente novamente." : "Nao foi possivel registar o pedido." };
+          : { success: false, message: response.status === 403 ? "A sessão expirou. Atualize a página e tente novamente." : "Não foi possível concluir o envio. Tente novamente." };
 
         if (!response.ok || !data.success) {
-          showSubmitFeedback(data.message || "Nao foi possivel registar o pedido.", "error");
+          showSubmitFeedback(data.message || "Não foi possível concluir o envio. Tente novamente.", "error");
           return;
         }
 

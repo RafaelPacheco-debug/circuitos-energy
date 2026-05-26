@@ -72,7 +72,7 @@
     <div class="mb-4 text-center">
       <img th:src="@{/images/logo-circuitos-energy.png(v=4)}" src="/images/logo-circuitos-energy.png?v=4" alt="Circuitos Energy" class="brand-logo mx-auto mb-3">
       <h1 class="h3 fw-bold mb-2">Entrar na sua conta</h1>
-      <p class="text-muted mb-0">Aceda ao perfil, ferramentas solares e area administrativa.</p>
+      <p class="text-muted mb-0">Aceda ao perfil, ferramentas solares e área administrativa.</p>
     </div>
 
     <div class="support-row mb-4">
@@ -80,11 +80,14 @@
       <div class="support-item"><i class="bi bi-sun me-1"></i> Simuladores</div>
     </div>
 
+    <div th:if="${param.registered}" class="alert alert-success" role="alert">
+      Conta criada com sucesso. Pode iniciar sessão.
+    </div>
     <div th:if="${param.error}" class="alert alert-danger" role="alert">
-      Utilizador ou palavra-passe invalidos. Tente novamente.
+      Utilizador ou palavra-passe inválidos. Tente novamente.
     </div>
     <div th:if="${param.logout}" class="alert alert-success" role="alert">
-      Sessao terminada com sucesso.
+      Sessão terminada com sucesso.
     </div>
 
     <form th:action="@{/login}" method="post">
@@ -104,7 +107,7 @@
     </form>
 
     <div class="d-flex justify-content-between align-items-center mt-4">
-      <a href="/" class="text-muted">Voltar ao inicio</a>
+      <a href="/" class="text-muted">Voltar ao site</a>
       <a href="/registro" class="text-muted">Criar conta</a>
     </div>
   </main>
