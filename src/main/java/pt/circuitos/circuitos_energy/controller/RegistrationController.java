@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.circuitos.circuitos_energy.model.RegistrationForm;
 import pt.circuitos.circuitos_energy.service.AppUserService;
@@ -31,7 +32,8 @@ public class RegistrationController {
     public String registrar(
             @Valid @ModelAttribute("registrationForm") RegistrationForm form,
             BindingResult result,
-            Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
         if (!form.getPassword().equals(form.getConfirmPassword())) {
             result.rejectValue("confirmPassword", "password.mismatch", "As senhas não coincidem");
@@ -56,8 +58,7 @@ public class RegistrationController {
                 form.getEmail(),
                 "USER");
 
-        model.addAttribute("success", true);
-        model.addAttribute("registrationForm", new RegistrationForm());
-        return "registro";
+        redirectAttributes.addAttribute("registered", "true");
+        return "redirect:/login";
     }
 }
