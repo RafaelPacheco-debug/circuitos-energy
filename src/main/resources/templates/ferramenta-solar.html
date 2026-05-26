@@ -354,6 +354,19 @@
             text-decoration:none;
         }
 
+        .homeBudgetBtn{
+            display:block;
+            margin-top: 10px;
+            width:100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background:#374151;
+            color:#fff;
+            font-weight:700;
+            text-align:center;
+            text-decoration:none;
+        }
+
         /* RIGHT */
         .stack{display:flex; flex-direction:column; gap: 18px;}
 
@@ -838,7 +851,10 @@
                th:href="@{/ferramentas/solar/orcamento}"
                target="_blank"
                rel="noopener"
-               class="printBudgetBtn">Imprimir cálculo</a>
+               class="printBudgetBtn">Imprimir orçamento</a>
+            <a th:if="${resultado != null}"
+               th:href="@{/}"
+               class="homeBudgetBtn">Voltar à página inicial</a>
 
         </div>
     </div>
