@@ -544,11 +544,20 @@
       color:#b91c1c;
     }
 
-    .print-budget-link{
+    .print-budget-actions{
       display:none;
       width:100%;
-      min-height:54px;
       margin-top:16px;
+      gap:12px;
+    }
+
+    .print-budget-actions.is-visible{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+
+    .print-budget-button{
+      min-height:54px;
       align-items:center;
       justify-content:center;
       gap:10px;
@@ -558,12 +567,16 @@
       border:1px solid rgba(255,255,255,.22);
       font-size:15px;
       font-weight:800;
-      text-decoration:none;
+      cursor:pointer;
       box-shadow:0 16px 34px rgba(15,118,110,.22);
     }
 
-    .print-budget-link.is-visible{
+    .print-budget-button{
       display:flex;
+    }
+
+    .print-budget-button:hover{
+      transform:translateY(-1px);
     }
 
     .submit-btn{
@@ -754,6 +767,10 @@
 
       .completion-banner.is-visible{
         align-items:stretch;
+      }
+
+      .print-budget-actions.is-visible{
+        grid-template-columns:1fr;
       }
     }
   </style>
@@ -1106,11 +1123,14 @@
 
               <button type="submit" class="submit-btn" id="solarQuoteSubmit"><i class="bi bi-calculator"></i>Calcular Orçamento</button>
               <div class="submit-feedback" id="solarQuoteFeedback"></div>
-              <a id="solarQuotePrintLink"
-                 class="print-budget-link"
-                 href="#"
-                 target="_blank"
-                 rel="noopener"><i class="bi bi-printer"></i>Transferir PDF / Imprimir orçamento</a>
+              <div class="print-budget-actions" id="solarQuotePrintActions">
+                <button type="button" class="print-budget-button" id="solarQuotePdfButton">
+                  <i class="bi bi-file-earmark-pdf"></i>Transferir Orçamento (PDF)
+                </button>
+                <button type="button" class="print-budget-button" id="solarQuotePrintButton">
+                  <i class="bi bi-printer"></i>Imprimir Orçamento
+                </button>
+              </div>
               <a class="btn-secondary mt-3 d-flex justify-content-center text-decoration-none" th:href="@{/}">
                 Voltar à página inicial
               </a>
@@ -1503,7 +1523,9 @@
     const solarQuoteForm = document.getElementById("solarQuoteForm");
     const solarQuoteSubmit = document.getElementById("solarQuoteSubmit");
     const solarQuoteFeedback = document.getElementById("solarQuoteFeedback");
-    const solarQuotePrintLink = document.getElementById("solarQuotePrintLink");
+    const solarQuotePrintActions = document.getElementById("solarQuotePrintActions");
+    const solarQuotePdfButton = document.getElementById("solarQuotePdfButton");
+    const solarQuotePrintButton = document.getElementById("solarQuotePrintButton");
     const simulationEmpty = document.getElementById("simulationEmpty");
     const simulationResult = document.getElementById("simulationResult");
 
@@ -1535,20 +1557,17 @@
       solarQuoteFeedback.className = `submit-feedback is-visible ${type === "success" ? "is-success" : "is-error"}`;
     }
 
-    function hidePrintLink() {
-      solarQuotePrintLink.classList.remove("is-visible");
-      solarQuotePrintLink.setAttribute("href", "#");
+    function hidePrintActions() {
+      solarQuotePrintActions.classList.remove("is-visible");
     }
 
-    function showPrintLink(printUrl) {
-      if (!printUrl) {
-        hidePrintLink();
-        return;
-      }
+    function showPrintActions() {
+      solarQuotePrintActions.classList.add("is-visible");
+      solarQuotePrintActions.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
 
-      solarQuotePrintLink.setAttribute("href", printUrl);
-      solarQuotePrintLink.classList.add("is-visible");
-      solarQuotePrintLink.scrollIntoView({ behavior: "smooth", block: "center" });
+    function printBudget() {
+      window.print();
     }
 
     function validateField(fieldId) {
@@ -1612,57 +1631,24 @@
       field.addEventListener("change", () => validateField(fieldId));
     });
 
-    solarQuoteForm.addEventListener("submit", async (event) => {
+    solarQuotePdfButton.addEventListener("click", printBudget);
+    solarQuotePrintButton.addEventListener("click", printBudget);
+
+    solarQuoteForm.addEventListener("submit", (event) => {
       event.preventDefault();
 
       syncQuoteFormFromWizard();
 
       const isFormValid = fieldIds.every((fieldId) => validateField(fieldId));
       if (!isFormValid) {
-        hidePrintLink();
+        hidePrintActions();
         showSubmitFeedback("Verifique os campos obrigatórios antes de submeter o pedido.", "error");
         return;
       }
 
       calculateSimulation();
-      hidePrintLink();
-
-      solarQuoteSubmit.disabled = true;
-      solarQuoteSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i>A enviar...';
-
-      try {
-        const csrfInput = solarQuoteForm.querySelector('input[name="_csrf"]');
-        const headers = { "Accept": "application/json" };
-        if (csrfInput && csrfInput.value) {
-          headers["X-CSRF-TOKEN"] = csrfInput.value;
-        }
-
-        const response = await fetch(solarQuoteForm.action, {
-          method: "POST",
-          headers,
-          credentials: "same-origin",
-          body: new FormData(solarQuoteForm)
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-        const data = contentType.includes("application/json")
-          ? await response.json()
-          : { success: false, message: response.status === 403 ? "A sessão expirou. Atualize a página e tente novamente." : "Não foi possível concluir o envio. Tente novamente." };
-
-        if (!response.ok || !data.success) {
-          showSubmitFeedback(data.message || "Não foi possível concluir o envio. Tente novamente.", "error");
-          return;
-        }
-
-        showSubmitFeedback("Pedido registado com sucesso. Pode abrir o orçamento e escolher Guardar como PDF.", "success");
-        showPrintLink(data.printUrl);
-      } catch (error) {
-        hidePrintLink();
-        showSubmitFeedback("Ocorreu um erro ao enviar os dados. Tente novamente dentro de instantes.", "error");
-      } finally {
-        solarQuoteSubmit.disabled = false;
-        solarQuoteSubmit.innerHTML = '<i class="bi bi-calculator"></i>Calcular Orçamento';
-      }
+      showSubmitFeedback("Orçamento calculado com sucesso. Pode transferir em PDF ou imprimir pelo browser.", "success");
+      showPrintActions();
     });
   </script>
 </body>
