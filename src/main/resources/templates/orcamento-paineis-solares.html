@@ -1051,7 +1051,7 @@
               <p>Informe a área disponível e preferências</p>
             </div>
 
-            <form id="solarQuoteForm" action="/orcamento/paineis-solares/submeter" th:action="@{/orcamento/paineis-solares/submeter}" method="post">
+            <form id="solarQuoteForm" action="/orcamento/paineis-solares/submeter" th:action="@{/orcamento/paineis-solares/submeter}" method="post" autocomplete="off">
               <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
               <input type="hidden" name="installationType" id="wizardInstallationType">
               <input type="hidden" name="propertyType" id="wizardPropertyType">
@@ -1150,7 +1150,12 @@
 
   <script>
     const STORAGE_KEY = "solarPanelsBudgetWizard";
+    const shouldResetWizardState = "[[${resetSolarPanelsWizard}]]" === "true";
     const totalSteps = 9;
+
+    if (shouldResetWizardState) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
 
     const questionnaireSection = document.getElementById("solarPanelsQuestionnaire");
     const quoteSection = document.getElementById("quoteSection");

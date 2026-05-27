@@ -710,7 +710,7 @@
             <h3>Dados de Consumo</h3>
             <div class="hint">Ajuste os valores conforme o seu consumo</div>
 
-            <form th:action="@{/ferramentas/calcular-solar}" method="post" th:object="${calculoSolarRequest}">
+            <form th:action="@{/ferramentas/calcular-solar}" method="post" th:object="${calculoSolarRequest}" autocomplete="off">
               <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <input type="hidden" name="installationType" id="hiddenInstallationType">
                 <input type="hidden" name="ownership" id="hiddenOwnership">
@@ -905,13 +905,19 @@
     const wizardTrack = document.getElementById('wizardTrack');
     const solarForm = document.querySelector('form[action*="/ferramentas/calcular-solar"]');
     const hasServerResult = calculatorGrid && calculatorGrid.dataset.hasResult === 'true';
+    const shouldResetWizardState = '[[${resetSolarWizard}]]' === 'true';
+    const wizardStorageKey = 'solarWizardState';
+
+    if (shouldResetWizardState) {
+        localStorage.removeItem(wizardStorageKey);
+    }
 
     function saveWizardState() {
-        localStorage.setItem('solarWizardState', JSON.stringify(wizardState));
+        localStorage.setItem(wizardStorageKey, JSON.stringify(wizardState));
     }
 
     function loadWizardState() {
-        const saved = localStorage.getItem('solarWizardState');
+        const saved = localStorage.getItem(wizardStorageKey);
         if (!saved) {
             return;
         }
@@ -921,7 +927,7 @@
             wizardState.currentStep = parsed.currentStep || 1;
             wizardState.answers = { ...wizardState.answers, ...(parsed.answers || {}) };
         } catch {
-            localStorage.removeItem('solarWizardState');
+            localStorage.removeItem(wizardStorageKey);
         }
     }
 

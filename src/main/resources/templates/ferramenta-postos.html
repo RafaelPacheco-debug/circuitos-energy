@@ -659,7 +659,7 @@
         <h3>Dados do Projeto</h3>
         <div class="hint">Preencha as informações abaixo para calcular o orçamento.</div>
 
-        <form th:action="@{/ferramentas/calcular-postos}" method="post" th:object="${postosRequest}">
+        <form th:action="@{/ferramentas/calcular-postos}" method="post" th:object="${postosRequest}" autocomplete="off">
           <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
           <input type="hidden" th:field="*{wizardInstallationType}" id="hiddenWizardInstallationType">
           <input type="hidden" th:field="*{wizardInstallationPlace}" id="hiddenWizardInstallationPlace">
