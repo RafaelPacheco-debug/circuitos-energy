@@ -13,7 +13,7 @@
     }
 
     .page {
-      max-width: 860px;
+      max-width: 900px;
       margin: 32px auto;
       padding: 32px;
       background: #ffffff;
@@ -29,11 +29,12 @@
       margin-bottom: 26px;
     }
 
-    h1, h2 {
-      margin: 0;
+    h1, h2, p {
+      margin-top: 0;
     }
 
     h1 {
+      margin-bottom: 8px;
       font-size: 28px;
       color: #0f766e;
     }
@@ -87,6 +88,7 @@
       margin-top: 24px;
       display: flex;
       gap: 12px;
+      flex-wrap: wrap;
     }
 
     button, a {
@@ -106,6 +108,18 @@
 
     a {
       background: #475569;
+    }
+
+    @media (max-width: 720px) {
+      .top,
+      .grid {
+        display: block;
+      }
+
+      .meta {
+        text-align: left;
+        margin-top: 16px;
+      }
     }
 
     @media print {
@@ -169,7 +183,7 @@
     </div>
 
     <div class="actions">
-      <button type="button" onclick="window.print()">Imprimir cálculo / guardar como PDF</button>
+      <button type="button" onclick="window.print()">Imprimir / guardar como PDF</button>
       <a th:href="@{/ferramentas/solar}">Voltar</a>
     </div>
   </main>
