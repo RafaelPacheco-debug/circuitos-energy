@@ -1528,6 +1528,7 @@
     const solarQuotePrintButton = document.getElementById("solarQuotePrintButton");
     const simulationEmpty = document.getElementById("simulationEmpty");
     const simulationResult = document.getElementById("simulationResult");
+    let solarQuotePrintUrl = "";
 
     const fieldIds = ["nomeCompleto", "email", "telefone", "areaDisponivel", "tipoPainel", "tipoTelhado"];
 
@@ -1559,11 +1560,22 @@
 
     function hidePrintActions() {
       solarQuotePrintActions.classList.remove("is-visible");
+      solarQuotePrintUrl = "";
     }
 
-    function showPrintActions() {
+    function showPrintActions(printUrl) {
+      solarQuotePrintUrl = printUrl || "";
       solarQuotePrintActions.classList.add("is-visible");
       solarQuotePrintActions.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function openPrintBudgetPage() {
+      if (solarQuotePrintUrl) {
+        window.open(solarQuotePrintUrl, "_blank", "noopener");
+        return;
+      }
+
+      window.print();
     }
 
     function printBudget() {
@@ -1631,10 +1643,10 @@
       field.addEventListener("change", () => validateField(fieldId));
     });
 
-    solarQuotePdfButton.addEventListener("click", printBudget);
+    solarQuotePdfButton.addEventListener("click", openPrintBudgetPage);
     solarQuotePrintButton.addEventListener("click", printBudget);
 
-    solarQuoteForm.addEventListener("submit", (event) => {
+    solarQuoteForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
       syncQuoteFormFromWizard();
@@ -1647,8 +1659,42 @@
       }
 
       calculateSimulation();
-      showSubmitFeedback("Orçamento calculado com sucesso. Pode transferir em PDF ou imprimir pelo browser.", "success");
-      showPrintActions();
+      hidePrintActions();
+
+      solarQuoteSubmit.disabled = true;
+      solarQuoteSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i>A preparar...';
+
+      try {
+        const csrfInput = solarQuoteForm.querySelector('input[name="_csrf"]');
+        const headers = { "Accept": "application/json" };
+        if (csrfInput && csrfInput.value) {
+          headers["X-CSRF-TOKEN"] = csrfInput.value;
+        }
+
+        const response = await fetch(solarQuoteForm.action, {
+          method: "POST",
+          headers,
+          credentials: "same-origin",
+          body: new FormData(solarQuoteForm)
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+        const data = contentType.includes("application/json") ? await response.json() : {};
+
+        if (!response.ok || data.success === false) {
+          showSubmitFeedback("Verifique os dados introduzidos antes de transferir o orçamento.", "error");
+          return;
+        }
+
+        showSubmitFeedback("Orçamento calculado com sucesso. Pode transferir em PDF ou imprimir pelo browser.", "success");
+        showPrintActions(data.printUrl || "/orcamento/paineis-solares/orcamento");
+      } catch (error) {
+        showSubmitFeedback("Orçamento calculado com sucesso. Pode imprimir pelo browser.", "success");
+        showPrintActions("");
+      } finally {
+        solarQuoteSubmit.disabled = false;
+        solarQuoteSubmit.innerHTML = '<i class="bi bi-calculator"></i>Calcular Orçamento';
+      }
     });
   </script>
 </body>
