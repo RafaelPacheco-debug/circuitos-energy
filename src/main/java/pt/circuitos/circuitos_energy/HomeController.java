@@ -332,14 +332,17 @@ public class HomeController {
     }
 
     @GetMapping("/orcamento/paineis-solares")
-    public String introOrcamentoPaineisSolares() {
+    public String introOrcamentoPaineisSolares(HttpSession session) {
+        limparEstadoOrcamentoPaineis(session);
         return "intro-orcamento-paineis-solares";
     }
 
     @GetMapping("/orcamento/paineis-solares/simulador")
     public String orcamentoPaineisSolares(Model model, HttpSession session) {
         session.getId();
+        limparEstadoOrcamentoPaineis(session);
         model.addAttribute("orcamentoPaineisRequest", new OrcamentoPaineisSolaresRequest());
+        model.addAttribute("resetSolarPanelsWizard", true);
         return "orcamento-paineis-solares";
     }
 
@@ -393,13 +396,15 @@ public class HomeController {
     // -------- FERRAMENTAS / SOLAR --------
 
     @GetMapping("/ferramentas/solar")
-    public String introSolar() {
+    public String introSolar(HttpSession session) {
+        limparEstadoCalculoSolar(session);
         return "intro-ferramenta-solar";
     }
 
     @GetMapping("/ferramentas/solar/simulador")
     public String paginaSolar(Model model, HttpSession session) {
         session.getId();
+        limparEstadoCalculoSolar(session);
         CalculoSolarRequest request = new CalculoSolarRequest();
         request.setConsumoMensalKwh(300.0);
         request.setTarifaKwh(0.150);
@@ -412,6 +417,7 @@ public class HomeController {
         model.addAttribute("horasUsoDiario", request.getHorasUsoDiario());
         model.addAttribute("investimento", request.getInvestimento());
         model.addAttribute("resultado", null);
+        model.addAttribute("resetSolarWizard", true);
         return "ferramenta-solar";
     }
 
@@ -483,13 +489,15 @@ public class HomeController {
     // -------- FERRAMENTAS / POSTOS DE CARREGAMENTO --------
 
     @GetMapping("/ferramentas/postos")
-    public String introPostos() {
+    public String introPostos(HttpSession session) {
+        limparEstadoPostos(session);
         return "intro-ferramenta-postos";
     }
 
     @GetMapping("/ferramentas/postos/simulador")
     public String paginaPostos(Model model, HttpSession session) {
         session.getId();
+        limparEstadoPostos(session);
         model.addAttribute("postosRequest", new PostosCarregamentoRequest());
         model.addAttribute("resultadoPostos", null);
         return "ferramenta-postos";
@@ -1049,6 +1057,18 @@ public class HomeController {
                 resumo,
                 valorPrincipal,
                 orcamento.referenciaSubmissaoId());
+    }
+
+    private void limparEstadoCalculoSolar(HttpSession session) {
+        session.removeAttribute(SESSION_SOLAR_ORCAMENTO);
+    }
+
+    private void limparEstadoPostos(HttpSession session) {
+        session.removeAttribute(SESSION_POSTOS_ORCAMENTO);
+    }
+
+    private void limparEstadoOrcamentoPaineis(HttpSession session) {
+        session.removeAttribute(SESSION_PAINEIS_ORCAMENTO);
     }
 
     private static class UploadValidationException extends RuntimeException {
