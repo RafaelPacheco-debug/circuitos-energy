@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultado do Orçamento Solar | Circuitos Energy</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 32px 16px 112px;
+      font-family: Arial, sans-serif;
+      color: #172033;
+      background: #f5f7f8;
+    }
+
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 34px;
+      background: #ffffff;
+      border: 1px solid #d9e2e7;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 2px solid #0f766e;
+      padding-bottom: 18px;
+      margin-bottom: 26px;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 30px;
+      color: #0f766e;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 28px 0 12px;
+    }
+
+    .meta {
+      text-align: right;
+      font-size: 14px;
+      color: #526173;
+      min-width: 170px;
+    }
+
+    .intro {
+      color: #526173;
+      line-height: 1.55;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin: 24px 0 8px;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 10px;
+      background: #eefaf7;
+      border: 1px solid #cfece5;
+    }
+
+    .metric span {
+      display: block;
+      color: #526173;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .metric strong {
+      display: block;
+      color: #0f766e;
+      font-size: 22px;
+      line-height: 1.15;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 22px;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1f4;
+      font-size: 15px;
+    }
+
+    .label {
+      color: #526173;
+    }
+
+    .value {
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .technical {
+      margin-top: 24px;
+      padding: 18px 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      line-height: 1.6;
+    }
+
+    .note {
+      margin-top: 24px;
+      padding: 14px 16px;
+      background: #eefaf7;
+      border-left: 4px solid #0f766e;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, .96);
+      border-top: 1px solid #d9e2e7;
+      box-shadow: 0 -12px 32px rgba(15, 23, 42, .08);
+      z-index: 10;
+    }
+
+    button, a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 8px;
+      border: 0;
+      background: #0f766e;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .secondary {
+      background: #475569;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 18px 10px 178px;
+      }
+
+      .page {
+        padding: 22px 16px;
+      }
+
+      .top,
+      .grid,
+      .summary {
+        display: block;
+      }
+
+      .metric {
+        margin-bottom: 10px;
+      }
+
+      .meta {
+        text-align: left;
+        margin-top: 16px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+
+      .page {
+        max-width: none;
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
+      .actions {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="top">
+      <div>
+        <h1>Circuitos Energy</h1>
+        <p>Proposta estimativa para instalação de painéis solares</p>
+      </div>
+      <div class="meta">
+        <div>Data</div>
+        <strong th:text="${#temporals.format(orcamento.data, 'dd/MM/yyyy HH:mm')}">27/05/2026 12:00</strong>
+      </div>
+    </header>
+
+    <p class="intro">
+      Esta proposta foi preparada com base nos dados introduzidos no simulador de orçamento solar.
+      Os valores são indicativos e servem como ponto de partida para validação técnica.
+    </p>
+
+    <section class="summary">
+      <div class="metric">
+        <span>Potência estimada</span>
+        <strong><span th:text="${#numbers.formatDecimal(orcamento.resultado.potenciaEstimadaKwp, 1, 1)}">10,0</span> kWp</strong>
+      </div>
+      <div class="metric">
+        <span>N.º de painéis</span>
+        <strong th:text="${orcamento.resultado.numeroPaineis}">23</strong>
+      </div>
+      <div class="metric">
+        <span>Investimento</span>
+        <strong><span th:text="${#numbers.formatDecimal(orcamento.resultado.investimentoEstimado, 1, 0)}">9660</span> EUR</strong>
+      </div>
+      <div class="metric">
+        <span>Economia anual</span>
+        <strong><span th:text="${#numbers.formatDecimal(orcamento.resultado.economiaAnualEstimada, 1, 0)}">590</span> EUR</strong>
+      </div>
+    </section>
+
+    <section>
+      <h2>Dados introduzidos</h2>
+      <div class="grid">
+        <div class="row"><span class="label">Nome</span><span class="value" th:text="${orcamento.dados.nomeCompleto}">Cliente</span></div>
+        <div class="row"><span class="label">Email</span><span class="value" th:text="${orcamento.dados.email}">email@exemplo.com</span></div>
+        <div class="row"><span class="label">Telefone</span><span class="value" th:text="${orcamento.dados.telefone}">900000000</span></div>
+        <div class="row"><span class="label">Área disponível</span><span class="value" th:text="${orcamento.dados.areaDisponivel + ' m²'}">50 m²</span></div>
+        <div class="row"><span class="label">Tipo de painel</span><span class="value" th:text="${orcamento.dados.tipoPainel}">Monocristalino</span></div>
+        <div class="row"><span class="label">Tipo de telhado</span><span class="value" th:text="${orcamento.dados.tipoTelhado}">Cerâmico</span></div>
+        <div class="row"><span class="label">Consumo mensal</span><span class="value" th:text="${orcamento.dados.consumoMensal ?: 'Não indicado'}">300</span></div>
+        <div class="row"><span class="label">Tipo de instalação</span><span class="value" th:text="${orcamento.dados.installationType ?: 'Não indicado'}">Residência</span></div>
+        <div class="row"><span class="label">Tipo de imóvel</span><span class="value" th:text="${orcamento.dados.propertyType ?: 'Não indicado'}">Moradia</span></div>
+        <div class="row"><span class="label">Local do projeto</span><span class="value" th:text="${orcamento.dados.projectCity ?: 'Não indicado'}">Lisboa</span></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Resultados calculados</h2>
+      <div class="grid">
+        <div class="row"><span class="label">Potência estimada</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.potenciaEstimadaKwp, 1, 1)}">10,0</span> kWp</span></div>
+        <div class="row"><span class="label">Número de painéis</span><span class="value" th:text="${orcamento.resultado.numeroPaineis}">23</span></div>
+        <div class="row"><span class="label">Investimento estimado</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.investimentoEstimado, 1, 0)}">9660</span> EUR</span></div>
+        <div class="row"><span class="label">Consumo anual</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.consumoAnualKwh, 1, 0)}">3600</span> kWh</span></div>
+        <div class="row"><span class="label">Economia anual estimada</span><span class="value"><span th:text="${#numbers.formatDecimal(orcamento.resultado.economiaAnualEstimada, 1, 0)}">590</span> EUR</span></div>
+      </div>
+    </section>
+
+    <section class="technical">
+      <h2>Resumo técnico</h2>
+      <p>
+        A solução estimada considera a área disponível, o tipo de painel selecionado e as condições de instalação indicadas.
+        A potência calculada permite dimensionar uma proposta inicial de autoconsumo, sujeita a confirmação em visita técnica,
+        análise da cobertura, orientação, sombreamento e capacidade elétrica existente.
+      </p>
+    </section>
+
+    <div class="note">
+      <strong>Nota final.</strong> Este orçamento é estimativo. Os valores apresentados podem variar após avaliação técnica,
+      confirmação dos equipamentos e validação das condições reais de instalação.
+    </div>
+  </main>
+
+  <div class="actions">
+    <a th:href="@{/orcamento/paineis-solares/orcamento}" target="_blank" rel="noopener">Transferir Orçamento (PDF)</a>
+    <button type="button" onclick="window.print()">Imprimir / guardar como PDF</button>
+    <a class="secondary" th:href="@{/}">Voltar à página inicial</a>
+  </div>
+</body>
+</html>

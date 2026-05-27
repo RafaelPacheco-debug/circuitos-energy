@@ -1051,7 +1051,7 @@
               <p>Informe a área disponível e preferências</p>
             </div>
 
-            <form id="solarQuoteForm" action="/orcamento/paineis-solares/submeter" th:action="@{/orcamento/paineis-solares/submeter}" method="post" novalidate>
+            <form id="solarQuoteForm" action="/orcamento/paineis-solares/submeter" th:action="@{/orcamento/paineis-solares/submeter}" method="post">
               <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
               <input type="hidden" name="installationType" id="wizardInstallationType">
               <input type="hidden" name="propertyType" id="wizardPropertyType">
@@ -1122,15 +1122,6 @@
               </div>
 
               <button type="submit" class="submit-btn" id="solarQuoteSubmit"><i class="bi bi-calculator"></i>Calcular Orçamento</button>
-              <div class="submit-feedback" id="solarQuoteFeedback"></div>
-              <div class="print-budget-actions" id="solarQuotePrintActions">
-                <button type="button" class="print-budget-button" id="solarQuotePdfButton">
-                  <i class="bi bi-file-earmark-pdf"></i>Transferir Orçamento (PDF)
-                </button>
-                <button type="button" class="print-budget-button" id="solarQuotePrintButton">
-                  <i class="bi bi-printer"></i>Imprimir Orçamento
-                </button>
-              </div>
               <a class="btn-secondary mt-3 d-flex justify-content-center text-decoration-none" th:href="@{/}">
                 Voltar à página inicial
               </a>
@@ -1138,45 +1129,6 @@
           </article>
 
           <aside class="side-stack">
-            <section class="card simulation-card">
-              <div class="card-head">
-                <h3>Simulação do Projeto</h3>
-                <p>Estimativa baseada nas suas especificações</p>
-              </div>
-
-              <div class="simulation-empty" id="simulationEmpty">
-                <div class="simulation-empty-icon">
-                  <i class="bi bi-calculator"></i>
-                </div>
-                <p>Preencha o formulário para ver a simulação do seu projeto solar</p>
-              </div>
-
-              <div class="simulation-result" id="simulationResult">
-                <div class="sim-grid">
-                  <div class="sim-item">
-                    <span class="sim-item-label">Potência estimada</span>
-                    <span class="sim-item-value" id="simPotencia">0 kWp</span>
-                  </div>
-                  <div class="sim-item">
-                    <span class="sim-item-label">N.º de painéis</span>
-                    <span class="sim-item-value" id="simPaineis">0</span>
-                  </div>
-                  <div class="sim-item">
-                    <span class="sim-item-label">Investimento</span>
-                    <span class="sim-item-value" id="simInvestimento">€0</span>
-                  </div>
-                  <div class="sim-item">
-                    <span class="sim-item-label">Economia anual</span>
-                    <span class="sim-item-value" id="simEconomia">€0</span>
-                  </div>
-                </div>
-
-                <div class="sim-note" id="simNote">
-                  Estimativa inicial preparada para futura ligação ao backend com cálculo avançado.
-                </div>
-              </div>
-            </section>
-
             <section class="card benefits-card">
               <div class="card-head">
                 <h3>Benefícios da Energia Solar</h3>
@@ -1520,181 +1472,8 @@
 
     updateWizardUI();
 
-    const solarQuoteForm = document.getElementById("solarQuoteForm");
-    const solarQuoteSubmit = document.getElementById("solarQuoteSubmit");
-    const solarQuoteFeedback = document.getElementById("solarQuoteFeedback");
-    const solarQuotePrintActions = document.getElementById("solarQuotePrintActions");
-    const solarQuotePdfButton = document.getElementById("solarQuotePdfButton");
-    const solarQuotePrintButton = document.getElementById("solarQuotePrintButton");
-    const simulationEmpty = document.getElementById("simulationEmpty");
-    const simulationResult = document.getElementById("simulationResult");
-    let solarQuotePrintUrl = "";
-
-    const fieldIds = ["nomeCompleto", "email", "telefone", "areaDisponivel", "tipoPainel", "tipoTelhado"];
-
-    const panelFactors = {
-      "Monocristalino": 1.15,
-      "Policristalino": 1.0,
-      "Alta Eficiência": 1.28,
-      "Com Bateria": 1.55
-    };
-
-    const roofFactors = {
-      "Ceramico": 1.0,
-      "Metalico": 0.96,
-      "Plano": 1.08,
-      "Terreno": 1.12
-    };
-
-    function showFieldError(fieldId, isVisible) {
-      const error = document.querySelector(`[data-error-for="${fieldId}"]`);
-      if (error) {
-        error.classList.toggle("is-visible", isVisible);
-      }
-    }
-
-    function showSubmitFeedback(message, type) {
-      solarQuoteFeedback.textContent = message;
-      solarQuoteFeedback.className = `submit-feedback is-visible ${type === "success" ? "is-success" : "is-error"}`;
-    }
-
-    function hidePrintActions() {
-      solarQuotePrintActions.classList.remove("is-visible");
-      solarQuotePrintUrl = "";
-    }
-
-    function showPrintActions(printUrl) {
-      solarQuotePrintUrl = printUrl || "";
-      solarQuotePrintActions.classList.add("is-visible");
-      solarQuotePrintActions.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    function openPrintBudgetPage() {
-      if (solarQuotePrintUrl) {
-        window.open(solarQuotePrintUrl, "_blank", "noopener");
-        return;
-      }
-
-      window.print();
-    }
-
-    function printBudget() {
-      window.print();
-    }
-
-    function validateField(fieldId) {
-      const field = document.getElementById(fieldId);
-      const value = field.value.trim();
-
-      let isValid = true;
-
-      if (fieldId === "email") {
-        isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-      } else if (fieldId === "telefone") {
-        isValid = /^[0-9+\s()\-]{6,20}$/.test(value);
-      } else if (fieldId === "areaDisponivel") {
-        isValid = Number(value) > 0;
-      } else {
-        isValid = value !== "";
-      }
-
-      showFieldError(fieldId, !isValid);
-      return isValid;
-    }
-
-    function formatEuro(value) {
-      return new Intl.NumberFormat("pt-PT", {
-        style: "currency",
-        currency: "EUR",
-        maximumFractionDigits: 0
-      }).format(value);
-    }
-
-    function calculateSimulation() {
-      const area = Number(document.getElementById("areaDisponivel").value || 0);
-      const consumoMensal = Number(document.getElementById("consumoMensal").value || 0);
-      const tipoPainel = document.getElementById("tipoPainel").value;
-      const tipoTelhado = document.getElementById("tipoTelhado").value;
-
-      const panelFactor = panelFactors[tipoPainel] || 1;
-      const roofFactor = roofFactors[tipoTelhado] || 1;
-
-      const potenciaBase = area * 0.2;
-      const potenciaFinal = potenciaBase * panelFactor * roofFactor;
-      const numeroPaineis = Math.max(1, Math.round(area / 2.2));
-      const investimento = numeroPaineis * 420 * panelFactor;
-      const consumoAnual = consumoMensal > 0 ? consumoMensal * 12 : potenciaFinal * 1200;
-      const economiaAnual = consumoAnual * 0.21 * 0.78;
-
-      document.getElementById("simPotencia").textContent = `${potenciaFinal.toFixed(1)} kWp`;
-      document.getElementById("simPaineis").textContent = `${numeroPaineis}`;
-      document.getElementById("simInvestimento").textContent = formatEuro(investimento);
-      document.getElementById("simEconomia").textContent = formatEuro(economiaAnual);
-      document.getElementById("simNote").textContent =
-        `Estimativa para ${tipoPainel.toLowerCase()} em cobertura ${tipoTelhado.toLowerCase()}, com base numa área de ${area} m².`;
-
-      simulationEmpty.style.display = "none";
-      simulationResult.classList.add("is-visible");
-    }
-
-    fieldIds.forEach((fieldId) => {
-      const field = document.getElementById(fieldId);
-      field.addEventListener("input", () => validateField(fieldId));
-      field.addEventListener("change", () => validateField(fieldId));
-    });
-
-    solarQuotePdfButton.addEventListener("click", openPrintBudgetPage);
-    solarQuotePrintButton.addEventListener("click", printBudget);
-
-    solarQuoteForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
+    document.getElementById("solarQuoteForm").addEventListener("submit", () => {
       syncQuoteFormFromWizard();
-
-      const isFormValid = fieldIds.every((fieldId) => validateField(fieldId));
-      if (!isFormValid) {
-        hidePrintActions();
-        showSubmitFeedback("Verifique os campos obrigatórios antes de submeter o pedido.", "error");
-        return;
-      }
-
-      calculateSimulation();
-      hidePrintActions();
-
-      solarQuoteSubmit.disabled = true;
-      solarQuoteSubmit.innerHTML = '<i class="bi bi-hourglass-split"></i>A preparar...';
-
-      try {
-        const csrfInput = solarQuoteForm.querySelector('input[name="_csrf"]');
-        const headers = { "Accept": "application/json" };
-        if (csrfInput && csrfInput.value) {
-          headers["X-CSRF-TOKEN"] = csrfInput.value;
-        }
-
-        const response = await fetch(solarQuoteForm.action, {
-          method: "POST",
-          headers,
-          credentials: "same-origin",
-          body: new FormData(solarQuoteForm)
-        });
-
-        const contentType = response.headers.get("content-type") || "";
-        const data = contentType.includes("application/json") ? await response.json() : {};
-
-        if (!response.ok || data.success === false) {
-          showSubmitFeedback("Verifique os dados introduzidos antes de transferir o orçamento.", "error");
-          return;
-        }
-
-        showSubmitFeedback("Orçamento calculado com sucesso. Pode transferir em PDF ou imprimir pelo browser.", "success");
-        showPrintActions(data.printUrl || "/orcamento/paineis-solares/orcamento");
-      } catch (error) {
-        showSubmitFeedback("Orçamento calculado com sucesso. Pode imprimir pelo browser.", "success");
-        showPrintActions("");
-      } finally {
-        solarQuoteSubmit.disabled = false;
-        solarQuoteSubmit.innerHTML = '<i class="bi bi-calculator"></i>Calcular Orçamento';
-      }
     });
   </script>
 </body>

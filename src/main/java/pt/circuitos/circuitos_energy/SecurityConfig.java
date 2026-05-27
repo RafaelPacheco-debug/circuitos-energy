@@ -65,6 +65,7 @@ public class SecurityConfig {
                                                                 "/ferramentas/calcular-postos",
                                                                 "/orcamento/paineis-solares/simulador",
                                                                 "/orcamento/paineis-solares/submeter",
+                                                                "/orcamento/paineis-solares/resultado",
                                                                 "/orcamento/paineis-solares/orcamento")
                                                 .authenticated()
                                                 .anyRequest().authenticated())
