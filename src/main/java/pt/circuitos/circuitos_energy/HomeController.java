@@ -344,21 +344,14 @@ public class HomeController {
     }
 
     @PostMapping("/orcamento/paineis-solares/submeter")
-    @ResponseBody
-    public Map<String, Object> submeterOrcamentoPaineisSolares(
-            @Valid @ModelAttribute OrcamentoPaineisSolaresRequest request,
+    public String submeterOrcamentoPaineisSolares(
+            @Valid @ModelAttribute("orcamentoPaineisRequest") OrcamentoPaineisSolaresRequest request,
             BindingResult result,
-            HttpSession session) {
+            HttpSession session,
+            Model model) {
 
         if (result.hasErrors()) {
-            String mensagem = result.getAllErrors().stream()
-                    .findFirst()
-                    .map(error -> error.getDefaultMessage())
-                    .orElse("Nao foi possivel submeter o orcamento.");
-
-            return Map.of(
-                    "success", false,
-                    "message", mensagem);
+            return "orcamento-paineis-solares";
         }
 
         OrcamentoPaineisSolaresSubmissao submissao = ferramentaUtilizadorService.guardarOrcamentoPaineis(request);
@@ -367,11 +360,20 @@ public class HomeController {
         session.setAttribute(SESSION_PAINEIS_ORCAMENTO,
                 new OrcamentoPaineisImpressao(request, resultado, LocalDateTime.now(), submissao.getId()));
 
-        return Map.of(
-                "success", true,
-                "id", submissao.getId(),
-                "message", "Pedido registado com sucesso.",
-                "printUrl", "/orcamento/paineis-solares/orcamento");
+        return "redirect:/orcamento/paineis-solares/resultado";
+    }
+
+    @GetMapping("/orcamento/paineis-solares/resultado")
+    public String resultadoOrcamentoPaineisSolares(HttpSession session, Model model) {
+        OrcamentoPaineisImpressao orcamento =
+                (OrcamentoPaineisImpressao) session.getAttribute(SESSION_PAINEIS_ORCAMENTO);
+
+        if (orcamento == null) {
+            return "redirect:/orcamento/paineis-solares/simulador";
+        }
+
+        model.addAttribute("orcamento", orcamento);
+        return "orcamento-paineis-solares-resultado";
     }
 
     @GetMapping("/orcamento/paineis-solares/orcamento")
